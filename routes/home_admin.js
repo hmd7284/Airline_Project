@@ -4,7 +4,7 @@ const path = require("path");
 const db = require("../database");
 const bcrypt = require("bcrypt");
 
-router.get("/", (req, res) => {
+router.get("/home_admin", (req, res) => {
   res.redirect("/home_admin");
 });
 
