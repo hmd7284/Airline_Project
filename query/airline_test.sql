@@ -48,7 +48,7 @@ CREATE TABLE customers (
 CREATE TABLE account (
     username varchar(255) PRIMARY KEY,
     password varchar(255) NOT NULL,
-    customer int NOT NULL,
+    customer int,
     type varchar(8) NOT NULL,
     CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer'),
     CONSTRAINT acc_cus_fk FOREIGN KEY (customer) REFERENCES customers (customer_code)
@@ -123,6 +123,9 @@ CREATE TABLE transactions (
 );
 
 -- Insert Data
+INSERT INTO account (username, PASSWORD, type)
+    VALUES ('admin', 'admin', 'admin');
+
 -- INSERT INTO aircraft (aircraft_name, capacity, status, mfd_com, mfd_date)
 --     VALUES ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
 --     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),

@@ -1,8 +1,7 @@
 const express = require("express");
-require("dotenv").config();
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const homeRouter = require("./routes/home");
+const homeadminRouter = require("./routes/home_admin");
 const airplaneRouter = require("./routes/airplane");
 const app = express();
 const port = 5000;
@@ -25,8 +24,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(homeRouter);
+app.use(homeadminRouter);
 app.use(airplaneRouter);
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

@@ -18,8 +18,8 @@ router.post("/airplane", async (req, res) => {
   try {
     if (action === "add") {
       const result = await db.query(
-        "INSERT INTO aircraft (aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [aircraftName, capacity, status, mfdCom, mfdDate],
+        "INSERT INTO aircraft (aircraft_code, aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+        [aircraftCode, aircraftName, capacity, status, mfdCom, mfdDate],
       );
 
       res.json({
