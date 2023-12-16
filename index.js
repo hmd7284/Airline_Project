@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const homeRouter = require("./routes/home");
 const airplaneRouter = require("./routes/airplane");
 const app = express();
-
+const port = 5000;
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
   secret: "thisismysecretkey",
@@ -27,6 +27,6 @@ app.use((req, res, next) => {
 
 app.use(homeRouter);
 app.use(airplaneRouter);
-app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`);
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
 });
