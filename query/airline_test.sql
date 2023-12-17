@@ -34,24 +34,23 @@ CREATE TABLE airport (
     CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
 );
 
+CREATE TABLE account (
+    id serial PRIMARY KEY,
+    email varchar(255),
+    password varchar(255),
+    type varchar(8) NOT NULL,
+    CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer')
+);
+
 CREATE TABLE customers (
-    customer_code serial PRIMARY KEY,
+    id int PRIMARY KEY,
     name varchar(255),
     address varchar(255),
     dob date,
     country varchar(3) NOT NULL,
-    email varchar(255),
     phone_number varchar(12),
+    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id),
     CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code)
-);
-
-CREATE TABLE account (
-    username varchar(255) PRIMARY KEY,
-    password varchar(255) NOT NULL,
-    customer int,
-    type varchar(8) NOT NULL,
-    CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer'),
-    CONSTRAINT acc_cus_fk FOREIGN KEY (customer) REFERENCES customers (customer_code)
 );
 
 CREATE TABLE route (
@@ -123,8 +122,8 @@ CREATE TABLE transactions (
 );
 
 -- Insert Data
-INSERT INTO account (username, PASSWORD, type)
-    VALUES ('admin', 'admin', 'admin');
+INSERT INTO account (email, PASSWORD, type)
+    VALUES ('admin@gmail.com', 'admin', 'admin');
 
 -- INSERT INTO aircraft (aircraft_name, capacity, status, mfd_com, mfd_date)
 --     VALUES ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
