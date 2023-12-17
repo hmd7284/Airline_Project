@@ -38,7 +38,7 @@ CREATE TABLE account (
     id serial PRIMARY KEY,
     email varchar(255),
     password varchar(255),
-    type varchar(8) NOT NULL,
+    type varchar(8),
     CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer')
 );
 
@@ -47,10 +47,11 @@ CREATE TABLE customers (
     name varchar(255),
     address varchar(255),
     dob date,
-    country varchar(3) NOT NULL,
+    country varchar(3),
+    email varchar(255),
     phone_number varchar(12),
-    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id),
-    CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code)
+    CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
+    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
 CREATE TABLE route (
@@ -116,7 +117,7 @@ CREATE TABLE transactions (
     discount varchar(6) NOT NULL,
     total double precision,
     CONSTRAINT trans_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT trans_cus_fk FOREIGN KEY (customer) REFERENCES customers (customer_code),
+    CONSTRAINT trans_cus_fk FOREIGN KEY (customer) REFERENCES customers (id),
     CONSTRAINT trans_fare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
     CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code)
 );

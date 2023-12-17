@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin Panel</title>
+    <title>User Signup</title>
     <link rel="stylesheet" href="admin_login.css">
 </head>
 <body>
     <div class="login-container">
-        <h2>Login Admin Panel</h2>
-        <form action="/admin_login" id="loginForm" method="post">
+        <h2>User Signup</h2>
+        <form action="/user_signup" id="loginForm" method="post">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
             <input type="submit" value="Login">
         </form>
         <p id="error-message"></p>

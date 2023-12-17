@@ -18,9 +18,7 @@ function isLoggedIn(req, res, next) {
 router.post("/user_signup", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-
-  const client = await pool.connect();
-
+  const client = await db.connect();
   try {
     await client.query("BEGIN");
 
@@ -29,7 +27,6 @@ router.post("/user_signup", async (req, res) => {
       "SELECT * FROM account WHERE email = $1",
       [email],
     );
-
     if (result.rows.length > 0) {
       // Email already registered
       req.flash("error", "Email already registered");
@@ -38,8 +35,8 @@ router.post("/user_signup", async (req, res) => {
     } else {
       // Insert new account
       await client.query(
-        "INSERT INTO account (email, password) VALUES ($1, $2)",
-        [email, hashedPassword],
+        "INSERT INTO account (email, password, type) VALUES ($1, $2, $3)",
+        [email, hashedPassword, "customer"],
       );
 
       const idResult = await client.query(
@@ -51,7 +48,7 @@ router.post("/user_signup", async (req, res) => {
       // Insert into customer
       const { name, address, dob, country, phone_number } = req.body;
       await client.query(
-        "INSERT INTO customer VALUES ($1, $2, $3, $4, $5, $6)",
+        "INSERT INTO customers VALUES ($1, $2, $3, $4, $5, $6)",
         [
           id,
           name,
@@ -73,6 +70,54 @@ router.post("/user_signup", async (req, res) => {
   } finally {
     // Release the client back to the pool
     client.release();
+  }
+});
+
+router.post("/user_login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(404).json({ message: "Please enter all fields" });
+  } else {
+    const login_client = await db.connect();
+
+    try {
+      // Select user from the database
+      const result = await login_client.query(
+        "SELECT * FROM account WHERE email = $1 AND type = $2",
+        [email, "customer"],
+      );
+
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+
+        // Compare the password using bcrypt
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) throw err;
+
+          if (isMatch) {
+            // Set session userId
+            req.session.userId = user.id;
+            res.redirect("/home_user");
+            console.log("User logged in");
+          } else {
+            req.flash("error", "Password is not correct");
+            console.error("Error during sign in: Password is not correct");
+            res.redirect("/user_login");
+          }
+        });
+      } else {
+        console.error("Error during sign in: Email is not registered");
+        req.flash("error", "Email is not registered");
+        res.redirect("/user_login");
+      }
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      res.status(500).json({ message: "Internal server error" });
+    } finally {
+      // Release the client back to the pool
+      login_client.release();
+    }
   }
 });
 

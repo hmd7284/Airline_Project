@@ -5,13 +5,12 @@ const db = require("../database");
 const bcrypt = require("bcrypt");
 
 router.get("/home_admin", (req, res) => {
-  res.redirect("/home_admin");
-});
-
-router.get("/home_admin", (req, res) => {
   res.render("home_admin.ejs");
 });
 
+router.get("/admin_login", (req, res) => {
+  res.render("admin_login.ejs");
+});
 router.get("/airplane", (req, res) => {
   res.render("airplane.ejs");
 });
