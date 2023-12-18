@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
 const bodyParser = require("body-parser");
+const moment = require("moment");
+const homeRouter = require("./routes/home");
 const homeuserRouter = require("./routes/home_user");
 const homeadminRouter = require("./routes/home_admin");
 const usersRouter = require("./routes/users");
@@ -30,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(homeRouter);
 app.use(homeuserRouter);
 app.use(usersRouter);
 app.use(homeadminRouter);

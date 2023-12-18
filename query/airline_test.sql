@@ -47,10 +47,9 @@ CREATE TABLE customers (
     name varchar(255),
     address varchar(255),
     dob date,
-    country varchar(3),
-    email varchar(255),
-    phone_number varchar(12),
-    CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
+    --country varchar(3),
+    phone_number varchar(10),
+    -- CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
@@ -74,7 +73,7 @@ CREATE TABLE employee (
     employee_code serial PRIMARY KEY,
     name varchar(255),
     email varchar(255),
-    phone_number varchar(12)
+    phone_number varchar(10)
 );
 
 CREATE TABLE flight_schedule (

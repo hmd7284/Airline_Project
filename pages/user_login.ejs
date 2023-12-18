@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
-    <link rel="stylesheet" href="admin_login.css">
-</head>
-<body>
-    <div class="login-container">
-        <h2>User Login</h2>
-        <form action="/user_login" id="loginForm" method="post">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <input type="submit" value="Login">
-        </form>
-        <p id="error-message"></p>
-    </div>
-</body>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <link rel="stylesheet" href="user_login.css">
+    </head>
+
+    <body>
+        <video autoplay muted loop id="video-bg">
+            <source src="videos/login.mp4" type="video/mp4">
+        </video>
+        <div class="login-container">
+            <h2>Welcome to our system</h2>
+            <form action="/user_login" id="loginForm" method="post">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="submit">Login</button>
+            </form>
+            <br>
+            <a href="/user_signup" style="color:mediumblue"><strong>You don't have an account ? Sign up !</strong></a>
+            <p id="error-message"></p>
+        </div>
+    </body>
+
 </html>
