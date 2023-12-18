@@ -1,0 +1,86 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    height: 100vh;
+    background: url(levi-guzman-1077831-unsplash.jpg);
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 25%;
+    max-width: 400px;
+
+    /* Set the height to 100% of the container */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+}
+
+/* Set styles for labels */
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 16px; /* Increase font size */
+}
+
+/* Set styles for inputs */
+input {
+    width: calc(100% - 20px); /* Set width to 100% minus padding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px; /* Increase font size */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px; /* Increase font size */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    color: #ff0000;
+    margin-top: 10px;
+    font-size: 14px; /* Increase font size */
+}
+
+/* Add a media query for smaller screens */
+@media (max-width: 768px) {
+    body {
+        justify-content: center;
+        align-items: center;
+    }
+    .login-container {
+        width: 80%;
+    }
+}
+
+#video-bg {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1000;
+}
