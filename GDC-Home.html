@@ -33,8 +33,6 @@
           <li><a href="AdminLog.html"><strong>Admin</strong></a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" data-toggle="modal" data-target="#signup"><strong>Sign up </strong><i class="fas fa-user-plus"></i></a></li>
-					<li><a href="#" data-toggle="modal" data-target="#login"><strong>Login </strong><i class="fas fa-user"></i></a></li>
 				</ul>
 			</div>
 		</div>
@@ -58,8 +56,6 @@
     <!--Tabs Headings-->
     <ul class="nav nav-tabs">
       <li class="active"><a class="tabshead" data-toggle="tab" href="#home"><i class="fas fa-plane"></i> Flights</a></li>
-      <li><a class="tabshead" data-toggle="tab" href="#menu1"><i class="far fa-address-book"></i> My Bookings</a></li>
-      <li><a class="tabshead" data-toggle="tab" href="#menu2"><i class="far fa-clock"></i> Flight Status</a></li>
     </ul>
     <!--Tabs Headings End-->
 
@@ -84,7 +80,7 @@
           	<option value="Banglore">BANGLORE</option>
           	<option value="Kolkata">KOLKATA</option>
           </select>
-          <input type="number" class="drop" name="passengers" step="1" min="1" max="10" placeholder="Number Of Passengers">
+          <br>
           <span class="lab">Departure:</span>
           <input type="date" name="depart" class="drop" id="depart">
           <span class="lab">Return:</span>
@@ -93,110 +89,6 @@
           <input type="submit" name="submit" id="flightsButton">
         </form>
       </div>
-      <!--Tab Content Flight End-->
-
-      <!--Tab Content My Bookings-->
-      <div id="menu1" class="tab-pane fade">
-        <h3 class="lab2">My Bookings</h3>
-        <form action="GDC-Ticket.php" method="POST">
-          <input type="text" name="ticketno" placeholder="Ticket Number" class="drop2">
-          <input type="text" name="lastname" placeholder="Passenger Last Name" class="drop2">
-          <input type="submit" name="submit" id="tickButton">
-        </form>
-    	</div>
-      <!--Tab Content My Bookings Ends-->
-
-      <!--Tab Content Flight Status-->
-      <div id="menu2" class="tab-pane fade">
-        <h3 class="lab2">Flight Status</h3>
-        <form action="GDC-FlightStatus.php" method="POST">
-          <input type="text" name="flightid" placeholder="Flight Number" class="drop2">
-          <select name="origin" class="drop2">.
-          	<option value="org">Origin</option>
-          	<option value="Mumbai">MUMBAI</option>
-          	<option value="Delhi">DELHI</option>
-          	<option value="Banglore">BANGLORE</option>
-          	<option value="Kolkata">KOLKATA</option>
-          </select>
-          <span class="lab2">Date:</span>
-          <input type="date" name="depart" class="drop21">
-          <input type="submit" name="submit" id="fsButton">
-        </form>
-      </div>
-      <!--Tab Content Flight Status Ends-->
-    </div>
-    <!--Tab Contents End-->
-  </div>
-  <!--Tabs End-->
-
-  <!--SingUp Modal-->
-  <div id="signup" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!--SignUp Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">SignUp</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST">
-          	<label for="username">Username:</label>
-            <input type="text" name="usernameSignUp" placeholder="Username" id="usernameSignUp">
-            <br>
-            <label for="email">Email ID:</label>
-            <input type="email" name="emailid" placeholder="Email Id" id="email">
-            <br>
-            <label for="pass">Password:</label>
-            <input type="password" name="passwordSignUp" id="passSignUp">
-            <br>
-            <label for="confpass">Confirm Password:</label>
-            <input type="password" name="confpassword" id="confpass">
-            <br>
-            <input type="Submit" name="submit" id="submitSignUp" value="SUBMIT">
-            <br>
-            <span id="messagecheck1"></span>
-            <br>
-            <span id="messagecheck2"></span>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      <!--SignUp Modal content End-->
-    </div>
-  </div>
-  <!--SignUp Modal End-->
-
-  <!--Login Modal-->
-  <div id="login" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-      <!--Login Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Login</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST">
-            <label for="username">Username:</label>
-            <input type="text" name="usernameLogin" placeholder="Username" id="usernameLogin">
-            <br>
-            <label for="pass">Password:</label>
-            <input type="password" name="passwordLogin" id="passLogin">
-            <br>
-            <input type="Submit" name="submit" value="LOGIN">
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      <!--Login Modal Content End-->
-    </div>
-  </div>
-  <!--Login Modal End-->
-  <script type="text/javascript" src="GDC-HomeJSnew.js"></script>
 </body>
 </html>
 
