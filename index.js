@@ -2,7 +2,6 @@ const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
 const bodyParser = require("body-parser");
-const moment = require("moment");
 const homeRouter = require("./routes/home");
 const homeuserRouter = require("./routes/home_user");
 const homeadminRouter = require("./routes/home_admin");

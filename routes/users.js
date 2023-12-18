@@ -53,14 +53,13 @@ router.post("/user_signup", async (req, res) => {
       console.log(id);
       // Insert into customer
       const { name, dob, address, phone_number } = req.body;
-      console.log(req.body.dob);
       await client.query(
-        "INSERT INTO customers (id, name, address, dob, phone_number) VALUES ($1, $2, $3, $4, $5)",
+        "INSERT INTO customers (id, name, dob, address, phone_number) VALUES ($1, $2, $3, $4, $5)",
         [
           id,
           name,
-          address,
           dob,
+          address,
           phone_number,
         ],
       );

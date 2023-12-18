@@ -45,11 +45,9 @@ CREATE TABLE account (
 CREATE TABLE customers (
     id int PRIMARY KEY,
     name varchar(255),
-    address varchar(255),
     dob date,
-    --country varchar(3),
+    address varchar(255),
     phone_number varchar(10),
-    -- CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
@@ -84,6 +82,7 @@ CREATE TABLE flight_schedule (
     arrival_time time,
     aircraft varchar(4) NOT NULL,
     route varchar(6) NOT NULL,
+    remaining_seats int,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
 );

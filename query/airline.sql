@@ -34,24 +34,21 @@ CREATE TABLE airport (
     CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
 );
 
-CREATE TABLE customers (
-    customer_code serial PRIMARY KEY,
-    name varchar(255),
-    address varchar(255),
-    dob date,
-    country varchar(3) NOT NULL,
+CREATE TABLE account (
+    id serial PRIMARY KEY,
     email varchar(255),
-    phone_number varchar(12),
-    CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code)
+    password varchar(255),
+    type varchar(8),
+    CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer')
 );
 
-CREATE TABLE account (
-    username varchar(255) PRIMARY KEY,
-    password varchar(255) NOT NULL,
-    customer int NOT NULL,
-    type varchar(8) NOT NULL,
-    CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer'),
-    CONSTRAINT acc_cus_fk FOREIGN KEY (customer) REFERENCES customers (customer_code)
+CREATE TABLE customers (
+    id int PRIMARY KEY,
+    name varchar(255),
+    dob date,
+    address varchar(255),
+    phone_number varchar(10),
+    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
 CREATE TABLE route (
@@ -74,7 +71,7 @@ CREATE TABLE employee (
     employee_code serial PRIMARY KEY,
     name varchar(255),
     email varchar(255),
-    phone_number varchar(12)
+    phone_number varchar(10)
 );
 
 CREATE TABLE flight_schedule (
@@ -85,6 +82,7 @@ CREATE TABLE flight_schedule (
     arrival_time time,
     aircraft varchar(4) NOT NULL,
     route varchar(6) NOT NULL,
+    remaining_seats int,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
 );
@@ -117,12 +115,15 @@ CREATE TABLE transactions (
     discount varchar(6) NOT NULL,
     total double precision,
     CONSTRAINT trans_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT trans_cus_fk FOREIGN KEY (customer) REFERENCES customers (customer_code),
+    CONSTRAINT trans_cus_fk FOREIGN KEY (customer) REFERENCES customers (id),
     CONSTRAINT trans_fare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
     CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code)
 );
 
 -- Insert Data
+INSERT INTO account (email, PASSWORD, type)
+    VALUES ('admin@gmail.com', 'admin', 'admin');
+
 -- INSERT INTO aircraft (aircraft_name, capacity, status, mfd_com, mfd_date)
 --     VALUES ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
 --     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
