@@ -6,7 +6,7 @@ CREATE DATABASE airline;
 \c airline;
 -- Create Tables
 CREATE TABLE aircraft (
-    aircraft_code varchar(4) PRIMARY KEY,
+    aircraft_code varchar(5) PRIMARY KEY,
     aircraft_name varchar(255),
     capacity int,
     status varchar(30),

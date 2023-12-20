@@ -104,6 +104,7 @@ router.post("/user_login", async (req, res) => {
           if (isMatch) {
             // Set session userId
             req.session.userId = user.id;
+            req.flash("success", "You have successfully logged in");
             res.redirect("/home_user");
             console.log("User logged in");
           } else {
@@ -131,9 +132,9 @@ router.get("/user_login", isLoggedOut, (req, res) => {
   res.render("user_login.ejs", { message: req.flash("error") });
 }); //if already logged in, redirect to /booking
 
-router.get("/logout", isLoggedIn, (req, res) => {
+router.get("/user_logout", isLoggedIn, (req, res) => {
   req.session.destroy();
-  res.redirect("/user_login");
+  res.redirect("/home");
 });
 
 router.get("/user_signup", (req, res) => {

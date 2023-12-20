@@ -6,15 +6,21 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
-      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-      crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
       integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="home_user.css">
+    <style>
+      .alert {
+        opacity: 1;
+        transition: opacity 1.5s ease-out;
+        /* Adjust the duration and easing as needed */
+      }
+
+      .alert.hide {
+        opacity: 0;
+      }
+    </style>
   </head>
 
   <body>
@@ -39,13 +45,28 @@
           <li><a href="/user_contacts"><strong>Contacts</strong></a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/logout"><strong>Logout</strong></a></li>
+            <li><a href="/user_profile"><strong>User Profile</strong></a></li>
+            <li><a href="/user_logout"><strong>Logout</strong></a></li>
+            <li>
+              <% if(message.success){ %>
+                <div id="success-alert" class="alert alert-success" role="alert">
+                  <%= message.success %>
+                </div>
+                <!-- <script>
+                  setTimeout(() => {
+                    document.getElementById('success-alert').style.opacity = '0';
+                    setTimeout(() => {
+                      document.getElementById('success-alert').style.display = 'none';
+                    }, 1000); // Fade out takes 0.5 seconds (adjust as needed)
+                  }, 3000); // Hide after 5 seconds (adjust as needed)
+                </script>
+                <% } %> -->
+            </li>
           </ul>
         </div>
       </div>
     </nav>
     <!--NavBar End-->
-
     <!--Heading/Moto-->
     <div class="container">
       <div class="row">
@@ -105,7 +126,25 @@
       <!--Tab Contents End-->
     </div>
     <!--Tabs End-->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"></script>
+    <script>
+      // Add this JavaScript to trigger the fade-out effect after a delay
+      setTimeout(() => {
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+          successAlert.classList.add('hide');
+        }
 
+        // const errorAlert = document.getElementById('error-alert');
+        // if (errorAlert) {
+        //   errorAlert.classList.add('hide');
+        // }
+      }, 3000); // Hide after 5 seconds (adjust as needed)
+    </script>
   </body>
 
 </html>

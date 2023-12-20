@@ -7,7 +7,6 @@ const homeuserRouter = require("./routes/home_user");
 const homeadminRouter = require("./routes/home_admin");
 const usersRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
-const airplaneRouter = require("./routes/airplane");
 const app = express();
 const port = 5000;
 
@@ -20,6 +19,10 @@ app.use(session({
 }));
 
 app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.message = req.flash();
+  next();
+});
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set("views", "pages");
@@ -36,7 +39,6 @@ app.use(homeuserRouter);
 app.use(usersRouter);
 app.use(homeadminRouter);
 app.use(adminRouter);
-app.use(airplaneRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
