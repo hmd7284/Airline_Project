@@ -17,8 +17,6 @@ router.post("/admin_login", async (req, res) => {
 
     if (results.rows.length > 0) {
       const admin = results.rows[0];
-
-      // Note: In a real-world scenario, use a secure password hashing mechanism like bcrypt
       if (admin.password === password) {
         req.session.adminID = admin.id;
         res.redirect("/home_admin");

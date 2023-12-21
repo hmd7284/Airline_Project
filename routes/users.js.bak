@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database");
+const bcrypt = require("bcrypt");
 
 function isLoggedOut(req, res, next) {
   if (req.session.userId) {
@@ -22,6 +23,7 @@ router.post("/user_signup", async (req, res) => {
     console.error("Error during sign up: Password is required");
     return res.redirect("/user_signup");
   }
+  const hashedPassword = await bcrypt.hash(password, 10);
   const client = await db.connect();
   try {
     await client.query("BEGIN");
@@ -41,7 +43,7 @@ router.post("/user_signup", async (req, res) => {
       // Insert new account
       await client.query(
         "INSERT INTO account (email, password, type) VALUES ($1, $2, $3)",
-        [email, password, "customer"],
+        [email, hashedPassword, "customer"],
       );
       const idResult = await client.query(
         "SELECT id FROM account WHERE email = $1",
@@ -95,17 +97,22 @@ router.post("/user_login", async (req, res) => {
       if (result.rows.length > 0) {
         const user = result.rows[0];
 
-        if (user.password === password) {
-          // Set session userId
-          req.session.userId = user.id;
-          req.flash("success", "You have successfully logged in");
-          res.redirect("/home_user");
-          console.log("User logged in");
-        } else {
-          req.flash("error", "Password is not correct");
-          console.error("Error during sign in: Password is not correct");
-          res.redirect("/user_login");
-        }
+        // Compare the password using bcrypt
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) throw err;
+
+          if (isMatch) {
+            // Set session userId
+            req.session.userId = user.id;
+            req.flash("success", "You have successfully logged in");
+            res.redirect("/home_user");
+            console.log("User logged in");
+          } else {
+            req.flash("error", "Password is not correct");
+            console.error("Error during sign in: Password is not correct");
+            res.redirect("/user_login");
+          }
+        });
       } else {
         console.error("Error during sign in: Email is not registered");
         req.flash("error", "Email is not registered");
