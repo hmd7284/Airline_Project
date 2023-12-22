@@ -1,3 +1,6 @@
+--SET VALUE TO 1
+SELECT setval('account_id_seq', 1, false);
+--Insert some account
 insert into account (email, password) values ('kbooler0@wikispaces.com', 'fovumW01754%');
 insert into account (email, password) values ('lmuckian1@reddit.com', 'qozraE37975.Fbd\');
 insert into account (email, password) values ('flamboll2@dot.gov', 'cyaukN50005<''q');
