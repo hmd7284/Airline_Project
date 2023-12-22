@@ -40,8 +40,8 @@ router.post("/user_signup", async (req, res) => {
     } else {
       // Insert new account
       await client.query(
-        "INSERT INTO account (email, password, type) VALUES ($1, $2, $3)",
-        [email, password, "customer"],
+        "INSERT INTO account (email, password) VALUES ($1, $2)",
+        [email, password],
       );
       const idResult = await client.query(
         "SELECT id FROM account WHERE email = $1",
@@ -88,8 +88,8 @@ router.post("/user_login", async (req, res) => {
     try {
       // Select user from the database
       const result = await login_client.query(
-        "SELECT * FROM account WHERE email = $1 AND type = $2",
-        [email, "customer"],
+        "SELECT * FROM account WHERE email = $1",
+        [email],
       );
 
       if (result.rows.length > 0) {

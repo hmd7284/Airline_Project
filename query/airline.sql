@@ -12,7 +12,7 @@ CREATE TABLE aircraft (
     status varchar(30),
     mfd_com varchar(30),
     mfd_date date,
-    CONSTRAINT ac_stt_check CHECK(status = 'Inactive' OR status = 'Acticve')
+    CONSTRAINT ac_stt_check CHECK (status = 'Inactive' OR status = 'Acticve')
 );
 
 CREATE TABLE countries (
@@ -66,7 +66,7 @@ CREATE TABLE airfare (
     route varchar(6) NOT NULL,
     price double precision,
     CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT af_type_check CHECK(TYPE = 'Economy' OR TYPE = 'Business')
+    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
 );
 
 CREATE TABLE employee (
@@ -105,7 +105,6 @@ CREATE TABLE discount (
     description text
 );
 
-
 -- Create the transactions table
 CREATE TABLE transactions (
     transaction_id serial PRIMARY KEY,
@@ -121,13 +120,13 @@ CREATE TABLE transactions (
 
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
-    order_id INTEGER,
-    transaction_id INTEGER REFERENCES transactions(transaction_id),
-    flight_code VARCHAR(6) NOT NULL,
-    airfare VARCHAR(6),
-    price DOUBLE PRECISION,
-    quantity INTEGER,
-    total DOUBLE PRECISION,
+    order_id integer,
+    transaction_id integer REFERENCES transactions (transaction_id),
+    flight_code varchar(6) NOT NULL,
+    airfare varchar(6),
+    price double precision,
+    quantity integer,
+    total double precision,
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code)
