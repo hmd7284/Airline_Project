@@ -39,18 +39,16 @@ CREATE TABLE account (
     id serial PRIMARY KEY,
     email varchar(255),
     password varchar(255),
-    type varchar(8),
+    type varchar(8) DEFAULT 'customer',
     CONSTRAINT chk_type CHECK (type = 'admin' OR type = 'customer')
 );
 
 CREATE TABLE customers (
     id int PRIMARY KEY,
     name varchar(255),
-    address varchar(255),
     dob date,
-    --country varchar(3),
-    phone_number varchar(10),
-    -- CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
+    address varchar(255),
+    phone_number varchar(12),
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
@@ -75,7 +73,7 @@ CREATE TABLE employee (
     employee_code serial PRIMARY KEY,
     name varchar(255),
     email varchar(255),
-    phone_number varchar(10)
+    phone_number varchar(12)
 );
 
 CREATE TABLE flight_schedule (
@@ -110,16 +108,17 @@ CREATE TABLE discount (
 
 -- Create the transactions table
 CREATE TABLE transactions (
-    transaction_id SERIAL PRIMARY KEY,
-    booking_date DATE NOT NULL,
-    customer_id INT NOT NULL,
-    status VARCHAR(10),
-    discount VARCHAR(6),
-    total_amount DOUBLE PRECISION,
-    CONSTRAINT check_status CHECK(status = 'Success' OR status = 'Failed'),
+    transaction_id serial PRIMARY KEY,
+    booking_date date NOT NULL,
+    customer_id int NOT NULL,
+    status varchar(10),
+    discount varchar(5),
+    total_amount double precision,
+    CONSTRAINT check_status CHECK (status = 'Success' OR status = 'Failed'),
     CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code),
     CONSTRAINT trans_cus_fk FOREIGN KEY (customer_id) REFERENCES customers (id)
 );
+
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
     order_id INTEGER,
@@ -130,12 +129,10 @@ CREATE TABLE transactions_order (
     quantity INTEGER,
     total DOUBLE PRECISION,
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
-    CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule(flight_code),
-    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare(airfare_code)
+    CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
+    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code)
 );
-
 
 -- Insert Data
 INSERT INTO account (email, PASSWORD, type)
     VALUES ('admin@gmail.com', 'admin', 'admin');
-
