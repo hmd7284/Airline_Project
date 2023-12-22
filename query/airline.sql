@@ -67,7 +67,8 @@ CREATE TABLE airfare (
     TYPE VARCHAR(30),
     route varchar(6) NOT NULL,
     price double precision,
-    CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
+    CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
+    CONSTRAINT af_type_check CHECK()
 );
 
 CREATE TABLE employee (
@@ -85,7 +86,8 @@ CREATE TABLE flight_schedule (
     arrival_time time,
     aircraft varchar(5) NOT NULL,
     route varchar(6) NOT NULL,
-    remaining_seat integer,
+    business_seat integer,
+    economy_seat integer,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
 );
