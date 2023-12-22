@@ -66,7 +66,7 @@ CREATE TABLE airfare (
     route varchar(6) NOT NULL,
     price double precision,
     CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT af_type_check CHECK()
+    CONSTRAINT af_type_check CHECK(TYPE = 'Economy' OR TYPE = 'Business')
 );
 
 CREATE TABLE employee (
