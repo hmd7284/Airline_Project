@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking</title>
+  <!-- Add your CSS styles here or link to an external stylesheet -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Find Flights</h1>
+  <form action="/booking" method="post">
+    <label for="origin">Origin:</label>
+    <input type="text" id="origin" name="origin" required>
+    
+    <label for="destination">Destination:</label>
+    <input type="text" id="destination" name="destination" required>
+    
+    <label for="departure_date">Departure Date:</label>
+    <input type="date" id="departure_date" name="departure_date" required>
+    
+    <button type="submit">Search Flights</button>
+  </form>
+
+  <% if (flights.length > 0) { %>
+    <h2>Available Flights</h2>
+    <ul>
+      <% flights.forEach(flight => { %>
+        <li>
+          Flight Code: <%= flight.flight_code %><br>
+          Departure Time: <%= flight.departure_time %><br>
+          Origin: <%= flight.origin %><br>
+          Destination: <%= flight.destination %><br>
+          Aircraft Code: <%= flight.aircraft_code %><br>
+          Aircraft Name: <%= flight.aircraft_name %><br>
+          Price: <%= flight.price %><br>
+          <!-- Add a form or link for booking -->
+          <form action="/book-flight" method="post">
+            <input type="hidden" name="flightCode" value="<%= flight.flight_code %>">
+            <input type="submit" value="Book Now">
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No flights found.</p>
+  <% } %>
+</body>
+</html>
+
