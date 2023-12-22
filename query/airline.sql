@@ -11,7 +11,8 @@ CREATE TABLE aircraft (
     capacity int,
     status varchar(30),
     mfd_com varchar(30),
-    mfd_date date
+    mfd_date date,
+    CONSTRAINT ac_stt_check CHECK(status = 'Inactive' OR status = 'Acticve')
 );
 
 CREATE TABLE countries (
@@ -82,9 +83,9 @@ CREATE TABLE flight_schedule (
     departure_time time,
     arrival_date date,
     arrival_time time,
-    aircraft varchar(4) NOT NULL,
+    aircraft varchar(5) NOT NULL,
     route varchar(6) NOT NULL,
-    remaining_seat integer NOT NULL,
+    remaining_seat integer,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
 );
@@ -104,8 +105,7 @@ CREATE TABLE discount (
     description text
 );
 
--- Create a sequence for order_id
-CREATE SEQUENCE order_id_sequence START 1;
+
 -- Create the transactions table
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
@@ -120,7 +120,7 @@ CREATE TABLE transactions (
 );
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
-    order_id INTEGER DEFAULT nextval('order_id_sequence'::regclass),
+    order_id INTEGER,
     transaction_id INTEGER REFERENCES transactions(transaction_id),
     flight_code VARCHAR(6) NOT NULL,
     airfare VARCHAR(6),
@@ -131,22 +131,7 @@ CREATE TABLE transactions_order (
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule(flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare(airfare_code)
 );
--- Create a function to reset the order_id sequence
-CREATE OR REPLACE FUNCTION reset_order_id_sequence()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF TG_OP = 'INSERT' THEN
-        -- Reset the order_id sequence when a new transaction is inserted
-        EXECUTE 'ALTER SEQUENCE order_id_sequence RESTART WITH 1';
-    END IF;
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
 
--- Create a trigger to call the reset_order_id_sequence function after an insert on transactions table
-CREATE TRIGGER reset_order_id_trigger
-AFTER INSERT ON transactions
-FOR EACH STATEMENT EXECUTE FUNCTION reset_order_id_sequence();
 
 -- Insert Data
 INSERT INTO account (email, PASSWORD, type)
