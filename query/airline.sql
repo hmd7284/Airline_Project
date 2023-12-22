@@ -6,7 +6,7 @@ CREATE DATABASE airline;
 \c airline;
 -- Create Tables
 CREATE TABLE aircraft (
-    aircraft_code varchar(4) PRIMARY KEY,
+    aircraft_code varchar(5) PRIMARY KEY,
     aircraft_name varchar(255),
     capacity int,
     status varchar(30),
@@ -45,9 +45,11 @@ CREATE TABLE account (
 CREATE TABLE customers (
     id int PRIMARY KEY,
     name varchar(255),
-    dob date,
     address varchar(255),
+    dob date,
+    --country varchar(3),
     phone_number varchar(10),
+    -- CONSTRAINT cus_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code),
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
@@ -82,7 +84,7 @@ CREATE TABLE flight_schedule (
     arrival_time time,
     aircraft varchar(4) NOT NULL,
     route varchar(6) NOT NULL,
-    remaining_seats int,
+    remaining_seat integer NOT NULL,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
 );
@@ -96,112 +98,57 @@ CREATE TABLE flight_staff (
 );
 
 CREATE TABLE discount (
-    discount_code varchar(6) PRIMARY KEY,
+    discount_code varchar(5) PRIMARY KEY,
     title varchar(255),
     amount int,
     description text
 );
 
+-- Create a sequence for order_id
+CREATE SEQUENCE order_id_sequence START 1;
+-- Create the transactions table
 CREATE TABLE transactions (
-    transaction_code varchar(6) PRIMARY KEY,
-    booking_date date,
-    departure_date date,
-    flight_code varchar(6) NOT NULL,
-    status char,
-    charges varchar(255),
-    customer int NOT NULL,
-    airfare varchar(6) NOT NULL,
-    num_of_airfare int,
-    discount varchar(6) NOT NULL,
-    total double precision,
-    CONSTRAINT trans_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT trans_cus_fk FOREIGN KEY (customer) REFERENCES customers (id),
-    CONSTRAINT trans_fare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
-    CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code)
+    transaction_id SERIAL PRIMARY KEY,
+    booking_date DATE NOT NULL,
+    customer_id INT NOT NULL,
+    status VARCHAR(10),
+    discount VARCHAR(6),
+    total_amount DOUBLE PRECISION,
+    CONSTRAINT check_status CHECK(status = 'Success' OR status = 'Failed'),
+    CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code),
+    CONSTRAINT trans_cus_fk FOREIGN KEY (customer_id) REFERENCES customers (id)
 );
+-- Create the transactions_order table
+CREATE TABLE transactions_order (
+    order_id INTEGER DEFAULT nextval('order_id_sequence'::regclass),
+    transaction_id INTEGER REFERENCES transactions(transaction_id),
+    flight_code VARCHAR(6) NOT NULL,
+    airfare VARCHAR(6),
+    price DOUBLE PRECISION,
+    quantity INTEGER,
+    total DOUBLE PRECISION,
+    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
+    CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule(flight_code),
+    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare(airfare_code)
+);
+-- Create a function to reset the order_id sequence
+CREATE OR REPLACE FUNCTION reset_order_id_sequence()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- Reset the order_id sequence when a new transaction is inserted
+        EXECUTE 'ALTER SEQUENCE order_id_sequence RESTART WITH 1';
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to call the reset_order_id_sequence function after an insert on transactions table
+CREATE TRIGGER reset_order_id_trigger
+AFTER INSERT ON transactions
+FOR EACH STATEMENT EXECUTE FUNCTION reset_order_id_sequence();
 
 -- Insert Data
 INSERT INTO account (email, PASSWORD, type)
     VALUES ('admin@gmail.com', 'admin', 'admin');
 
--- INSERT INTO aircraft (aircraft_name, capacity, status, mfd_com, mfd_date)
---     VALUES ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Boeing 787', 274, 'available', 'Boeing', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A350', 305, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A330', 269, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01'),
---     ('Airbus A321', 184, 'available', 'Airbus', '2023-01-01');
