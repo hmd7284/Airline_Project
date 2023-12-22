@@ -1,6 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
+const router = express.router
 
 
 const app = express();
@@ -16,43 +17,27 @@ const pool = new Pool({
 
 pool.connect();
 
-// Set up a route to handle requests for My Booking data with optional filtering
-app.get('/mybooking', async (req, res) => {
+app.get('/my_booking', async (req, res) => {
   try {
     const page = req.query.page || 1;
     const perPage = 6;
     const offset = (page - 1) * perPage;
 
-    // Get start and end dates from query parameters
-    const startDate = req.query.start_date;
-    const endDate = req.query.end_date;
+    let query = 'SELECT * FROM my_booking';
+    const params = [perPage, offset];
 
-    // Construct the base SQL query
-    let queryText = 'SELECT * FROM my_booking';
-
-    // Add WHERE clause for date filtering if start and end dates are provided
-    const queryValues = [];
-    if (startDate && endDate) {
-      queryText += ' WHERE start_date >= $1 AND end_date <= $2';
-      queryValues.push(startDate, endDate);
+    // Check if start_date and end_date are present in the request
+    if (req.query.start_date && req.query.end_date) {
+      query += ' WHERE start_date >= $3 AND end_date <= $4';
+      params.push(req.query.start_date, req.query.end_date);
     }
 
-    queryText += ' LIMIT $3 OFFSET $4';
+    query += ' LIMIT $1 OFFSET $2';
 
-    const result = await pool.query({
-      text: queryText,
-      values: [...queryValues, perPage, offset],
-    });
-
+    const result = await pool.query(query, params);
     const bookings = result.rows;
 
-    // Fetch total records count for pagination
-    let totalQueryText = 'SELECT COUNT(*) FROM my_booking';
-    if (startDate && endDate) {
-      totalQueryText += ' WHERE start_date >= $1 AND end_date <= $2';
-    }
-
-    const totalResult = await pool.query(totalQueryText, queryValues);
+    const totalResult = await pool.query('SELECT COUNT(*) FROM my_booking');
     const totalRecords = totalResult.rows[0].count;
     const totalPages = Math.ceil(totalRecords / perPage);
 
@@ -65,6 +50,7 @@ app.get('/mybooking', async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 });
+
 
 // Serve your HTML page
 app.use(express.static('public'));

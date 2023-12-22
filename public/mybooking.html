@@ -39,7 +39,7 @@
     <div class="login-container">
       <h2>Booking search</h2>
       <!-- Add an ID to your form -->
-      <form id="dateFilterForm">
+      <form id="dateFilterForm" method="post">
         <span class="lab">From:</span>
         <input type="date" id="start_date">
         <br>
@@ -74,7 +74,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       try {
-        const response = await fetch('/mybooking');
+        const response = await fetch('/my_booking');
         const { bookings, totalPages } = await response.json();
   
         const tbody = document.getElementById('mybookingTableBody');
@@ -109,7 +109,7 @@
         async function renderPage(pageNumber, startDate, endDate) {
           try {
             // Construct the fetch URL based on whether start and end dates are present
-            const fetchUrl = `/mybooking?page=${pageNumber}${startDate && endDate ? `&start_date=${startDate}&end_date=${endDate}` : ''}`;
+            const fetchUrl = `/my_booking?page=${pageNumber}${startDate && endDate ? `&start_date=${startDate}&end_date=${endDate}` : ''}`;
             const filteredResponse = await fetch(fetchUrl);
             const { bookings } = await filteredResponse.json();
   
@@ -142,21 +142,20 @@
         }
   
         // Handle form submission
-document.getElementById('dateFilterForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  // Get the values from the form
-  const startDateValue = document.getElementById('start_date').value;
-  const endDateValue = document.getElementById('end_date').value;
-
-  console.log('Start Date:', startDateValue);
-  console.log('End Date:', endDateValue);
-
-  // Perform custom search
-  renderPage(1, startDateValue, endDateValue);
-  renderPaginationButtons(startDateValue, endDateValue);
-});
-
+        document.getElementById('dateFilterForm').addEventListener('submit', async function (e) {
+          e.preventDefault();
+  
+          // Get the values from the form
+          const startDateValue = document.getElementById('start_date').value;
+          const endDateValue = document.getElementById('end_date').value;
+  
+          console.log('Start Date:', startDateValue);
+          console.log('End Date:', endDateValue);
+  
+          // Perform custom search
+          renderPage(1, startDateValue, endDateValue);
+          renderPaginationButtons(startDateValue, endDateValue);
+        });
   
         // Initial rendering without dates
         renderPage(currentPage);
@@ -165,6 +164,7 @@ document.getElementById('dateFilterForm').addEventListener('submit', async funct
         console.error('Error fetching data:', error);
       }
     });
-  </script>  
+  </script>
+  
   </body>
 </html>
