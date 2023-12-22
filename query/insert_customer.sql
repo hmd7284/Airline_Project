@@ -1,4 +1,4 @@
-INSERT INTO customers VALUES('1', 'Nguyen Trung Kien', 'Hanoi', '2004-04-11', '0399780946');insert into customers (id, name, address, dob, phone_number) values (1, 'Vinny De Meyer', 'Suite 54', '1983-08-19', '663-943-1747');
+insert into customers (id, name, address, dob, phone_number) values (1, 'Vinny De Meyer', 'Suite 54', '1983-08-19', '663-943-1747');
 insert into customers (id, name, address, dob, phone_number) values (2, 'Gratia Dallicott', 'Apt 660', '1975-07-17', '414-773-9585');
 insert into customers (id, name, address, dob, phone_number) values (3, 'Elva Durrans', 'Apt 151', '1999-12-16', null);
 insert into customers (id, name, address, dob, phone_number) values (4, 'Faina Hanne', 'Apt 1164', '2003-09-27', '113-650-2099');
