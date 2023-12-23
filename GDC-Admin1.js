@@ -2,11 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg'); // Import Pool from pg module
 
-const app = express();
+const admin1 = express();
 const port = 5500;
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+GDC.use(express.urlencoded({ extended: true }));
+admin1.use(express.json());
 
 // Sửa tên biến thành 'dbPool' để tránh trùng lặp
 const dbPool = new Pool({
@@ -16,12 +16,12 @@ const dbPool = new Pool({
   password: '181004',
   port: 5432,
 });
-app.get('/', (req, res) => {
+admin1.get('/', (req, res) => {
   res.send('Welcome to the GDC Airways Management System');
 });
 
 // Endpoint để thêm hoặc xóa máy bay
-app.post('/manageAircraft', async (req, res) => {
+admin1.post('/manageAircraft', async (req, res) => {
   const { action, aircraftCode, aircraftName, capacity, status, mfdCom, mfdDate } = req.body;
 
   try {
@@ -52,6 +52,6 @@ app.post('/manageAircraft', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+admin1.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

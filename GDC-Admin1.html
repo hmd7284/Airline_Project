@@ -38,32 +38,46 @@
 		</div>
 	</nav>
   <!--NavBar End-->
-  <h2 id="airplane">Airplane</h2>
-  <form action="/manageAircraft" method="post">
-    <!-- Thêm trường action để xác định loại hành động -->
-    <input type="hidden" name="action" value="add">
-    <label for="addAircraftCode">Code:</label>
-    <input type="text" id="addAircraftCode" name="aircraftCode">
-    <br>
-    <label for="addAircraftName">Name:</label>
-    <input type="text" id="addAircraftName" name="aircraftName">
-    <br>
-    <label for="addCapacity">Capacity:</label>
-    <input type="number" id="addCapacity" name="capacity">
-    <!-- Các trường khác ... -->
-    <button type="submit">Add Airplane</button>
-  </form>
+  <div>
+    <div>
+      <h2 id="airplane">Add Airplane</h2>
+      <form action="/manageAircraft" method="post">
+        <!-- Thêm trường action để xác định loại hành động -->
+        <input type="hidden" name="action" value="add">
+        <label for="addAircraftCode">Code:</label>
+        <input type="text" id="addAircraftCode" name="aircraftCode">
+        <br>
+        <label for="addAircraftName">Name:</label>
+        <input type="text" id="addAircraftName" name="aircraftName">
+        <br>
+        <label for="addCapacity">Capacity:</label>
+        <input type="number" id="addCapacity" name="capacity">
+        <br>
+        <label for="mdf_com">Company:</label>
+        <input type="text" id="mdf_com" name="mdf_com">
+        <br>
+        <label for="maintenanceStatus">Status:</label>
+        <select id="maintenanceStatus" name="maintenanceStatus">
+          <option value="active" id="active">Active</option>
+          <option value="inactive" id="inactive">Inactive</option>
+        </select>
+        <br>
+        <br>
+        <button type="submit">Add Airplane</button>
+      </form>
+    </div>
   
-  <form action="/manageAircraft" method="post">
-    <!-- Thêm trường action để xác định loại hành động -->
-    <input type="hidden" name="action" value="delete">
-    <label for="deleteAircraftCode">Code:</label>
-    <input type="text" id="deleteAircraftCode" name="aircraftCode">
-    <!-- Các trường khác ... -->
-    <button type="submit">Delete Airplane</button>
-  </form>
-  
-  
+    <div>
+      <form action="/manageAircraft" method="post">
+        <!-- Thêm trường action để xác định loại hành động -->
+        <input type="hidden" name="action" value="delete">
+        <label for="deleteAircraftCode">Code:</label>
+        <input type="text" id="deleteAircraftCode" name="aircraftCode">
+        <!-- Các trường khác ... -->
+        <button type="submit">Delete Airplane</button>
+      </form>
+    </div>
+  </div>
 </body>
 
 

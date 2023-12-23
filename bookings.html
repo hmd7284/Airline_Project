@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GDC Airways</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="Booking.css">
+</head>
+
+<body>
+
+  <!--NavBar-->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand">GDC AIRWAYS</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        		<span class="sr-only">Toggle navigation</span>
+	      </button>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+                    <li><a href="GDC-Home.html"><strong>Home</strong></a></li>
+					<li class="active"><a href="#"><strong>Booking tickets</strong></a></li>
+                    <li><a href="Mybooking.html"><strong>My Booking</strong></a></li>
+					<li><a href="GDC-About.html"><strong>About</strong></a></li>
+					<li><a href="GDC-Contacts.html"><strong>Contacts</strong></a></li>
+                    <li><a href="AdminLog.html"><strong>Admin</strong></a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+				</ul>
+			</div>
+		</div>
+	</nav>
+    <br>
+    <div class="login-container">
+        <form id="ticketForm">
+            <label for="ticketInput">Vé:</label>
+            <input type="text" id="ticketInput" name="ticketInput">
+            <button type="button" onclick="addTicket()">Thêm vé</button>
+            <br>
+            <p>Hàng chờ vé: <span id="queue"></span></p>
+            <button type="button" onclick="submitTickets()">Gửi</button>
+        </form>
+    </div>
+
+    <script>
+        let ticketQueue = [];
+    
+        function addTicket() {
+            const ticketInput = document.getElementById("ticketInput").value;
+            if (ticketInput.trim() !== "") {
+                ticketQueue.push(ticketInput);
+                updateQueue();
+                document.getElementById("ticketInput").value = "";
+            }
+        }
+    
+        function updateQueue() {
+            document.getElementById("queue").innerText = ticketQueue.join(", ");
+        }
+    
+        function submitTickets() {
+            // Gửi vé đi (thực hiện hành động cần thiết ở đây)
+            alert("Vé đã được gửi đi: " + ticketQueue.join(", "));
+            // Reset hàng chờ
+            ticketQueue = [];
+            updateQueue();
+        }
+    </script>
+</body>
+</html>

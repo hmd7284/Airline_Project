@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GDC Airways</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="Booking.css">
+</head>
+
+<body>
+
+  <!--NavBar-->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand">GDC AIRWAYS</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        		<span class="sr-only">Toggle navigation</span>
+	      </button>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+                    <li><a href="GDC-Home.html"><strong>Home</strong></a></li>
+					<li class="active"><a href="#"><strong>Booking tickets</strong></a></li>
+                    <li><a href="Mybooking.html"><strong>My Booking</strong></a></li>
+					<li><a href="GDC-About.html"><strong>About</strong></a></li>
+					<li><a href="GDC-Contacts.html"><strong>Contacts</strong></a></li>
+                    <li><a href="AdminLog.html"><strong>Admin</strong></a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+				</ul>
+			</div>
+		</div>
+	</nav>
+    <br>
+    <div class="login-container">
+      <h2>Make booking</h2>
+      <br>
+      <form id="fsty" method="POST" onsubmit="addToQueue(event)">
+          <label for="fcode">Flight code: </label>
+          <input type="text" name="fcode" placeholder="Flight Code" id="fcode">
+          <label for="type">Class: </label>
+          <select name="type">
+              <option value="Economy">Economy</option>
+              <option value="Business">Business</option>
+          </select>
+          <label for="quanity">Amount of tickets: </label>
+          <input type="text" name="amount" placeholder="Amount" id="amount">
+          <input type="submit" name="submit" value="Add ticket">
+      </form>
+      <p id="error-message"></p>
+  </div>
+  <br>
+  <div id="queue-container">
+      <table>
+          <thead>
+              <tr>
+                  <th>Flight Code</th>
+                  <th>Type of Ticket</th>
+                  <th>Price</th>
+                  <th>From</th>
+                  <th>To </th>
+                  <th>Departure date</th>
+                  <th>Departure time</th>
+                  <th>Quanity</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody id="queue-list"></tbody>
+      </table>
+      <br>
+      <label for="discount">Discount code: </label>
+          <input type="text" name="discount" placeholder="Discount code" id="discountcode">
+      <input type="submit" name="submit" id="submitqueue" value="Submit">
+  </div>
+
+  <div class="login-container">
+    <!--Tab Content Flight-->
+    <div id="home" class="tab-pane fade in active">
+      <h3 class="lab">Flights</h3>
+      <form method="POST"> 
+        <label for="from">From: </label>
+        <input type="text">
+        <label for="from">To: </label>
+        <input type="text">
+        <br>
+        <label for="depart">Departure date: </label>
+        <input type="date" name="depart" class="drop" id="depart">
+        <br>
+        <input type="submit" name="submit" id="flightsButton">
+      </form>
+    </div>
+  
+  <script>
+    // Trong hàm addToQueue(event)
+var amountCell = document.createElement("td");
+var amountValue = document.getElementById("amount").value;
+amountCell.innerText = amountValue;
+tableRow.appendChild(amountCell);
+
+function removeFromQueue(row) {
+    var tableBody = document.getElementById("queue-list");
+    tableBody.removeChild(row);
+}
+
+
+function addToQueue(event) {
+    event.preventDefault(); // Prevents the form from submitting normally
+
+    // Get values from the form
+    var fcode = document.getElementById("fcode").value;
+    var type = document.querySelector("select[name='type']").value;
+    var amountValue = document.getElementById("amount").value;
+
+    // Validate input
+    if (fcode === "" || type === "" || amountValue === "") {
+        document.getElementById("error-message").innerText = "Please fill in all fields.";
+        return;
+    }
+
+    // Clear error message
+    document.getElementById("error-message").innerText = "";
+
+    // Add data to the queue table
+    var tableRow = document.createElement("tr");
+
+    // Add Flight Code cell
+    var flightCodeCell = document.createElement("td");
+    flightCodeCell.innerText = fcode;
+    tableRow.appendChild(flightCodeCell);
+
+    // Add Type of Ticket cell
+    var typeCell = document.createElement("td");
+    typeCell.innerText = type;
+    tableRow.appendChild(typeCell);
+
+    // Add Price cell (empty)
+    var priceCell = document.createElement("td");
+    tableRow.appendChild(priceCell);
+
+    // Add From cell (empty)
+    var fromCell = document.createElement("td");
+    tableRow.appendChild(fromCell);
+
+    // Add To cell (empty)
+    var toCell = document.createElement("td");
+    tableRow.appendChild(toCell);
+
+    // Add Departure date cell (empty)
+    var departureDateCell = document.createElement("td");
+    tableRow.appendChild(departureDateCell);
+
+    // Add Departure time cell (empty)
+    var departureTimeCell = document.createElement("td");
+    tableRow.appendChild(departureTimeCell);
+
+    // Add Quanity cell
+    var amountCell = document.createElement("td");
+    amountCell.innerText = amountValue;
+    tableRow.appendChild(amountCell);
+
+    // Add Action cell with remove button
+    var actionCell = document.createElement("td");
+    var removeButton = document.createElement("button");
+    removeButton.innerText = "X";
+    removeButton.addEventListener("click", function() {
+        removeFromQueue(tableRow);
+    });
+    actionCell.appendChild(removeButton);
+    tableRow.appendChild(actionCell);
+
+    document.getElementById("queue-list").appendChild(tableRow);
+
+    // Clear the form fields
+    document.getElementById("fsty").reset();
+}
+  </script>
+</body>
+</html>
