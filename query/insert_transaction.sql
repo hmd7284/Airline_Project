@@ -13,9 +13,15 @@ DECLARE
     temp_discount integer;
 BEGIN
     -- Define the airfare_code
-    temp_route := (SELECT route FROM flight_schedule WHERE flight_code = NEW.flight_code);
-    IF (NEW.type = 'Economy') THEN 
-        temp_airfare := 'E' || temp_route; 
+    temp_route := (
+        SELECT
+            route
+        FROM
+            flight_schedule
+        WHERE
+            flight_code = NEW.flight_code);
+    IF (NEW.type = 'Economy') THEN
+        temp_airfare := 'E' || temp_route;
     ELSE
         temp_airfare := 'B' || temp_route;
     END IF;
@@ -62,10 +68,13 @@ BEGIN
     WHERE
         transaction_id = NEW.transaction_id;
     -- Update the remaning seat of the flight
-    IF (NEW.type = 'Economy') 
-    THEN
-        UPDATE flight_schedule SET economy_seat = economy_seat - NEW.quantity
-        WHERE flight_code = NEW.flight_code;
+    IF (NEW.type = 'Economy') THEN
+        UPDATE
+            flight_schedule
+        SET
+            economy_seat = economy_seat - NEW.quantity
+        WHERE
+            flight_code = NEW.flight_code;
     ELSE
         UPDATE
             flight_schedule
@@ -91,8 +100,8 @@ INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
     VALUES (CURRENT_DATE, '1', 0, NULL);
 
 -- Then insert table transactions_order repectively from 1 ...
-INSERT INTO transactions_order(order_id, transaction_id, flight_code, type, quantity)
-VALUES('1', currval('transactions_transaction_id_seq'), 'FL001','Economy', 1);
+INSERT INTO transactions_order (order_id, transaction_id, flight_code, type, quantity)
+    VALUES ('1', currval('transactions_transaction_id_seq'), 'FL001', 'Economy', 1);
 
-INSERT INTO transactions_order(order_id, transaction_id, flight_code, type, quantity)
-VALUES('2', currval('transactions_transaction_id_seq'), 'FL001','Business', 2);
+INSERT INTO transactions_order (order_id, transaction_id, flight_code, type, quantity)
+    VALUES ('2', currval('transactions_transaction_id_seq'), 'FL001', 'Business', 2);
