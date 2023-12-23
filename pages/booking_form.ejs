@@ -1,0 +1,63 @@
+<!-- booking-form.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Booking</title>
+  <!-- Add your CSS styles here or link to an external stylesheet -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Flight Booking</h1>
+  <form action="/booking" method="post">
+    <!-- Hidden input fields for storing airport codes -->
+  <input type="hidden" id="origin_code" name="origin_code" value="">
+  <input type="hidden" id="destination_code" name="destination_code" value="">
+    <label for="origin">Origin:</label>
+    <select id="origin" name="origin" onchange="updateAirportCode('origin')" required>
+      <% airports.forEach(airport => { %>
+        <option value="<%= airport.airport_code %>"><%= airport.airport_name %> - <%= airport.address %></option>
+      <% }) %>
+    </select>
+
+    <label for="destination">Destination:</label>
+    <select id="destination" name="destination" onchange="updateAirportCode('destination')" required>
+      <% airports.forEach(airport => { %>
+        <option value="<%= airport.airport_code %>"><%= airport.airport_name %> - <%= airport.address %></option>
+      <% }) %>
+    </select>
+
+    <label for="departure_date">Departure Date:</label>
+    <input type="date" id="departure_date" name="departure_date" required>
+
+    <label for="num_seats">Number of Seats:</label>
+    <input type="number" id="number_of_seats" name="number_of_seats" min="1" required>
+
+    <button type="submit">Search Flights</button>
+  </form>
+  <script>
+  // JavaScript function to update hidden input fields with selected airport codes
+  function updateAirportCode(type) {
+    const dropdown = document.getElementById(type);
+    const codeInput = document.getElementById(`${type}_code`);
+    const selectedOption = dropdown.options[dropdown.selectedIndex];
+    console.log(type, selectedOption.value);
+    codeInput.value = selectedOption.value;
+  }
+</script>
+</body>
+</html>
+

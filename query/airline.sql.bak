@@ -32,7 +32,7 @@ CREATE TABLE airport (
     airport_name varchar(255),
     address varchar(255),
     city varchar(3) NOT NULL,
-    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
+    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code) ON DELETE CASCADE
 );
 
 CREATE TABLE account (
@@ -49,7 +49,7 @@ CREATE TABLE customers (
     dob date,
     address varchar(255),
     phone_number varchar(12),
-    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id) ON DELETE CASCADE
+    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
 );
 
 CREATE TABLE route (
@@ -62,11 +62,11 @@ CREATE TABLE route (
 
 CREATE TABLE airfare (
     airfare_code varchar(7) PRIMARY KEY,
-    type VARCHAR(30),
+    TYPE VARCHAR(30),
     route varchar(6) NOT NULL,
     price double precision,
     CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
+    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
 );
 
 CREATE TABLE employee (
@@ -122,15 +122,19 @@ CREATE TABLE transactions (
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
     order_id integer,
-    transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE,
+    transaction_id integer REFERENCES transactions (transaction_id),
     flight_code varchar(6) NOT NULL,
-    type VARCHAR(30),
+    TYPE VARCHAR(30),
     airfare varchar(7),
     price double precision,
     quantity integer NOT NULL,
     total double precision,
-    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
+    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id) ON DELETE CASCADE,
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
-    CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
+    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
 );
+
+-- Insert Data
+INSERT INTO account (email, PASSWORD, type)
+    VALUES ('admin@gmail.com', 'admin', 'admin');

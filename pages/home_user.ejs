@@ -43,7 +43,8 @@
           <li class="active"><a href="#"><strong>Home</strong></a></li>
           <li><a href="/user_about"><strong>About</strong></a></li>
           <li><a href="/user_contacts"><strong>Contacts</strong></a></li>
-          <li><a href="/booking"><strong>Booking History</strong></a></li>
+          <li><a href="/booking"><strong>Search Flight</strong></a></li>
+          <li><a href="/flight_result"><strong>Booking</strong></a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/user_profile"><strong>User Profile</strong></a></li>
@@ -96,7 +97,7 @@
         <!--Tab Content Flight-->
         <div id="home" class="tab-pane fade in active">
           <h3 class="lab">Flights</h3>
-          <form action="GDC-HomeConn.php" method="POST">
+          <form action="/booking" method="POST">
             <select name="origin" class="drop" id="ori">
               <option value="Origin">Origin</option>
               <option value="Mumbai">MUMBAI</option>

@@ -1,8 +1,13 @@
 --SET VALUE TO 1
-SELECT setval('account_id_seq', 1, false);
+SELECT
+    setval('account_id_seq', 1, FALSE);
+
 --Insert some account
-insert into account (email, password) values ('kbooler0@wikispaces.com', 'fovumW01754%');
-insert into account (email, password) values ('lmuckian1@reddit.com', 'qozraE37975.Fbd\');
+INSERT INTO account (email, PASSWORD)
+    VALUES ('kbooler0@wikispaces.com', 'fovumW01754%');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('lmuckian1@reddit.com', 'qozraE37975.Fbd\');
 insert into account (email, password) values ('flamboll2@dot.gov', 'cyaukN50005<''q');
 insert into account (email, password) values ('jyorke3@bloomberg.com', 'wimwhR24625>(87u');
 insert into account (email, password) values ('sgadesby4@rakuten.co.jp', 'qmiooU03555''');
@@ -19,10 +24,16 @@ insert into account (email, password) values ('apillinge@earthlink.net', 'gmdvcO
 insert into account (email, password) values ('dsimcoxf@bbc.co.uk', 'lgvznC24240`b+I"');
 insert into account (email, password) values ('tguinnaneg@sohu.com', 'yjweoO01864}D');
 insert into account (email, password) values ('tgockelerh@irs.gov', 'yxubtG92373(\o');
-insert into account (email, password) values ('eeilerti@joomla.org', 'syudoR75430\');
-insert into account (email, password) values ('bheggisonj@bing.com', 'wnvybX27476`B');
-insert into account (email, password) values ('mhourstonk@amazonaws.com', 'zmxauO82579#M0');
-insert into account (email, password) values ('wmendenhalll@unesco.org', 'awebzD45529`zxi\');
+insert into account (email, password) values ('eeilerti@joomla.org', ' syudoR75430\');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('bheggisonj@bing.com', 'wnvybX27476`B');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('mhourstonk@amazonaws.com', 'zmxauO82579#M0');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('wmendenhalll@unesco.org', 'awebzD45529`zxi\');
 insert into account (email, password) values ('glocklessm@i2i.jp', 'pfuulL34466(');
 insert into account (email, password) values ('twysen@moonfruit.com', 'vqeobA02982?');
 insert into account (email, password) values ('gswateo@wordpress.org', 'bejusY03228_#B?');
@@ -144,60 +155,172 @@ insert into account (email, password) values ('mmacpike3v@wufoo.com', 'ldlrpB238
 insert into account (email, password) values ('ptesto3w@alexa.com', 'izrcrA94314~');
 insert into account (email, password) values ('cthewless3x@psu.edu', 'ryyalF41045)>');
 insert into account (email, password) values ('twooton3y@economist.com', 'etejlE57460&p>7Y');
-insert into account (email, password) values ('ddedham3z@jugem.jp', 'lakhhD18874\');
-insert into account (email, password) values ('sshiell40@seattletimes.com', 'vixruC61224`');
-insert into account (email, password) values ('lcarnew41@cocolog-nifty.com', 'kqvggP23883(');
-insert into account (email, password) values ('areddin42@cargocollective.com', 'jxhiiO44846\y');
-insert into account (email, password) values ('gcowlas43@hexun.com', 'wnsczQ07683?');
-insert into account (email, password) values ('wmoss44@unc.edu', 'kdvutJ71363'')nP');
-insert into account (email, password) values ('ghemeret45@ow.ly', 'swjivM96014!bB');
-insert into account (email, password) values ('prowledge46@bloglovin.com', 'dwqsuN68419+');
-insert into account (email, password) values ('rrennison47@123-reg.co.uk', 'lpkmoM98821(');
-insert into account (email, password) values ('iperree48@freewebs.com', 'rbyiaP28525@');
-insert into account (email, password) values ('tsydenham49@samsung.com', 'hmvanP12763''XKA');
-insert into account (email, password) values ('ehiggan4a@github.com', 'mazrvG80045\');
-insert into account (email, password) values ('amcilheran4b@mit.edu', 'xmgnvH17806$');
-insert into account (email, password) values ('bheadey4c@dropbox.com', 'hdnabR00205~Y?_v');
-insert into account (email, password) values ('amacdermot4d@bloglovin.com', 'kvnxhX98185?k~');
-insert into account (email, password) values ('ecarabet4e@ibm.com', 'cvgqeX16612_|');
-insert into account (email, password) values ('wgregoletti4f@surveymonkey.com', 'iekukP54998%');
-insert into account (email, password) values ('bfellos4g@prweb.com', 'xjcnkM19188,,d.{');
-insert into account (email, password) values ('dbellerby4h@alibaba.com', 'tkssrK87097|');
-insert into account (email, password) values ('mstrand4i@redcross.org', 'awbrgL87527$');
-insert into account (email, password) values ('rdrains4j@moonfruit.com', 'oifvsE96737@7f');
-insert into account (email, password) values ('otorrese4k@opera.com', 'dmsykB60696/k');
-insert into account (email, password) values ('hdomanski4l@myspace.com', 'tqdrsW90722{');
-insert into account (email, password) values ('jspavins4m@state.tx.us', 'zurpfU63540"');
-insert into account (email, password) values ('emoxon4n@photobucket.com', 'imchiS10600~ei');
-insert into account (email, password) values ('alasslett4o@mit.edu', 'dkrcfQ33217.o');
-insert into account (email, password) values ('jwoolcocks4p@hostgator.com', 'yidzwO49218*');
-insert into account (email, password) values ('dtadgell4q@furl.net', 'jwkdmV81435?');
-insert into account (email, password) values ('dellif4r@youku.com', 'tmooiX92488=XC');
-insert into account (email, password) values ('toolahan4s@infoseek.co.jp', 'hoxqhU71358''');
-insert into account (email, password) values ('cdohmer4t@sciencedirect.com', 'innvtA41951*SB,`');
-insert into account (email, password) values ('cfreund4u@issuu.com', 'ksngqU90253\bU8');
-insert into account (email, password) values ('rgideon4v@taobao.com', 'qsqelI06624+`|');
-insert into account (email, password) values ('tsustin4w@nps.gov', 'jibniZ10213%');
-insert into account (email, password) values ('ffaircley4x@infoseek.co.jp', 'jbqolY33077.');
-insert into account (email, password) values ('gphipardshears4y@princeton.edu', 'plklyY09831#');
-insert into account (email, password) values ('sfrance4z@nps.gov', 'qcfijP94587?$f');
-insert into account (email, password) values ('mkettell50@123-reg.co.uk', 'fupcfR57564}');
-insert into account (email, password) values ('jgoacher51@xrea.com', 'azvljS37928?');
-insert into account (email, password) values ('sschwander52@google.co.uk', 'nppluX08971{');
-insert into account (email, password) values ('cgatheral53@google.ru', 'slqkcD99891"l2');
-insert into account (email, password) values ('wdansken54@gnu.org', 'usnzaV54278&');
-insert into account (email, password) values ('gcotte55@sun.com', 'azhudT26593_');
-insert into account (email, password) values ('xdacks56@state.gov', 'lpmytG69224@');
-insert into account (email, password) values ('jbanthorpe57@nbcnews.com', 'rplvwW13179,+jK');
-insert into account (email, password) values ('bmaccard58@imageshack.us', 'ielmiC96113_');
-insert into account (email, password) values ('mireland59@europa.eu', 'hyjzbF20550!');
-insert into account (email, password) values ('goxford5a@ft.com', 'yttqfE24669>/');
-insert into account (email, password) values ('owiddowson5b@twitpic.com', 'zmwhbD22165|');
-insert into account (email, password) values ('jwallworke5c@e-recht24.de', 'psslzU12070(');
-insert into account (email, password) values ('sansty5d@upenn.edu', 'jkdqvS30058*');
-insert into account (email, password) values ('tdearnaly5e@meetup.com', 'ihqzoI39634%a');
-insert into account (email, password) values ('carmfirld5f@ucla.edu', 'xakmlU02991<Ju');
-insert into account (email, password) values ('kkoles5g@nbcnews.com', 'wbhzvH75545+');
-insert into account (email, password) values ('mmacpherson5h@hubpages.com', 'ejfmdG01703)');
-insert into account (email, password) values ('bcollinette5i@shutterfly.com', 'okusnK27246?c\T');
-insert into account (email, password) values ('prain5j@lulu.com', 'ngvlnG60481)');
+insert into account (email, password) values ('ddedham3z@jugem.jp', ' lakhhD18874\');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('sshiell40@seattletimes.com', 'vixruC61224`');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('lcarnew41@cocolog-nifty.com', 'kqvggP23883(');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('areddin42@cargocollective.com', 'jxhiiO44846\y');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('gcowlas43@hexun.com', 'wnsczQ07683?');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('wmoss44@unc.edu', 'kdvutJ71363'')nP');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('ghemeret45@ow.ly', 'swjivM96014!bB');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('prowledge46@bloglovin.com', 'dwqsuN68419+');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('rrennison47@123-reg.co.uk', 'lpkmoM98821(');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('iperree48@freewebs.com', 'rbyiaP28525@');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('tsydenham49@samsung.com', 'hmvanP12763''XKA');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('ehiggan4a@github.com', 'mazrvG80045\');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('amcilheran4b@mit.edu', 'xmgnvH17806$');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('bheadey4c@dropbox.com', 'hdnabR00205~Y?_v');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('amacdermot4d@bloglovin.com', 'kvnxhX98185?k~');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('ecarabet4e@ibm.com', 'cvgqeX16612_|');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('wgregoletti4f@surveymonkey.com', 'iekukP54998%');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('bfellos4g@prweb.com', 'xjcnkM19188,,d.{');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('dbellerby4h@alibaba.com', 'tkssrK87097|');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('mstrand4i@redcross.org', 'awbrgL87527$');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('rdrains4j@moonfruit.com', 'oifvsE96737@7f');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('otorrese4k@opera.com', 'dmsykB60696/k');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('hdomanski4l@myspace.com', 'tqdrsW90722{');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('jspavins4m@state.tx.us', 'zurpfU63540"');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('emoxon4n@photobucket.com', 'imchiS10600~ei');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('alasslett4o@mit.edu', 'dkrcfQ33217.o');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('jwoolcocks4p@hostgator.com', 'yidzwO49218*');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('dtadgell4q@furl.net', 'jwkdmV81435?');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('dellif4r@youku.com', 'tmooiX92488=XC');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('toolahan4s@infoseek.co.jp', 'hoxqhU71358''');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('cdohmer4t@sciencedirect.com', 'innvtA41951*SB,`');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('cfreund4u@issuu.com', 'ksngqU90253\bU8');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('rgideon4v@taobao.com', 'qsqelI06624+`|');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('tsustin4w@nps.gov', 'jibniZ10213%');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('ffaircley4x@infoseek.co.jp', 'jbqolY33077.');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('gphipardshears4y@princeton.edu', 'plklyY09831#');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('sfrance4z@nps.gov', 'qcfijP94587?$f');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('mkettell50@123-reg.co.uk', 'fupcfR57564}');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('jgoacher51@xrea.com', 'azvljS37928?');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('sschwander52@google.co.uk', 'nppluX08971{');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('cgatheral53@google.ru', 'slqkcD99891"l2');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('wdansken54@gnu.org', 'usnzaV54278&');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('gcotte55@sun.com', 'azhudT26593_');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('xdacks56@state.gov', 'lpmytG69224@');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('jbanthorpe57@nbcnews.com', 'rplvwW13179,+jK');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('bmaccard58@imageshack.us', 'ielmiC96113_');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('mireland59@europa.eu', 'hyjzbF20550!');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('goxford5a@ft.com', 'yttqfE24669>/');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('owiddowson5b@twitpic.com', 'zmwhbD22165|');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('jwallworke5c@e-recht24.de', 'psslzU12070(');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('sansty5d@upenn.edu', 'jkdqvS30058*');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('tdearnaly5e@meetup.com', 'ihqzoI39634%a');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('carmfirld5f@ucla.edu', 'xakmlU02991<Ju');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('kkoles5g@nbcnews.com', 'wbhzvH75545+');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('mmacpherson5h@hubpages.com', 'ejfmdG01703)');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('bcollinette5i@shutterfly.com', 'okusnK27246?c\T');
+
+INSERT INTO account (email, PASSWORD)
+    VALUES ('prain5j@lulu.com', 'ngvlnG60481)');

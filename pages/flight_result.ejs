@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Flights</title>
+  <!-- Add any additional head elements as needed -->
+</head>
+<body>
+<!--     <h2>Make Booking</h2> -->
+<!-- <form action="/make_booking" method="post"> -->
+<!--   <!-- Hidden input for flight_code --> -->
+<!--   <label for="flight_code">Flight Code:</label> -->
+<!--   <input type="text" name="flight_code"> -->
+<!---->
+<!--   <label for="num_economy_tickets">Number of Economy Tickets:</label> -->
+<!--   <input type="number" name="num_economy_tickets" min="0" required> -->
+<!---->
+<!--   <label for="num_business_tickets">Number of Business Tickets:</label> -->
+<!--   <input type="number" name="num_business_tickets" min="0" required> -->
+<!---->
+<!--   <button type="submit">Book Tickets</button> -->
+<!-- </form> -->
+  <h2>Available Flights</h2>
+
+  <% if (flights.length > 0) { %>
+    <ul>
+      <% flights.forEach(flight => { %>
+        <li>
+          <strong>Flight Code:</strong> <%= flight.flight_code %><br>
+          <strong>Departure Time:</strong> <%= flight.departure_time %><br>
+          <strong>Origin:</strong> <%= flight.origin %><br>
+          <strong>Destination:</strong> <%= flight.destination %><br>
+          <strong>Aircraft Code:</strong> <%= flight.aircraft_code %><br>
+          <strong>Aircraft Name:</strong> <%= flight.aircraft_name %><br>
+          <strong>Economy Price:</strong> <%= flight.economy_price %><br>
+          <strong>Business Price:</strong> <%= flight.business_price %><br>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No flights found.</p>
+  <% } %>
+
+  <!-- Add any additional HTML content or scripts as needed -->
+</body>
+</html>
+
