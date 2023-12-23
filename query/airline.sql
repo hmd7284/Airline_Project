@@ -32,7 +32,7 @@ CREATE TABLE airport (
     airport_name varchar(255),
     address varchar(255),
     city varchar(3) NOT NULL,
-    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
+    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code) ON DELTE CASCADE
 );
 
 CREATE TABLE account (
