@@ -12,7 +12,7 @@ CREATE TABLE aircraft (
     status varchar(30),
     mfd_com varchar(30),
     mfd_date date,
-    CONSTRAINT ac_stt_check CHECK (status = 'Inactive' OR status = 'Acticve')
+    CONSTRAINT ac_stt_check CHECK (status = 'Inactive' OR status = 'Active')
 );
 
 CREATE TABLE countries (
@@ -87,7 +87,8 @@ CREATE TABLE flight_schedule (
     business_seat integer,
     economy_seat integer,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
-    CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code)
+    CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
+    CONSTRAINT fsch_check CHECK(arrival_date >= departure_date)
 );
 
 CREATE TABLE flight_staff (
