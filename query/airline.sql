@@ -111,9 +111,9 @@ CREATE TABLE transactions (
     transaction_id serial PRIMARY KEY,
     booking_date date NOT NULL,
     customer_id int NOT NULL,
-    status varchar(10),
+    status varchar(10) DEFAULT 'Success',
     discount varchar(5),
-    total_amount double precision,
+    total_amount double precision DEFAULT 0,
     CONSTRAINT check_status CHECK (status = 'Success' OR status = 'Failed'),
     CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code),
     CONSTRAINT trans_cus_fk FOREIGN KEY (customer_id) REFERENCES customers (id)
@@ -124,13 +124,15 @@ CREATE TABLE transactions_order (
     order_id integer,
     transaction_id integer REFERENCES transactions (transaction_id),
     flight_code varchar(6) NOT NULL,
-    airfare varchar(6),
+    TYPE VARCHAR(30),
+    airfare varchar(7),
     price double precision,
     quantity integer NOT NULL,
     total double precision,
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code)
+    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
+    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
 );
 
 -- Insert Data
