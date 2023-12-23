@@ -129,7 +129,7 @@ CREATE TABLE transactions_order (
     price double precision,
     quantity integer NOT NULL,
     total double precision,
-    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
+    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id) ON DELETE CASCADE,
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
     CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
