@@ -1,3 +1,5 @@
+-- SET VALUE TO 1
+SELECT setval('transactions_transaction_id_seq', 1, false);
 -- Create function which update some values
 CREATE OR REPLACE FUNCTION update_transaction_func() RETURNS TRIGGER AS
 $$

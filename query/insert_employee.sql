@@ -1,3 +1,5 @@
+--SET VALUE TO 1
+SELECT setval('employee_employee_code_seq', 1, false);
 --insert some employees
 insert into employee (employee_code, name, email, phone_number) values (1, 'Ashlan Bellerby', 'Bellerby', '282-113-0741');
 insert into employee (employee_code, name, email, phone_number) values (2, 'Allx Leipoldt', 'Leipoldt', '167-814-5469');
