@@ -6,7 +6,7 @@ $$
 BEGIN
     UPDATE transactions SET total_amount = total_amount - OLD.total
     WHERE transaction_id = OLD.transaction_id;
-    IF (OLD."TYPE" = 'Economy')
+    IF (OLD.type = 'Economy')
     THEN
         UPDATE flight_schedule SET economy_seat = economy_seat + OLD.quantity
         WHERE flight_code = OLD.flight_code;
