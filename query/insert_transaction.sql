@@ -10,7 +10,7 @@ DECLARE temp_route varchar(6);
 BEGIN
     -- Define the airfare_code
     temp_route := (SELECT route FROM flight_schedule WHERE flight_code = NEW.flight_code);
-    IF (NEW."TYPE" = 'Economy') THEN 
+    IF (NEW.type = 'Economy') THEN 
         temp_airfare := 'E' || temp_route; 
     ELSE
         temp_airfare := 'B' || temp_route;
@@ -34,7 +34,7 @@ BEGIN
     UPDATE transactions SET total_amount = total_amount + (NEW.quantity * temp_price * (100 - temp_discount) / 100.0)
     WHERE transaction_id = NEW.transaction_id;
     -- Update the remaning seat of the flight
-    IF (NEW."TYPE" = 'Economy') 
+    IF (NEW.type = 'Economy') 
     THEN
         UPDATE flight_schedule SET economy_seat = economy_seat - NEW.quantity
         WHERE flight_code = NEW.flight_code;
@@ -55,8 +55,8 @@ EXECUTE PROCEDURE update_transaction_func();
 -- NEED to set total = 0 when initializing and if dont have discount then set it to be NULL
 INSERT INTO transactions(booking_date, customer_id, total_amount, discount) VALUES(current_date, '1', 0, null);
 -- Then insert table transactions_order repectively from 1 ...
-INSERT INTO transactions_order(order_id, transaction_id, flight_code, "TYPE", quantity)
+INSERT INTO transactions_order(order_id, transaction_id, flight_code, type, quantity)
 VALUES('1', currval('transactions_transaction_id_seq'), 'FL001','Economy', 1);
 
-INSERT INTO transactions_order(order_id, transaction_id, flight_code, "TYPE", quantity)
+INSERT INTO transactions_order(order_id, transaction_id, flight_code, type, quantity)
 VALUES('2', currval('transactions_transaction_id_seq'), 'FL001','Business', 2);

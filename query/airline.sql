@@ -62,11 +62,11 @@ CREATE TABLE route (
 
 CREATE TABLE airfare (
     airfare_code varchar(7) PRIMARY KEY,
-    TYPE VARCHAR(30),
+    type VARCHAR(30),
     route varchar(6) NOT NULL,
     price double precision,
     CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
+    CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
 CREATE TABLE employee (
@@ -124,7 +124,7 @@ CREATE TABLE transactions_order (
     order_id integer,
     transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE,
     flight_code varchar(6) NOT NULL,
-    TYPE VARCHAR(30),
+    type VARCHAR(30),
     airfare varchar(7),
     price double precision,
     quantity integer NOT NULL,
@@ -132,7 +132,7 @@ CREATE TABLE transactions_order (
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
-    CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
+    CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
 -- Insert Data
