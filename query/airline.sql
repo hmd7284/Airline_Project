@@ -61,7 +61,7 @@ CREATE TABLE route (
 );
 
 CREATE TABLE airfare (
-    airfare_code varchar(6) PRIMARY KEY,
+    airfare_code varchar(7) PRIMARY KEY,
     TYPE VARCHAR(30),
     route varchar(6) NOT NULL,
     price double precision,
