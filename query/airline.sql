@@ -32,7 +32,7 @@ CREATE TABLE airport (
     airport_name varchar(255),
     address varchar(255),
     city varchar(3) NOT NULL,
-    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code) ON DELTE CASCADE
+    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
 );
 
 CREATE TABLE account (
@@ -49,7 +49,7 @@ CREATE TABLE customers (
     dob date,
     address varchar(255),
     phone_number varchar(12),
-    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id)
+    CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id) ON DELETE CASCADE
 );
 
 CREATE TABLE route (
@@ -122,14 +122,14 @@ CREATE TABLE transactions (
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
     order_id integer,
-    transaction_id integer REFERENCES transactions (transaction_id),
+    transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE,
     flight_code varchar(6) NOT NULL,
     TYPE VARCHAR(30),
     airfare varchar(7),
     price double precision,
     quantity integer NOT NULL,
     total double precision,
-    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id) ON DELETE CASCADE,
+    CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
     CONSTRAINT af_type_check CHECK (TYPE = 'Economy' OR TYPE = 'Business')
