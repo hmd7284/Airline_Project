@@ -101,8 +101,8 @@ CREATE TABLE flight_staff (
 
 CREATE TABLE discount (
     discount_code varchar(5) PRIMARY KEY,
-    title varchar(255),
-    amount int,
+    title varchar(255) NOT NULL,
+    amount int NOT NULL,
     description text
 );
 
@@ -126,7 +126,7 @@ CREATE TABLE transactions_order (
     flight_code varchar(6) NOT NULL,
     airfare varchar(6),
     price double precision,
-    quantity integer,
+    quantity integer NOT NULL,
     total double precision,
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
     CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
