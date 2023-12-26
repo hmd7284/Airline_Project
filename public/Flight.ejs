@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GDC Airways</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+	<link rel="stylesheet" href="css/adminset.css">
+    <script src="../javascript/flight.js"></script>
+</head>
+
+<body>
+
+  <!--NavBar-->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand"> GDC AIRWAYS</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        		<span class="sr-only">Toggle navigation</span>
+	      </button>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li><a href="GDC-Admin.html"><strong>Home</strong></a></li>
+                    <li><a href="GDC-Admin2.html"><strong>Airport</strong></a></li>
+                    <li><a href="GDC-Admin1.html"><strong>Airplane</strong></a></li>
+                    <li><a href="GDC-Admin3.html"><strong>Maintenance</strong></a></li>
+                    <li><a href="GDC-Admin4.html"><strong>Route</strong></a></li>
+                    <li><a href="GDC-Admin5.html"><strong>Status</strong></a></li>
+                    <li class="active"><a href="#"><strong>Schedule</strong></a></li>
+                    <li><a href="GDC-Admin7.html"><strong>Flight Time</strong></a></li>
+                    <li><a href="GDC-Admin8.html"><strong>Staff</strong></a></li>
+                    <li><a href="GDC-Admin9.html"><strong>Sales</strong></a></li>
+                    <li><a href="GDC-Admin10.html"><strong>Revenue</strong></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+  <!--NavBar End-->
+  <div class="flex-container">
+  <div class="form-container">
+  <form>
+    <h2>Flight Schedule</h2>
+    <br>
+    <label for="flightCode">Code:</label>
+    <input type="text" id="flightCode" name="flightCode">
+    <br>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date">
+    <br>
+    <label for="departureTime">Departure Time:</label>
+    <input type="time" id="departureTime" name="departureTime">
+    <br>
+    <label for="landingTime">Estimated Landing Time:</label>
+    <input type="time" id="landingTime" name="landingTime">
+    <br>
+    <label for="airplaneCode">Airplane Code:</label>
+    <input type="text" id="airplaneCode" name="airplaneCode">
+    <br>
+    <label for="routeCode">Flight Route Code:</label>
+    <input type="text" id="routeCode" name="routeCode">
+    <br>
+    <button type="submit">Add Flight</button>
+    <button type="submit">Delete Flight</button>
+</form>
+<br>
+<form>
+    <h2>Adjust Flight Time</h2>
+    <br>
+    <label for="adjustFlightCode">Code:</label>
+    <input type="text" id="adjustFlightCode" name="adjustFlightCode">
+    <br>
+    <label for="newDepartureTime">New Departure Time:</label>
+    <input type="time" id="newDepartureTime" name="newDepartureTime">
+    <br>
+    <label for="newLandingTime">New Estimated Landing Time:</label>
+    <input type="time" id="newLandingTime" name="newLandingTime">
+    <br>
+    <button type="submit">Adjust Flight Time</button>
+</form>
+  </div>
+  <div class="table-container">
+    <div class="content-container">
+    <table>
+        <h2>Flight Schedule Information</h2>
+        <br>
+        <thead>
+            <tr>
+                <th>Flight Code</th>
+                <th>Departure Date</th>
+                <th>Departure Time</th>
+                <th>Arrival Date</th>
+                <th>Arrival Time</th>
+                <th>Aircraft</th>
+                <th>Route</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% flightSchedules.forEach(schedule => { %>
+                <tr>
+                    <td><%= schedule.flight_code %></td>
+                    <td><%= schedule.departure_date %></td>
+                    <td><%= schedule.departure_time %></td>
+                    <td><%= schedule.arrival_date %></td>
+                    <td><%= schedule.arrival_time %></td>
+                    <td><%= schedule.aircraft %></td>
+                    <td><%= schedule.route %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<br>
+    <!-- Pagination links -->
+    <div class="pagination">
+        <% for (let i = 1; i <= pageCount; i++) { %>
+            <a href="?page=<%= i %>"<%= i === currentPage ? ' style="font-weight: bold;"' : '' %>><%= i %></a>
+        <% } %>
+    </div>
+    </div>
+  </div>
+  </div>
+
+
+</body>
+</html>

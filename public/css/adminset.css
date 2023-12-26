@@ -1,0 +1,138 @@
+body {
+    background: url(../images/adminset.jpg);
+    background-size: cover;
+    color: white;
+}
+
+#logo {
+    width: 40px;
+    height: 40px;
+    display: inline;
+    margin-bottom: 10px;
+    vertical-align: top;
+}
+
+.navbar-brand {
+    font-family: Paytone One;
+}
+
+h2 {
+    color: black;
+    text-align: center;
+}
+
+#form-container {
+    justify-content: space-between;
+    width: 100%; /* Adjust the width as needed */
+    margin: auto; /* Center the container */
+}
+
+form {
+    flex: 1;
+    width: 90%; /* Adjust the width as needed */
+    margin-right: 5px; /* Adjust margin as needed */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #000;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #000;
+}
+
+button {
+    background-color: darkblue;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: blue;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.form-container {
+    flex: 0.3;
+    padding: 20px ; /* Adjust the padding as needed */
+}
+
+.table-container {
+    flex: 0.7;
+    padding: 20px;
+}
+
+.content-container {
+    background-color: #ffffff; /* Set background color for the table and pagination area */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    text-decoration-color: #000;
+}
+
+th, td {
+    border: 1px solid black;
+    text-align: left;
+    padding: 12px;
+}
+
+td {
+    color: #000;
+}
+
+th {
+    background-color: rgba(0, 0, 0, 0.734);
+}
+
+h2 {
+    color: #333;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    
+}
+
+.pagination a {
+    text-decoration: none;
+    padding: 10px;
+    margin: 2px;
+    background-color: darkblue;
+    color: white;
+    border: 1px solid darkblue;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: blue;
+}
