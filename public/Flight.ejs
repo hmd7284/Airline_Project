@@ -43,23 +43,26 @@
   <form>
     <h2>Flight Schedule</h2>
     <br>
-    <label for="flightCode">Code:</label>
-    <input type="text" id="flightCode" name="flightCode">
+    <label for="flight_code">Code:</label>
+    <input type="text" id="flight_code" name="flight_code">
     <br>
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date">
+    <label for="departure_date">Departure Date:</label>
+    <input type="date" id="departure_date" name="departure_date">
     <br>
-    <label for="departureTime">Departure Time:</label>
-    <input type="time" id="departureTime" name="departureTime">
+    <label for="departure_time">Departure Time:</label>
+    <input type="time" id="departure_time" name="departure_time">
     <br>
-    <label for="landingTime">Estimated Landing Time:</label>
-    <input type="time" id="landingTime" name="landingTime">
+    <label for="arrival_date">Estimated Landing Date:</label>
+    <input type="date" id="arrival_date" name="arrival_date">
     <br>
-    <label for="airplaneCode">Airplane Code:</label>
-    <input type="text" id="airplaneCode" name="airplaneCode">
+    <label for="arrival_time">Estimated Landing Time:</label>
+    <input type="time" id="arrival_time" name="arrival_time">
     <br>
-    <label for="routeCode">Flight Route Code:</label>
-    <input type="text" id="routeCode" name="routeCode">
+    <label for="aircraft">Airplane Code:</label>
+    <input type="text" id="aircraft" name="aircraft">
+    <br>
+    <label for="route">Flight Route Code:</label>
+    <input type="text" id="route" name="route">
     <br>
     <button type="submit">Add Flight</button>
     <button type="submit">Delete Flight</button>
@@ -68,14 +71,19 @@
 <form>
     <h2>Adjust Flight Time</h2>
     <br>
-    <label for="adjustFlightCode">Code:</label>
-    <input type="text" id="adjustFlightCode" name="adjustFlightCode">
+    <label for="flight_code">Code:</label>
+    <input type="text" id="flight_code" name="flight_code">
+    <label for="departure_date">Departure Date:</label>
+    <input type="date" id="departure_date" name="departure_date">
     <br>
-    <label for="newDepartureTime">New Departure Time:</label>
-    <input type="time" id="newDepartureTime" name="newDepartureTime">
+    <label for="departure_time">Departure Time:</label>
+    <input type="time" id="departure_time" name="departure_time">
     <br>
-    <label for="newLandingTime">New Estimated Landing Time:</label>
-    <input type="time" id="newLandingTime" name="newLandingTime">
+    <label for="arrival_date">Estimated Landing Date:</label>
+    <input type="date" id="arrival_date" name="arrival_date">
+    <br>
+    <label for="arrival_time">Estimated Landing Time:</label>
+    <input type="time" id="arrival_time" name="arrival_time">
     <br>
     <button type="submit">Adjust Flight Time</button>
 </form>
