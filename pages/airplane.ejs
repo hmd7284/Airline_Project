@@ -57,12 +57,12 @@
       </div>
       <% } else if (message.error) { %>
         <div id="flash-message" class="alert alert-danger" role="alert">
-          <%= message.error %>
+          <%= message.error %> 
         </div>
         <% } %>
 
           <h2 id="airplane">Airplane</h2>
-          <form action="/airplane" method="post">
+          <form id="airplane-form" action="/airplane" method="post">
             <input type="hidden" name="action" value="add">
             <label for="aircraft_code">Code:</label>
             <input type="text" id="aircraftCode" name="aircraftCode">
@@ -94,7 +94,7 @@
 
           </form>
 
-          <form action="/airplane" method="post">
+          <form class="airplane-form" action="/airplane" method="post">
             <input type="hidden" name="action" value="delete">
             <label for="deleteAircraftCode">Code:</label>
             <input type="text" id="deleteAircraftCode" name="aircraftCode">
@@ -107,8 +107,10 @@
             crossorigin="anonymous"></script>
           <script>
             $(document).ready(function () {
-              $("#flash-message").delay(3000).fadeOut("slow");
-            });
+              $("#flash-message").delay(5000).fadeOut("slow");
+            }); 
           </script>
+
   </body>
+
 </html>
