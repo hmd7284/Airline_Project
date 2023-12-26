@@ -108,7 +108,7 @@ CREATE TABLE discount (
 
 -- Create the transactions table
 CREATE TABLE transactions (
-    transaction_id serial PRIMARY KEY,
+    transaction_id SERIAL PRIMARY KEY,
     booking_date date NOT NULL,
     customer_id int NOT NULL,
     status varchar(10) DEFAULT 'Success',
@@ -121,7 +121,7 @@ CREATE TABLE transactions (
 
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
-    order_id integer,
+    order_id SERIAL,
     transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE,
     flight_code varchar(6) NOT NULL,
     type VARCHAR(30),
@@ -134,3 +134,19 @@ CREATE TABLE transactions_order (
     CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
+
+CREATE OR REPLACE FUNCTION reset_order_id_sequence()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Reset the sequence to 1
+    EXECUTE 'ALTER SEQUENCE transactions_order_order_id_seq RESTART WITH 1';
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to call the function after an insert on the transactions table
+CREATE TRIGGER reset_order_id_trigger
+AFTER INSERT ON transactions
+FOR EACH STATEMENT
+EXECUTE FUNCTION reset_order_id_sequence();
