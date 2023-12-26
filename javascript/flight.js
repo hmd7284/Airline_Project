@@ -20,10 +20,8 @@ Flight.use(express.static(path.join(__dirname, '../public')));
 
 Flight.get('/', async (req, res) => {
     try {
-        // Retrieve flight schedule data from the database
         const { rows } = await pool.query('SELECT * FROM flight_schedule');
 
-        // Paginate the data, 10 records per page
         const pageSize = 20;
         const pageCount = Math.ceil(rows.length / pageSize);
 
