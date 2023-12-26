@@ -3,7 +3,7 @@ SELECT
     setval('transactions_transaction_id_seq', 1, FALSE);
 
 -- Create function which update some values
-CREATE OR REPLACE FUNCTION update_transaction_func ()
+CREATE OR REPLACE FUNCTION update_transaction_func()
     RETURNS TRIGGER
     AS $$
 DECLARE
@@ -100,8 +100,8 @@ INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
     VALUES (CURRENT_DATE, '1', 0, NULL);
 
 -- Then insert table transactions_order repectively from 1 ...
-INSERT INTO transactions_order (order_id, transaction_id, flight_code, type, quantity)
-    VALUES ('1', currval('transactions_transaction_id_seq'), 'FL001', 'Economy', 1);
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
 
-INSERT INTO transactions_order (order_id, transaction_id, flight_code, type, quantity)
-    VALUES ('2', currval('transactions_transaction_id_seq'), 'FL001', 'Business', 2);
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);
