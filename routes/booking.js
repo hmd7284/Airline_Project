@@ -134,7 +134,7 @@ router.post("/flight_booking", isLoggedIn, async (req, res) => {
         [transactionId, flight_code, type, quantity],
       );
       if (orderResult.rows.length > 0) {
-        req.flash("errors", "Successfully booked flight!");
+        req.flash("sucess", "Successfully booked flight!");
         res.redirect("/confirmation");
       } else {
         console.error("Error during booking:", error);

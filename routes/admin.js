@@ -37,7 +37,7 @@ router.post("/admin_login", async (req, res) => {
 function isLoggedInAdmin(req, res, next) {
   if (req.session.adminID) {
     next();
-  } else res.redirect("/admin_login");
+  } else res.redirect("/home");
 }
 
 function isLoggedOutAdmin(req, res, next) {
@@ -55,7 +55,11 @@ router.get("/admin_logout", isLoggedInAdmin, (req, res) => {
   res.redirect("/home");
 });
 
-router.post("/airplane", async (req, res) => {
+router.get("/airplane", isLoggedInAdmin, async (req, res) => {
+  res.render("airplane.ejs", { message: req.flash("error") });
+});
+
+router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   const {
     action,
     aircraftCode,
@@ -67,33 +71,58 @@ router.post("/airplane", async (req, res) => {
   } = req.body;
 
   try {
+    const existingAircraft = await db.query(
+      "SELECT * FROM aircraft WHERE aircraft_code = $1",
+      [aircraftCode],
+    );
     if (action === "add") {
+      if (existingAircraft.rows.length > 0) {
+        req.flash("error", "Aircraft with the same code already exists");
+        res.redirect("/airplane");
+        return;
+      }
       const result = await db.query(
         "INSERT INTO aircraft (aircraft_code, aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
         [aircraftCode, aircraftName, capacity, status, mfdCom, mfdDate],
       );
-
-      res.json({
-        success: true,
-        message: "Aircraft added successfully",
-        aircraft: result.rows[0],
-      });
+      if (result.rows.length > 0) {
+        req.flash("error", "Aircraft added successfully");
+        res.redirect("/airplane");
+      } else {
+        req.flash("error", "Aircraft not added");
+        res.redirect("/airplane");
+      }
+      // res.json({
+      //   success: true,
+      //   message: "Aircraft added successfully",
+      //   aircraft: result.rows[0],
+      // });
     } else if (action === "delete") {
+      if (existingAircraft.rows.length === 0) {
+        req.flash("error", "Aircraft not found!! Cannot delete");
+        res.redirect("/airplane");
+        return;
+      }
       const result = await db.query(
         "DELETE FROM aircraft WHERE aircraft_code = $1 RETURNING *",
         [aircraftCode],
       );
 
       if (result.rows.length > 0) {
-        res.json({
-          success: true,
-          message: "Aircraft deleted successfully",
-          aircraft: result.rows[0],
-        });
+        req.flash("error", "Aircraft deleted successfully");
+        res.redirect("/airplane");
+        // res.json({
+        //   success: true,
+        //   message: "Aircraft deleted successfully",
+        //   aircraft: result.rows[0],
+        // });
       } else {
-        res.json({ success: false, message: "Aircraft not found" });
+        req.flash("error", "Aircraft not deleted!! Please try again");
+        /* res.json({ success: false, message: "Aircraft not found" }); */
       }
     } else {
+      req.flash("error", "Invalid action");
+      res.redirect("/airplane");
       res.status(400).json({ success: false, message: "Invalid action" });
     }
   } catch (error) {
