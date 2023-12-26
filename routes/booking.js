@@ -19,7 +19,7 @@ async function fetchAirportsFromDatabase() {
 
   try {
     const result = await client.query(
-      "SELECT aircraft_code, aircraft_name, address FROM airport",
+      "SELECT * FROM airport",
     );
     return result.rows;
   } finally {
@@ -149,4 +149,5 @@ router.post("/flight_booking", isLoggedIn, async (req, res) => {
     }
   }
 });
+
 module.exports = router;

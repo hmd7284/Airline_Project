@@ -131,4 +131,74 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   }
 });
 
+router.post("/schedule", isLoggedInAdmin, async (req, res) => {
+  const {
+    action,
+    flight_code,
+    departure_date,
+    departure_time,
+    arrival_date,
+    arrival_time,
+    aircraft,
+    route,
+  } = req.body;
+  try {
+    if (departure_date) {
+      if (departure_date > arrival_date) {
+        req.flash("error", "Departure date cannot be after arrival date");
+        res.redirect("/schedule");
+        return;
+      }
+    }
+    if (departure_date === arrival_date) {
+      if (departure_time > arrival_time) {
+        req.flash("error", "Departure time cannot be after arrival time");
+        res.redirect("/schedule");
+        return;
+      }
+    }
+    const existingFlight = await db.query(
+      "SELECT * FROM flight_schedule WHERE flight_code = $1",
+      [flight_code],
+    );
+    if (action === "add") {
+      if (
+        !action || !flight_code || !departure_date || !departure_time ||
+        !arrival_date || !arrival_time || !aircraft || !route
+      ) {
+        req.flash("error", "Please enter all fields");
+        res.redirect("/schedule");
+        return;
+      }
+      if (existingFlight.rows.length > 0) {
+        req.flash("error", "Flight with the same code already exists");
+        res.redirect("/schedule");
+        return;
+      } else {
+        const result = await db.query(
+          "INSERT INTO flight_schedule (flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+          [
+            flight_code,
+            departure_date,
+            departure_time,
+            arrival_date,
+            arrival_time,
+            aircraft,
+            route,
+          ],
+        );
+        if (result.rows.length > 0) {
+          req.flash("error", "Flight added successfully");
+          res.redirect("/schedule");
+        } else {
+          req.flash("error", "Flight not added");
+          res.redirect("/schedule");
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error managing flight:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 module.exports = router;
