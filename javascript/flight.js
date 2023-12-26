@@ -27,15 +27,12 @@ Flight.get('/', async (req, res) => {
         const pageSize = 20;
         const pageCount = Math.ceil(rows.length / pageSize);
 
-        // Get the current page number from the query parameter, default to 1
         const currentPage = parseInt(req.query.page) || 1;
 
-        // Slice the data to display only the records for the current page
         const startIdx = (currentPage - 1) * pageSize;
         const endIdx = startIdx + pageSize;
         const flightSchedules = rows.slice(startIdx, endIdx);
 
-        // Render the Flight.ejs template directly from the "public" directory
         res.render('Flight', {
             flightSchedules,
             pageCount,
