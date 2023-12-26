@@ -4,18 +4,15 @@ const db = require("../database");
 
 function isLoggedOut(req, res, next) {
   if (req.session.userId) {
-    res.redirect("/booking");
+    res.redirect("/flight_search");
   } else next();
 }
 
 function isLoggedIn(req, res, next) {
   if (req.session.userId) {
     next();
-  } else res.redirect("/home_user");
+  } else res.redirect("/home");
 }
-// router.get("/booking", isLoggedIn, (req, res) => {
-//   res.render("booking.ejs", { messages: req.flash("errors") });
-// }); //must log in to see
 
 async function fetchAirportsFromDatabase() {
   const client = await db.connect();
@@ -26,30 +23,26 @@ async function fetchAirportsFromDatabase() {
     );
     return result.rows;
   } finally {
-    // Release the client back to the pool
     client.release();
   }
 }
 
-router.get("/booking", isLoggedIn, async (req, res) => {
+router.get("/flight_search", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    res.render("booking_form.ejs", { airports });
+    res.render("flight_page.ejs", {
+      airports,
+      section: "search",
+      messages: req.flash("errors"),
+    });
   } catch (error) {
+    req.flash("errors", "Error fetching airport data");
     console.error("Error fetching airport data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-router.get("/flight_result", isLoggedIn, (req, res) => {
-  res.render("flight_result.ejs");
-});
-
-router.get("/make_booking", isLoggedIn, (req, res) => {
-  res.render("flight_result.ejs");
-});
-
-router.post("/booking", isLoggedIn, async (req, res) => {
+router.post("/flight_search", isLoggedIn, async (req, res) => {
   const { origin, destination, departure_date, number_of_seats } = req.body;
   if (
     !origin || !destination || !departure_date ||
@@ -65,10 +58,15 @@ router.post("/booking", isLoggedIn, async (req, res) => {
       );
       if (result.rows.length > 0) {
         const flights = result.rows;
-        res.render("flight_result.ejs", { flights });
+        res.render("flight_page.ejs", {
+          flights,
+          section: "results",
+          messages: req.flash("errors"),
+        });
       } else {
+        console.error("Error during flight search:", error);
         req.flash("errors", "No flights found");
-        res.redirect("/booking");
+        res.redirect("/flight_search");
       }
     } catch (error) {
       console.error("Error during booking:", error);
@@ -80,20 +78,76 @@ router.post("/booking", isLoggedIn, async (req, res) => {
   }
 });
 
-// router.post("/make_booking", isLoggedIn, async (req, res) => {
-//   const { flight_code, num_economy_tickets, num_business_tickets, discount_code } = req.body;
-//   if (!flight_code || !num_economy_tickets || !num_business_tickets) {
-//     res.status(404).json({ message: "Please enter all fields" });
-//   }
-//   else {
-//     const client = await db.connect();
-//     try {
-//       const transactionResult = await client.query(
-//       "INSERT INTO transactions (booking_date, customer_id, discount, total_amount) VALUES (current_date, $1, $2, $3) RETURNING transaction_id",
-//       [req.session.userId, discount_code, 0],
-//       );
-//       const transactionId = transactionResult.rows[0].transaction_id;
-//     }
-//   }
-// });
+router.get("/flight_results", isLoggedIn, (req, res) => {
+  // Assuming you have 'flights' data available
+  res.render("flight_page.ejs", {
+    flights,
+    section: "results",
+    messages: req.flash("errors"),
+  });
+});
+
+router.get("/flight_booking", isLoggedIn, (req, res) => {
+  res.render("flight_page.ejs", {
+    section: "booking",
+    messages: req.flash("errors"),
+  });
+});
+
+router.post("/flight_booking", isLoggedIn, async (req, res) => {
+  const { flight_code, type, quantity, discount_code } = req.body;
+  if (!flight_code || !type || !quantity || !discount_code) {
+    res.status(404).json({ message: "Please enter all fields" });
+  } else {
+    const client = await db.connect();
+    try {
+      const flight_query = await client.query(
+        "SELECT business_seat, economy_seat FROM flight_schedule WHERE flight_code = $1",
+        [flight_code],
+      );
+      if (flight_query.rows.length === 0) {
+        req.flash(
+          "errors",
+          "Flight not found! Make sure you enter the correct flight code.",
+        );
+        res.redirect("/flight_results");
+        return;
+      }
+      const flight = flight_query.rows[0];
+      if (type === "Business" && flight.business_seat < quantity) {
+        req.flash("errors", "Not enough business seats available!");
+        res.redirect("/flight_results");
+        return;
+      }
+      if (type === "Economy" && flight.economy_seat < quantity) {
+        req.flash("errors", "Not enough economy seats available!");
+        res.redirect("/flight_results");
+        return;
+      }
+      const transactionResult = await client.query(
+        "INSERT INTO transactions (booking_date, customer_id, discount, total_amount) VALUES (current_date, $1, $2, $3) RETURNING transaction_id",
+        [req.session.userId, discount_code, 0],
+      );
+      const transactionId = transactionResult.rows[0].transaction_id;
+      const orderResult = await client.query(
+        "INSERT INTO transactions_order (transaction_id, flight_code, type, quantity) VALUES ($1, $2, $3, $4)",
+        [transactionId, flight_code, type, quantity],
+      );
+      if (orderResult.rows.length > 0) {
+        req.flash("sucess", "Successfully booked flight!");
+        res.redirect("/confirmation");
+      } else {
+        console.error("Error during booking:", error);
+        req.flash("errors", "Error during booking");
+        res.redirect("/flight_results");
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      res.status(500).json({ message: "Internal server error" });
+    } finally {
+      client.release();
+    }
+  }
+});
+
 module.exports = router;

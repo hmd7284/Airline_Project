@@ -37,7 +37,7 @@ router.post("/admin_login", async (req, res) => {
 function isLoggedInAdmin(req, res, next) {
   if (req.session.adminID) {
     next();
-  } else res.redirect("/admin_login");
+  } else res.redirect("/home");
 }
 
 function isLoggedOutAdmin(req, res, next) {
@@ -55,7 +55,11 @@ router.get("/admin_logout", isLoggedInAdmin, (req, res) => {
   res.redirect("/home");
 });
 
-router.post("/airplane", async (req, res) => {
+router.get("/airplane", isLoggedInAdmin, async (req, res) => {
+  res.render("airplane.ejs", { message: req.flash("error") });
+});
+
+router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   const {
     action,
     aircraftCode,
@@ -67,33 +71,58 @@ router.post("/airplane", async (req, res) => {
   } = req.body;
 
   try {
+    const existingAircraft = await db.query(
+      "SELECT * FROM aircraft WHERE aircraft_code = $1",
+      [aircraftCode],
+    );
     if (action === "add") {
+      if (existingAircraft.rows.length > 0) {
+        req.flash("error", "Aircraft with the same code already exists");
+        res.redirect("/airplane");
+        return;
+      }
       const result = await db.query(
         "INSERT INTO aircraft (aircraft_code, aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
         [aircraftCode, aircraftName, capacity, status, mfdCom, mfdDate],
       );
-
-      res.json({
-        success: true,
-        message: "Aircraft added successfully",
-        aircraft: result.rows[0],
-      });
+      if (result.rows.length > 0) {
+        req.flash("error", "Aircraft added successfully");
+        res.redirect("/airplane");
+      } else {
+        req.flash("error", "Aircraft not added");
+        res.redirect("/airplane");
+      }
+      // res.json({
+      //   success: true,
+      //   message: "Aircraft added successfully",
+      //   aircraft: result.rows[0],
+      // });
     } else if (action === "delete") {
+      if (existingAircraft.rows.length === 0) {
+        req.flash("error", "Aircraft not found!! Cannot delete");
+        res.redirect("/airplane");
+        return;
+      }
       const result = await db.query(
         "DELETE FROM aircraft WHERE aircraft_code = $1 RETURNING *",
         [aircraftCode],
       );
 
       if (result.rows.length > 0) {
-        res.json({
-          success: true,
-          message: "Aircraft deleted successfully",
-          aircraft: result.rows[0],
-        });
+        req.flash("error", "Aircraft deleted successfully");
+        res.redirect("/airplane");
+        // res.json({
+        //   success: true,
+        //   message: "Aircraft deleted successfully",
+        //   aircraft: result.rows[0],
+        // });
       } else {
-        res.json({ success: false, message: "Aircraft not found" });
+        req.flash("error", "Aircraft not deleted!! Please try again");
+        /* res.json({ success: false, message: "Aircraft not found" }); */
       }
     } else {
+      req.flash("error", "Invalid action");
+      res.redirect("/airplane");
       res.status(400).json({ success: false, message: "Invalid action" });
     }
   } catch (error) {
@@ -102,4 +131,74 @@ router.post("/airplane", async (req, res) => {
   }
 });
 
+router.post("/schedule", isLoggedInAdmin, async (req, res) => {
+  const {
+    action,
+    flight_code,
+    departure_date,
+    departure_time,
+    arrival_date,
+    arrival_time,
+    aircraft,
+    route,
+  } = req.body;
+  try {
+    if (departure_date) {
+      if (departure_date > arrival_date) {
+        req.flash("error", "Departure date cannot be after arrival date");
+        res.redirect("/schedule");
+        return;
+      }
+    }
+    if (departure_date === arrival_date) {
+      if (departure_time > arrival_time) {
+        req.flash("error", "Departure time cannot be after arrival time");
+        res.redirect("/schedule");
+        return;
+      }
+    }
+    const existingFlight = await db.query(
+      "SELECT * FROM flight_schedule WHERE flight_code = $1",
+      [flight_code],
+    );
+    if (action === "add") {
+      if (
+        !action || !flight_code || !departure_date || !departure_time ||
+        !arrival_date || !arrival_time || !aircraft || !route
+      ) {
+        req.flash("error", "Please enter all fields");
+        res.redirect("/schedule");
+        return;
+      }
+      if (existingFlight.rows.length > 0) {
+        req.flash("error", "Flight with the same code already exists");
+        res.redirect("/schedule");
+        return;
+      } else {
+        const result = await db.query(
+          "INSERT INTO flight_schedule (flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+          [
+            flight_code,
+            departure_date,
+            departure_time,
+            arrival_date,
+            arrival_time,
+            aircraft,
+            route,
+          ],
+        );
+        if (result.rows.length > 0) {
+          req.flash("error", "Flight added successfully");
+          res.redirect("/schedule");
+        } else {
+          req.flash("error", "Flight not added");
+          res.redirect("/schedule");
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error managing flight:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 module.exports = router;

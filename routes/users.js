@@ -69,11 +69,9 @@ router.post("/user_signup", async (req, res) => {
       res.redirect("/user_login");
     }
   } catch (error) {
-    // Rollback on error
     await client.query("ROLLBACK");
     throw error;
   } finally {
-    // Release the client back to the pool
     client.release();
   }
 });
