@@ -1,69 +1,107 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>GDC Airways</title>
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="css/adminset.css">
-</head>
 
-<body>
+  <head>
+    <title>GDC Airways</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" -->
+    <!--   integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+    <link rel="stylesheet" href="admin/admin.css">
+    <style>
+      #flash-message {
+        position: fixed;
+        top: 120px;
+        right: 10px;
+        z-index: 9999;
+      }
+    </style>
+  </head>
 
-  <!--NavBar-->
-	<nav class="navbar navbar-inverse">
-		<div class="container">
-			<div class="navbar-header">
-				<a href="#" class="navbar-brand"> GDC AIRWAYS</a>
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-	        		<span class="sr-only">Toggle navigation</span>
-	      </button>
-			</div>
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"">
-				<ul class="nav navbar-nav">
-					<li><a href="GDC-Admin.html"><strong>Home</strong></a></li>
-                    <li><a href="GDC-Admin2.html"><strong>Airport</strong></a></li>
-                    <li class="active"><a href="#"><strong>Airplane</strong></a></li>
-					<li><a href="GDC-Admin3.html"><strong>Maintenance</strong></a></li>
-                    <li><a href="GDC-Admin4.html"><strong>Route</strong></a></li>
-                    <li><a href="GDC-Admin5.html"><strong>Status</strong></a></li>
-                    <li><a href="GDC-Admin6.html"><strong>Schedule</strong></a></li>
-                    <li><a href="GDC-Admin7.html"><strong>Flight Time</strong></a></li>
-                    <li><a href="GDC-Admin8.html"><strong>Staff</strong></a></li>
-                    <li><a href="GDC-Admin9.html"><strong>Sales</strong></a></li>
-                    <li><a href="GDC-Admin10.html"><strong>Revenue</strong></a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+  <body>
+
+    <!--NavBar-->
+    <nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/home_admin" class="navbar-brand"> GDC AIRWAYS</a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class=" nav navbar-nav">
+            <li><a href="home_admin"><strong>Home</strong></a></li>
+            <li><a href="/airport"><strong>Airport</strong></a></li>
+            <li class="active"><a href="#"><strong>Airplane</strong></a></li>
+            <li><a href="/maintenance"><strong>Maintenance</strong></a></li>
+            <li><a href="/route"><strong>Route</strong></a></li>
+            <li><a href="/status"><strong>Status</strong></a></li>
+            <li><a href="/schedule"><strong>Schedule</strong></a></li>
+            <li><a href="/flight_time"><strong>Flight Time</strong></a></li>
+            <li><a href="/staff"><strong>Staff</strong></a></li>
+            <li><a href="/sales"><strong>Sales</strong></a></li>
+            <li><a href="/revenue"><strong>Revenue</strong></a></li>
+            <li><a href="/admin_logout"><strong>Logout</strong></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!--NavBar End-->
+    <% if (message.success) { %>
+      <div id="flash-message" class="alert alert-success" role="alert">
+        <%= message.success %>
+      </div>
+      <% } else if (message.error) { %>
+        <div id="flash-message" class="alert alert-danger" role="alert">
+          <%= message.error %> 
+        </div>
+        <% } %>
+
   <div class="flex-container">
     <div class="form-container">
-  <form method="post">
-    <label for="aircraft_code">Aircraft Code:</label>
-    <input type="text" name="aircraft_code" placeholder="Code" required><br>
-    <label for="aircraft_name">Aircraft Name:</label>
-    <input type="text" name="aircraft_name" placeholder="Name" required><br>
-    <label for="capacity">Capacity:</label>
-    <input type="number" name="capacity" required><br>
-    <label for="status">Status:</label>
-    <select name="status" required>
-        <option value="Active">Active</option>
-        <option value="Inactive">Inactive</option>
-    </select><br>
-    <br>
-    <label for="mfd_com">Manufacturer Company:</label>
-    <input type="text" name="mfd_com" required><br>
-    <label for="mfd_date">Manufacturing Date:</label>
-    <input type="date" name="mfd_date" required><br>
-    <button type="submit">Add Airplane</button>
-</form>
-  <br>
-  <form method="post">
-    <input type="hidden" name="action" value="delete">
-    <label for="deleteAircraftCode">Code:</label>
-    <input type="text" id="deleteAircraftCode" name="aircraftCode">
-    <button type="submit">Delete Airplane</button>
-  </form>
+      <form id="airplane-form" action="/airplane" method="post">
+        <input type="hidden" name="action" value="add">
+        <label for="aircraft_code">Code:</label>
+        <input type="text" id="aircraftCode" name="aircraftCode">
+        <br>
+        <label for="addAircraftName">Name:</label>
+        <input type="text" id="addAircraftName" name="aircraftName">
+        <br>
+        <label for="addCapacity">Capacity:</label>
+        <input type="number" id="addCapacity" name="capacity">
+        <label for="status">Status:</label>
+        <select id="status" name="status">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <br>
+        <br>
+        <label for="mfdCom">Manufacturer:</label>
+        <select id="mfdCom" name="mfdCom">
+          <option value="Airbus">Airbus</option>
+          <option value="Boeing">Boeing</option>
+          <option value="Bombardier">Bombardier</option>
+          <option value="Embraer">Embraer</option>
+        </select>
+        <br>
+        <br>
+        <label for="mfdDate">Manufactured date:</label>
+        <input type="date" name="mfdDate">
+        <button type="submit">Add Airplane</button>
+
+      </form>
+<br>
+<br>
+      <form class="airplane-form" action="/airplane" method="post">
+        <input type="hidden" name="action" value="delete">
+        <label for="deleteAircraftCode">Code:</label>
+        <input type="text" id="deleteAircraftCode" name="aircraftCode">
+        <button type="submit">Delete Airplane</button>
+      </form>
     </div>
   <div class="table-container">
     <div class="content-container">
