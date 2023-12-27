@@ -4,7 +4,8 @@ $$
 DECLARE remaining_seat INTEGER;
 BEGIN
     remaining_seat := (SELECT capacity FROM aircraft WHERE aircraft_code = NEW.aircraft);
-    UPDATE flight_schedule SET business_seat = 20, economy_seat = remaining_seat - 20
+    UPDATE flight_schedule SET business_seat = (remaining_seat * 30 / 100), 
+                               economy_seat = remaining_seat - (remaining_seat * 30 / 100)
     WHERE flight_code = NEW.flight_code;
     RETURN NULL;
 END;
@@ -15,7 +16,7 @@ AFTER INSERT ON flight_schedule
 FOR EACH ROW
 EXECUTE PROCEDURE update_remaining_seat_func();
 -- Check insert inactive aircraft
-CREATE OR REPLACE FUNCTION check_insert_ac_func() RETURNS TRIGGER AS
+CREATE OR REPLACE FUNCTION check_insert_update_ac_func() RETURNS TRIGGER AS
 $$
 BEGIN
     IF ((SELECT status FROM aircraft WHERE aircraft_code = NEW.aircraft) = 'Inactive' ) 
@@ -27,10 +28,14 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER check_insert_ac
 BEFORE INSERT ON flight_schedule
 FOR EACH ROW
-EXECUTE PROCEDURE check_insert_ac_func();
+EXECUTE PROCEDURE check_insert_update_ac_func();
 
---Cause trigger cannot insert inactive aircraft so need to update
-UPDATE aircraft SET status = 'Active';
+CREATE OR REPLACE TRIGGER check_update_ac
+BEFORE UPDATE ON flight_schedule
+FOR EACH ROW
+WHEN (OLD.aircraft IS DISTINCT FROM NEW.aircraft)
+EXECUTE PROCEDURE check_insert_update_ac_func();
+
 
 -- Insert 60 records into flight_schedule
 INSERT INTO flight_schedule(flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route) VALUES
@@ -94,3 +99,66 @@ INSERT INTO flight_schedule(flight_code, departure_date, departure_time, arrival
 ('FL058', '2024-02-27', '10:45:00', '2024-02-27', '13:15:00', 'AC058', 'HANBNE'),
 ('FL059', '2024-02-28', '16:30:00', '2024-02-28', '19:00:00', 'AC059', 'BNEHAN'),
 ('FL060', '2024-03-01', '22:15:00', '2024-03-01', '00:45:00', 'AC060', 'HANDEL');
+
+
+INSERT INTO flight_schedule(flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route) VALUES
+('FL061', '2024-01-02', '08:00:00', '2024-01-02', '10:30:00', 'AC001', 'HANSGN'),
+('FL062', '2024-01-03', '12:45:00', '2024-01-03', '15:15:00', 'AC002', 'SGNHAN'),
+('FL063', '2024-01-04', '18:30:00', '2024-01-04', '21:00:00', 'AC003', 'DADHAN'),
+('FL064', '2024-01-05', '09:15:00', '2024-01-05', '11:45:00', 'AC004', 'HANDAD'),
+('FL065', '2024-01-06', '14:00:00', '2024-01-06', '16:30:00', 'AC005', 'DADSGN'),
+('FL066', '2024-01-07', '20:45:00', '2024-01-07', '23:15:00', 'AC006', 'SGNDAD'),
+('FL067', '2024-01-08', '07:30:00', '2024-01-08', '10:00:00', 'AC007', 'SWFHAN'),
+('FL068', '2024-01-08', '13:15:00', '2024-01-09', '15:45:00', 'AC008', 'HANSWF'),
+('FL069', '2024-01-10', '19:00:00', '2024-01-10', '21:30:00', 'AC009', 'HNDHAN'),
+('FL070', '2024-01-11', '10:45:00', '2024-01-11', '13:15:00', 'AC010', 'HANHND'),
+('FL071', '2024-01-12', '16:30:00', '2024-01-12', '19:00:00', 'AC011', 'BGHHAN'),
+('FL072', '2024-01-13', '05:15:00', '2024-01-13', '07:45:00', 'AC012', 'HANBGH'),
+('FL073', '2024-01-14', '11:00:00', '2024-01-14', '13:30:00', 'AC013', 'NAYHAN'),
+('FL074', '2024-01-15', '16:45:00', '2024-01-15', '19:15:00', 'AC014', 'HANNAY'),
+('FL075', '2024-01-16', '22:30:00', '2024-01-16', '01:00:00', 'AC015', 'PHTHAN'),
+('FL076', '2024-01-17', '09:15:00', '2024-01-17', '11:45:00', 'AC016', 'HANPHT'),
+('FL077', '2024-01-18', '15:00:00', '2024-01-18', '17:30:00', 'AC017', 'BMLHAN'),
+('FL078', '2024-01-19', '20:45:00', '2024-01-19', '23:15:00', 'AC018', 'HANBML'),
+('FL079', '2024-01-20', '06:30:00', '2024-01-20', '09:00:00', 'AC019', 'YQYHAN'),
+('FL080', '2024-01-21', '12:15:00', '2024-01-21', '14:45:00', 'AC020', 'HANYQY'),
+('FL081', '2024-01-22', '18:00:00', '2024-01-22', '20:30:00', 'AC021', 'YHMHAN'),
+('FL082', '2024-01-23', '07:45:00', '2024-01-23', '10:15:00', 'AC022', 'HANYHM'),
+('FL083', '2024-01-24', '13:30:00', '2024-01-24', '16:00:00', 'AC023', 'DMKHAN'),
+('FL084', '2024-01-25', '19:15:00', '2024-01-25', '21:45:00', 'AC024', 'HANDMK'),
+('FL085', '2024-01-26', '08:00:00', '2024-01-26', '10:30:00', 'AC025', 'SAWHAN'),
+('FL086', '2024-01-27', '13:45:00', '2024-01-27', '16:15:00', 'AC026', 'HANSAW'),
+('FL087', '2024-01-28', '19:30:00', '2024-01-28', '22:00:00', 'AC027', 'HLAHAN'),
+('FL088', '2024-01-29', '05:15:00', '2024-01-29', '07:45:00', 'AC028', 'HANHLA'),
+('FL089', '2024-01-30', '11:00:00', '2024-01-30', '13:30:00', 'AC029', 'TGAHAN'),
+('FL090', '2024-01-31', '16:45:00', '2024-01-31', '19:15:00', 'AC030', 'HANTGA'),
+('FL091', '2024-02-01', '22:30:00', '2024-02-01', '01:00:00', 'AC031', 'PSKHAN'),
+('FL092', '2024-02-02', '09:15:00', '2024-02-02', '11:45:00', 'AC032', 'HANPSK'),
+('FL093', '2024-02-03', '15:00:00', '2024-02-03', '17:30:00', 'AC033', 'AZPHAN'),
+('FL094', '2024-02-04', '20:45:00', '2024-02-04', '23:15:00', 'AC034', 'HANAZP'),
+('FL095', '2024-02-05', '06:30:00', '2024-02-05', '09:00:00', 'AC035', 'DELHAN'),
+('FL096', '2024-02-06', '12:15:00', '2024-02-06', '14:45:00', 'AC036', 'HANDEL'),
+('FL097', '2024-02-07', '18:00:00', '2024-02-07', '20:30:00', 'AC037', 'ZRHHAN'),
+('FL098', '2024-02-08', '07:45:00', '2024-02-08', '10:15:00', 'AC038', 'HANZRH'),
+('FL099', '2024-02-08', '13:30:00', '2024-02-09', '16:00:00', 'AC039', 'ICNHAN'),
+('FL100', '2024-02-10', '19:15:00', '2024-02-10', '21:45:00', 'AC040', 'HANICN'),
+('FL101', '2024-02-11', '08:00:00', '2024-02-11', '10:30:00', 'AC041', 'HKGHAN'),
+('FL102', '2024-02-12', '13:45:00', '2024-02-12', '16:15:00', 'AC042', 'WHPHAN'),
+('FL103', '2024-02-13', '19:30:00', '2024-02-13', '22:00:00', 'AC043', 'HANWHP'),
+('FL104', '2024-02-14', '05:15:00', '2024-02-14', '07:45:00', 'AC044', 'KIXHAN'),
+('FL105', '2024-02-15', '11:00:00', '2024-02-15', '13:30:00', 'AC045', 'HANKIX'),
+('FL106', '2024-02-16', '16:45:00', '2024-02-16', '19:15:00', 'AC046', 'MHTHAN'),
+('FL107', '2024-02-17', '22:30:00', '2024-02-17', '01:00:00', 'AC047', 'HANMHT'),
+('FL108', '2024-02-18', '09:15:00', '2024-02-18', '11:45:00', 'AC048', 'PVGHAN'),
+('FL109', '2024-02-19', '15:00:00', '2024-02-19', '17:30:00', 'AC049', 'HANPVG'),
+('FL110', '2024-02-20', '20:45:00', '2024-02-20', '23:15:00', 'AC050', 'CDGHAN'),
+('FL111', '2024-02-21', '06:30:00', '2024-02-21', '09:00:00', 'AC051', 'HANCDG'),
+('FL112', '2024-02-22', '12:15:00', '2024-02-22', '14:45:00', 'AC052', 'AGBHAN'),
+('FL113', '2024-02-23', '18:00:00', '2024-02-23', '20:30:00', 'AC053', 'HANAGB'),
+('FL114', '2024-02-24', '07:45:00', '2024-02-24', '10:15:00', 'AC054', 'MLBHAN'),
+('FL115', '2024-02-25', '13:30:00', '2024-02-25', '16:00:00', 'AC055', 'HANMLB'),
+('FL116', '2024-02-26', '19:15:00', '2024-02-26', '21:45:00', 'AC056', 'CXHHAN'),
+('FL117', '2024-02-27', '05:00:00', '2024-02-27', '07:30:00', 'AC057', 'HANCXH'),
+('FL118', '2024-02-28', '10:45:00', '2024-02-28', '13:15:00', 'AC058', 'BNEHAN'),
+('FL119', '2024-03-01', '16:30:00', '2024-03-01', '19:00:00', 'AC059', 'HANBNE'),
+('FL120', '2024-03-02', '22:15:00', '2024-03-02', '00:45:00', 'AC060', 'DELHAN');
