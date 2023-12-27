@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="admin/schedule.css">
+    <link rel="stylesheet" type="text/css" href="admin/adminset.css">
     <style>
       #flash-message {
         position: fixed;
@@ -64,24 +64,24 @@
                 <h2>Add Flight</h2>
                 <input type="hidden" name="action" value="add">
                 <label for="flight_code">Flight Code:</label>
-                <input type="text" id="flight_code" name="flight_code">
+                <input type="text" id="flight_code" name="flight_code" required>
                 <label for="departure_date">Departure Date:</label>
-                <input type="date" id="departure_date" name="departure_date">
+                <input type="date" id="departure_date" name="departure_date" required>
                 <br>
                 <label for="departure_time">Departure Time:</label>
-                <input type="time" id="departure_time" name="departure_time">
+                <input type="time" id="departure_time" name="departure_time" required>
                 <br>
                 <label for="arrival_date">Arrival Date:</label>
-                <input type="date" id="arrival_date" name="arrival_date">
+                <input type="date" id="arrival_date" name="arrival_date" required>
                 <br>
                 <label for="arrival_time">Arrival Time:</label>
-                <input type="time" id="arrival_time" name="arrival_time">
+                <input type="time" id="arrival_time" name="arrival_time" required>
                 <br>
                 <label for="aircraft">Airplane Code:</label>
-                <input type="text" id="aircraft" name="aircraft">
+                <input type="text" id="aircraft" name="aircraft" required>
                 <br>
                 <label for="route">Flight Route Code:</label>
-                <input type="text" id="route" name="route">
+                <input type="text" id="route" name="route" required>
                 <br>
                 <button type="submit">Add Flight</button>
               </form>
@@ -90,25 +90,26 @@
                 <h2>Cancel Flight</h2>
                 <input type="hidden" name="action" value="delete">
                 <label for="flight_code">Flight Code:</label>
-                <input type="text" id="flight_code" name="flight_code">
+                <input type="text" id="flight_code" name="flight_code" required>
                 <button type="submit">Delete Flight</button>
               </form>
+              <br>
               <form action="/schedule" method="post">
                 <h2>Update Flight</h2>
                 <input type="hidden" name="action" value="update">
                 <label for="flight_code">Flight Code:</label>
-                <input type="text" id="flight_code" name="flight_code">
+                <input type="text" id="flight_code" name="flight_code" required>
                 <label for="departure_date">Departure Date:</label>
-                <input type="date" id="departure_date" name="departure_date">
+                <input type="date" id="departure_date" name="departure_date" required>
                 <br>
                 <label for="departure_time">Departure Time:</label>
-                <input type="time" id="departure_time" name="departure_Time">
+                <input type="time" id="departure_time" name="departure_Time" required>
                 <br>
                 <label for="arrival_date">Arrival Date:</label>
-                <input type="date" id="arrival_date" name="arrival_date">
+                <input type="date" id="arrival_date" name="arrival_date" required>
                 <br>
                 <label for="arrival_time">Arrival Time:</label>
-                <input type="time" id="arrival_time" name="arrival_time">
+                <input type="time" id="arrival_time" name="arrival_time" required>
                 <br>
                 <button type="submit">Update Flight</button>
               </form>
@@ -155,7 +156,7 @@
                             <%= schedule.route %>
                           </td>
                         </tr>
-                        <% }); %>
+                        <% }) %>
                           <% } else { %>
                             <tr>
                               <td colspan="7">No flight schedules available</td>

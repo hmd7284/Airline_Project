@@ -10,9 +10,6 @@ router.get("/home_admin", (req, res) => {
 router.get("/admin_login", (req, res) => {
   res.render("admin_login.ejs");
 });
-router.get("/airplane", (req, res) => {
-  res.render("airplane.ejs");
-});
 
 router.get("/airport", (req, res) => {
   res.render("airport.ejs");
@@ -36,10 +33,6 @@ router.get("/route", (req, res) => {
 
 router.get("/sales", (req, res) => {
   res.render("sales.ejs");
-});
-
-router.get("/schedule", (req, res) => {
-  res.render("schedule.ejs");
 });
 
 router.get("/staff", (req, res) => {

@@ -55,8 +55,43 @@ router.get("/admin_logout", isLoggedInAdmin, (req, res) => {
   res.redirect("/home");
 });
 
-router.get("/airplane", isLoggedInAdmin, (req, res) => {
-  res.render("airplane.ejs", { message: req.flash("error") });
+async function fetchAircraftFromDatabase() {
+  const client = await db.connect();
+  try {
+    const result = await client.query(
+      "SELECT * FROM aircraft",
+    );
+    console.log("result.rows:", result.rows);
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
+router.get("/airplane", isLoggedInAdmin, async (req, res) => {
+  try {
+    const aircrafts = await fetchAircraftFromDatabase();
+
+    const pageSize = 20;
+    const pageCount = Math.ceil(aircrafts.length / pageSize);
+
+    const currentPage = parseInt(req.query.page) || 1;
+
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const aircraft = aircrafts.slice(startIdx, endIdx);
+
+    res.render("airplane.ejs", {
+      aircraft,
+      pageCount,
+      currentPage,
+      startIdx,
+      message: req.flash("error"),
+    });
+  } catch (error) {
+    console.error("Error retrieving aircraft schedule data:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.post("/airplane", isLoggedInAdmin, async (req, res) => {
@@ -96,11 +131,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         req.flash("error", error_message);
         res.redirect("/airplane");
       }
-      // res.json({
-      //   success: true,
-      //   message: "Aircraft added successfully",
-      //   aircraft: result.rows[0],
-      // });
     } else if (action === "delete") {
       if (existingAircraft.rows.length === 0) {
         const error_message =
@@ -118,11 +148,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         const success_message = `Aircraft ${aircraftCode} deleted successfully`;
         req.flash("success", success_message);
         res.redirect("/airplane");
-        // res.json({
-        //   success: true,
-        //   message: "Aircraft deleted successfully",
-        //   aircraft: result.rows[0],
-        // });
       } else {
         const error_message =
           `Aircraft ${aircraftCode} not deleted!! Please try again`;
@@ -139,24 +164,36 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   }
 });
 
+async function fetchScheduleFromDatabase() {
+  const client = await db.connect();
+
+  try {
+    const result = await client.query(
+      "SELECT * FROM flight_schedule",
+    );
+    console.log("result.rows:", result.rows);
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
 router.get("/schedule", isLoggedInAdmin, async (req, res) => {
   try {
-    // Fetch flight schedules from the database
-    const { rows } = await db.query("SELECT * FROM flight_schedule");
-
+    const schedules = await fetchScheduleFromDatabase();
     // Pagination logic
     const pageSize = 20;
-    const pageCount = Math.ceil(rows.length / pageSize);
+    const pageCount = Math.ceil(schedules.length / pageSize);
     const currentPage = parseInt(req.query.page) || 1;
     const startIdx = (currentPage - 1) * pageSize;
     const endIdx = startIdx + pageSize;
-    const flightSchedules = rows.slice(startIdx, endIdx);
-    console.log("flightSchedules:", flightSchedules);
-    // Render the schedule.ejs template with data
+    const flightSchedules = schedules.slice(startIdx, endIdx);
+
     res.render("schedule.ejs", {
-      flightSchedules: flightSchedules,
-      pageCount: pageCount,
-      currentPage: currentPage,
+      flightSchedules,
+      pageCount,
+      currentPage,
+      messages: req.flash("errors"),
     });
   } catch (error) {
     console.error("Error retrieving flight schedule data:", error);
