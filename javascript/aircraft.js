@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 const ejs = require('ejs');
 const path = require('path');
 
-const Flight = express();
+const aircraft = express();
 const port = 5500;
 
 const pool = new Pool({
@@ -14,12 +14,12 @@ const pool = new Pool({
     port: 5432,
 });
 
-Flight.set('views', path.join(__dirname, '../public')); 
-Flight.use(express.static(path.join(__dirname, '../public')));
+aircraft.set('views', path.join(__dirname, '../public')); 
+aircraft.use(express.static(path.join(__dirname, '../public')));
 
-Flight.get('/', async (req, res) => {
+aircraft.get('/', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM flight_schedule');
+        const { rows } = await pool.query('SELECT * FROM aircraft');
 
         const pageSize = 20;
         const pageCount = Math.ceil(rows.length / pageSize);
@@ -28,19 +28,20 @@ Flight.get('/', async (req, res) => {
 
         const startIdx = (currentPage - 1) * pageSize;
         const endIdx = startIdx + pageSize;
-        const flightSchedules = rows.slice(startIdx, endIdx);
+        const aircraft = rows.slice(startIdx, endIdx);
 
-        res.render('Flight.ejs', {
-            flightSchedules,
+        res.render('aircraft.ejs', {
+            aircraft,
             pageCount,
             currentPage,
+            startIdx,
         });
     } catch (error) {
-        console.error('Error retrieving flight schedule data:', error);
+        console.error('Error retrieving aircraft schedule data:', error);
         res.status(500).send('Internal Server Error');
     }
 });
 
-Flight.listen(port, () => {
+aircraft.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });

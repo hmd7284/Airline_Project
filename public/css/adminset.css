@@ -136,3 +136,7 @@ h2 {
 .pagination a:hover {
     background-color: blue;
 }
+
+select,option {
+    color: #000;
+}

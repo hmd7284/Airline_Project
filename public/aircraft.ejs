@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GDC Airways</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/adminset.css">
+</head>
+
+<body>
+
+  <!--NavBar-->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand"> GDC AIRWAYS</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        		<span class="sr-only">Toggle navigation</span>
+	      </button>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"">
+				<ul class="nav navbar-nav">
+					<li><a href="GDC-Admin.html"><strong>Home</strong></a></li>
+                    <li><a href="GDC-Admin2.html"><strong>Airport</strong></a></li>
+                    <li class="active"><a href="#"><strong>Airplane</strong></a></li>
+					<li><a href="GDC-Admin3.html"><strong>Maintenance</strong></a></li>
+                    <li><a href="GDC-Admin4.html"><strong>Route</strong></a></li>
+                    <li><a href="GDC-Admin5.html"><strong>Status</strong></a></li>
+                    <li><a href="GDC-Admin6.html"><strong>Schedule</strong></a></li>
+                    <li><a href="GDC-Admin7.html"><strong>Flight Time</strong></a></li>
+                    <li><a href="GDC-Admin8.html"><strong>Staff</strong></a></li>
+                    <li><a href="GDC-Admin9.html"><strong>Sales</strong></a></li>
+                    <li><a href="GDC-Admin10.html"><strong>Revenue</strong></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+  <div class="flex-container">
+    <div class="form-container">
+  <form method="post">
+    <label for="aircraft_code">Aircraft Code:</label>
+    <input type="text" name="aircraft_code" placeholder="Code" required><br>
+    <label for="aircraft_name">Aircraft Name:</label>
+    <input type="text" name="aircraft_name" placeholder="Name" required><br>
+    <label for="capacity">Capacity:</label>
+    <input type="number" name="capacity" required><br>
+    <label for="status">Status:</label>
+    <select name="status" required>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+    </select><br>
+    <br>
+    <label for="mfd_com">Manufacturer Company:</label>
+    <input type="text" name="mfd_com" required><br>
+    <label for="mfd_date">Manufacturing Date:</label>
+    <input type="date" name="mfd_date" required><br>
+    <button type="submit">Add Airplane</button>
+</form>
+  <br>
+  <form method="post">
+    <input type="hidden" name="action" value="delete">
+    <label for="deleteAircraftCode">Code:</label>
+    <input type="text" id="deleteAircraftCode" name="aircraftCode">
+    <button type="submit">Delete Airplane</button>
+  </form>
+    </div>
+  <div class="table-container">
+    <div class="content-container">
+    <table>
+        <h2>Flight Schedule Information</h2>
+        <br>
+        <thead>
+            <tr>
+              <th>No</th>
+                <th>Aircraft Code</th>
+                <th>Aircraft Name</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Manufacturing company</th>
+                <th>Manufacturing date</th>
+            </tr>
+        </thead>
+        <tbody>
+          <% aircraft.forEach((aircraft, index) => { %>
+                <tr>
+                  <td><%= startIdx + index + 1 %></td>
+                    <td><%= aircraft.aircraft_code %></td>
+                    <td><%= aircraft.aircraft_name %></td>
+                    <td><%= aircraft.capacity %></td>
+                    <td><%= aircraft.status %></td>
+                    <td><%= aircraft.mfd_com %></td>
+                    <td><%= aircraft.mfd_date %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <br>
+    <!-- Pagination links -->
+    <div class="pagination">
+        <% for (let i = 1; i <= pageCount; i++) { %>
+            <a href="?page=<%= i %>"<%= i === currentPage ? ' style="font-weight: bold;"' : '' %>><%= i %></a>
+        <% } %>
+    </div>
+    </div>
+  </div>
+</body>
+
+
+</html>
