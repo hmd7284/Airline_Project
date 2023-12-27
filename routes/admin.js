@@ -85,7 +85,6 @@ router.get("/airplane", isLoggedInAdmin, async (req, res) => {
       pageCount,
       currentPage,
       startIdx,
-      message: req.flash("error"),
     });
   } catch (error) {
     console.error("Error retrieving aircraft schedule data:", error);
@@ -103,7 +102,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
     mfdCom,
     mfdDate,
   } = req.body;
-
   try {
     const existingAircraft = await db.query(
       "SELECT * FROM aircraft WHERE aircraft_code = $1",
@@ -451,7 +449,6 @@ router.get("/route", isLoggedInAdmin, async (req, res) => {
       pageCount,
       currentPage,
       startIdx,
-      message: req.flash("error"),
     });
   } catch (error) {
     console.error("Error retrieving airport data:", error);
@@ -461,7 +458,6 @@ router.get("/route", isLoggedInAdmin, async (req, res) => {
 
 router.post("/route", isLoggedInAdmin, async (req, res) => {
   const { action, routeCode, origin, destination } = req.body;
-  console.log(req.body);
   try {
     const existingRoute = await db.query(
       "SELECT * FROM route WHERE route_code = $1",
