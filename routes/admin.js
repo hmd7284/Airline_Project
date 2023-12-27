@@ -139,6 +139,31 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   }
 });
 
+router.get("/schedule", isLoggedInAdmin, async (req, res) => {
+  try {
+    // Fetch flight schedules from the database
+    const { rows } = await db.query("SELECT * FROM flight_schedule");
+
+    // Pagination logic
+    const pageSize = 20;
+    const pageCount = Math.ceil(rows.length / pageSize);
+    const currentPage = parseInt(req.query.page) || 1;
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const flightSchedules = rows.slice(startIdx, endIdx);
+    console.log("flightSchedules:", flightSchedules);
+    // Render the schedule.ejs template with data
+    res.render("schedule.ejs", {
+      flightSchedules: flightSchedules,
+      pageCount: pageCount,
+      currentPage: currentPage,
+    });
+  } catch (error) {
+    console.error("Error retrieving flight schedule data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 router.post("/schedule", isLoggedInAdmin, async (req, res) => {
   const {
     action,
@@ -151,16 +176,15 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
     route,
   } = req.body;
   try {
-    if (departure_date) {
-      if (departure_date > arrival_date) {
-        req.flash(
-          "error",
-          "Departure date cannot be after arrival date",
-        );
-        res.redirect("/schedule");
-        return;
-      }
+    if (departure_date > arrival_date) {
+      req.flash(
+        "error",
+        "Departure date cannot be after arrival date",
+      );
+      res.redirect("/schedule");
+      return;
     }
+
     if (departure_date === arrival_date) {
       if (departure_time >= arrival_time) {
         req.flash(
