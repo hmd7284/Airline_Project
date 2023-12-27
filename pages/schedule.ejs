@@ -11,9 +11,9 @@
     <style>
       #flash-message {
         position: fixed;
-        top: 120px;
-        right: 10px;
-        z-index: 9999;
+        top: 220px;
+        right: 100px;
+        z-index: 99999;
       }
     </style>
   </head>
@@ -49,6 +49,7 @@
       </div>
     </nav>
     <!--NavBar End-->
+    <% console.log(message.success, message.error); %>
     <% if (message.success) { %>
       <div id="flash-message" class="alert alert-success" role="alert">
         <%= message.success %>
@@ -182,7 +183,7 @@
             crossorigin="anonymous"></script>
           <script>
             $(document).ready(function () {
-              $("#flash-message").delay(3000).fadeOut("slow");
+              $("#flash-message").delay(5000).fadeOut("slow");
             });
           </script>
   </body>

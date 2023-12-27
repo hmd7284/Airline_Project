@@ -27,10 +27,6 @@ router.get("/revenue", (req, res) => {
   res.render("revenue.ejs");
 });
 
-router.get("/route", (req, res) => {
-  res.render("route.ejs");
-});
-
 router.get("/sales", (req, res) => {
   res.render("sales.ejs");
 });
