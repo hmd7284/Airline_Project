@@ -48,7 +48,6 @@
         </div>
       </div>
     </nav>
-    <!--NavBar End-->
     <% if (message.success) { %>
       <div id="flash-message" class="alert alert-success" role="alert">
         <%= message.success %>
@@ -58,29 +57,30 @@
           <%= message.error %>
         </div>
         <% } %>
-
           <div class="flex-container">
             <div class="form-container">
               <form action="/airplane" method="post">
                 <h2>Add Airplane</h2>
                 <input type="hidden" name="action" value="add">
                 <label for="aircraft_code">Code:</label>
-                <input type="text" id="aircraft_code" name="aircraftCode" required>
+                <input type="text" id="aircraft_code" name="aircraftCode1" pattern="AC\d{3}" maxlength="5"
+                  placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode1 %>">
                 <br>
                 <label for="addAircraftName">Name:</label>
-                <input type="text" id="addAircraftName" name="aircraftName" required>
+                <input type="text" id="addAircraftName" name="aircraftName" value="<%= userInput.aircraftName %>"
+                  required>
                 <br>
                 <label for="addCapacity">Capacity:</label>
-                <input type="number" id="addCapacity" name="capacity" required>
+                <input type="number" id="addCapacity" name="capacity" value="<%= userInput.capacity %>" required>
                 <label for="status">Status:</label>
-                <select id="status" name="status" required>
+                <select id="status" name="status1" value="<%= userInput.status1 %>" required>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
                 <br>
                 <br>
                 <label for="mfdCom">Manufacturer:</label>
-                <select id="mfdCom" name="mfdCom" required>
+                <select id="mfdCom" name="mfdCom" value="<%= userInput.mfdCom %>" required>
                   <option value="Airbus">Airbus</option>
                   <option value="Boeing">Boeing</option>
                   <option value="Bombardier">Bombardier</option>
@@ -89,18 +89,25 @@
                 <br>
                 <br>
                 <label for="mfdDate">Manufactured date:</label>
-                <input type="date" id="mfdDate" name="mfdDate" required>
+                <input type="date" id="mfdDate" name="mfdDate" value="<%= userInput.mfdDate %>" required>
                 <button type="submit">Add Airplane</button>
 
               </form>
               <br>
               <br>
               <form action="/airplane" method="post">
-                <h2>Delete Airplane</h2>
-                <input type="hidden" name="action" value="delete">
+                <h2>Update Airplane Status</h2>
+                <input type="hidden" name="action" value="update">
                 <label for="deleteAircraftCode">Code:</label>
-                <input type="text" id="deleteAircraftCode" name="aircraftCode" required>
-                <button type="submit">Delete Airplane</button>
+                <input type="text" id="deleteAircraftCode" name="aircraftCode2" pattern="AC\d{3}" maxlength="5"
+                  placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode2 %>" required>
+            <select id="status" name="status2" value="<%= userInput.status2 %>" required>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+                <br>
+                <br>
+                <button type="submit">Update Airplane Status</button>
               </form>
             </div>
             <div class="table-container">

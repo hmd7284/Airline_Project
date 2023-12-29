@@ -11,8 +11,8 @@
     <style>
       #flash-message {
         position: fixed;
-        top: 220px;
-        right: 100px;
+        top: 120px;
+        right: 10px;
         z-index: 99999;
       }
     </style>
@@ -65,7 +65,7 @@
                 <h2>Add Flight</h2>
                 <input type="hidden" name="action" value="add">
                 <label for="flight_code">Flight Code:</label>
-                <input type="text" id="flight_code" name="flight_code" required>
+                <input type="text" id="flight_code" name="flight_code" pattern="FL\d{4}" placeholder="Enter a flight code (e.g., FL1234)" required>
                 <label for="departure_date">Departure Date:</label>
                 <input type="date" id="departure_date" name="departure_date" required>
                 <br>
@@ -79,7 +79,7 @@
                 <input type="time" id="arrival_time" name="arrival_time" required>
                 <br>
                 <label for="aircraft">Airplane Code:</label>
-                <input type="text" id="aircraft" name="aircraft" required>
+                <input type="text" id="aircraft" name="aircraft" pattern="AC\d{3}" maxlength="5" placeholder="Enter an airplane code (e.g., AC123)" required>
                 <br>
                 <label for="route">Flight Route Code:</label>
                 <input type="text" id="route" name="route" required>
@@ -123,6 +123,8 @@
                   <thead>
                     <tr>
                       <th>Flight Code</th>
+                      <th>Origin</th>
+                      <th>Destination</th>
                       <th>Departure Date</th>
                       <th>Departure Time</th>
                       <th>Arrival Date</th>
@@ -137,6 +139,12 @@
                         <tr>
                           <td>
                             <%= schedule.flight_code %>
+                          </td>
+                          <td>
+                            <%= schedule.origin_name %> - <%= schedule.origin_address %>
+                          </td>
+                          <td>
+                          <%= schedule.destination_name %> - <%= schedule.destination_address %>
                           </td>
                           <td>
                             <%= schedule.departure_date %>
