@@ -92,7 +92,7 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER update_transaction
     AFTER INSERT ON transactions_order
     FOR EACH ROW
-    EXECUTE PROCEDURE update_transaction_func ();
+    EXECUTE PROCEDURE update_transaction_func();
 
 -- Insert table transactions first (the transactions_id can be automatically increased by 1)
 -- NEED to set total = 0 when initializing and if dont have discount then set it to be NULL
