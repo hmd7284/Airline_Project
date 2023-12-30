@@ -3,7 +3,7 @@ DROP DATABASE IF EXISTS airline;
 
 CREATE DATABASE airline;
 
-\c airline;
+\c airline
 -- Create Tables
 CREATE TABLE aircraft (
     aircraft_code varchar(5) PRIMARY KEY,
@@ -30,7 +30,7 @@ CREATE TABLE cities (
 CREATE TABLE airport (
     airport_code varchar(3) PRIMARY KEY,
     airport_name varchar(255) NOT NULL,
-    address varchar(255) NOT NULL,
+    address varchar(255),
     city varchar(3) NOT NULL,
     CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
 );
@@ -48,7 +48,7 @@ CREATE TABLE customers (
     name varchar(255) NOT NULL,
     dob date NOT NULL,
     address varchar(255) NOT NULL,
-    phone_number varchar(12) NOT NULL,
+    phone_number varchar(12),
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id) ON DELETE CASCADE
 );
 
@@ -94,7 +94,7 @@ CREATE TABLE flight_schedule (
 CREATE TABLE flight_staff (
     flight_code varchar(6) NOT NULL,
     employee_id int NOT NULL,
-    PRIMARY KEY (flight_code, employee_code),
+    PRIMARY KEY (flight_code, employee_id),
     CONSTRAINT staff_sch_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
     CONSTRAINT staff_em_fk FOREIGN KEY (employee_id) REFERENCES employee (employee_id)
 );
@@ -108,7 +108,7 @@ CREATE TABLE discount (
 
 -- Create the transactions table
 CREATE TABLE transactions (
-    transaction_id SERIAL PRIMARY KEY,
+    transaction_id serial PRIMARY KEY,
     booking_date date NOT NULL,
     customer_id int NOT NULL,
     status varchar(10) DEFAULT 'Success',
@@ -121,7 +121,7 @@ CREATE TABLE transactions (
 
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
-    order_id SERIAL,
+    order_id serial,
     transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE,
     flight_code varchar(6) NOT NULL,
     type VARCHAR(30),
@@ -135,18 +135,19 @@ CREATE TABLE transactions_order (
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
-CREATE OR REPLACE FUNCTION reset_order_id_sequence()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION reset_order_id_sequence ()
+    RETURNS TRIGGER
+    AS $$
 BEGIN
     -- Reset the sequence to 1
     EXECUTE 'ALTER SEQUENCE transactions_order_order_id_seq RESTART WITH 1';
-
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$
+LANGUAGE plpgsql;
 
 -- Create a trigger to call the function after an insert on the transactions table
 CREATE TRIGGER reset_order_id_trigger
-AFTER INSERT ON transactions
-FOR EACH STATEMENT
-EXECUTE FUNCTION reset_order_id_sequence();
+    AFTER INSERT ON transactions
+    FOR EACH STATEMENT
+    EXECUTE FUNCTION reset_order_id_sequence ();

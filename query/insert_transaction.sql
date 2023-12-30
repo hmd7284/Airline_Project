@@ -3,7 +3,7 @@ SELECT
     setval('transactions_transaction_id_seq', 1, FALSE);
 
 -- Create function which update some values
-CREATE OR REPLACE FUNCTION update_transaction_func()
+CREATE OR REPLACE FUNCTION update_transaction_func ()
     RETURNS TRIGGER
     AS $$
 DECLARE
@@ -92,7 +92,7 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER update_transaction
     AFTER INSERT ON transactions_order
     FOR EACH ROW
-    EXECUTE PROCEDURE update_transaction_func();
+    EXECUTE PROCEDURE update_transaction_func ();
 
 -- Insert table transactions first (the transactions_id can be automatically increased by 1)
 -- NEED to set total = 0 when initializing and if dont have discount then set it to be NULL
@@ -101,7 +101,7 @@ INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
 
 -- Then insert table transactions_order repectively from 1 ...
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
+    VALUES (currval('transactions_transaction_id_seq'), 'FL0002', 'Economy', 1);
 
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);
+    VALUES (currval('transactions_transaction_id_seq'), 'FL0002', 'Business', 2);

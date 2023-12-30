@@ -16,9 +16,22 @@ async function fetchScheduleFromDatabase() {
   }
 }
 
+async function fetchRouteFromDatabase() {
+  const client = await db.connect();
+  try {
+    const result = await client.query(
+      "SELECT r.route_code, o.airport_code AS origin_code, o.airport_name AS origin_name, o.address AS origin_address, d.airport_code AS destination_code, d.airport_name AS destination_name, d.address AS destination_address FROM route r JOIN airport o ON r.origin = o.airport_code JOIN airport d ON r.destination = d.airport_code",
+    );
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
 router.get("/schedule", isLoggedInAdmin, async (req, res) => {
   try {
     const schedules = await fetchScheduleFromDatabase();
+    const flightroutes = await fetchRouteFromDatabase();
     // Pagination logic
     const pageSize = 20;
     const pageCount = Math.ceil(schedules.length / pageSize);
@@ -29,6 +42,7 @@ router.get("/schedule", isLoggedInAdmin, async (req, res) => {
     const userInput = req.session.userInput || {};
     res.render("schedule.ejs", {
       flightSchedules,
+      flightroutes,
       pageCount,
       currentPage,
       userInput,
@@ -39,48 +53,46 @@ router.get("/schedule", isLoggedInAdmin, async (req, res) => {
   }
 });
 
-async function checkFlightScheduleConditions(
-  req,
-  aircraftCode,
-  departureDate,
-  arrivalDate,
-  departureTime,
-  arrivalTime,
-  route,
-) {
-  try {
-    // Check aircraft condition
-    const aircraftConditionResult = await db.query(
-      "SELECT * FROM flight_schedule WHERE aircraft = $1 AND ($2, $3) OVERLAPS (departure_date, arrival_date)",
-      [aircraftCode, departureDate, arrivalDate],
-    );
-    const aircraftCondition = aircraftConditionResult.rows.length === 0;
-    if (!aircraftCondition) {
-      const error_message =
-        `Aircraft ${aircraftCode} has another flight schedule for the selected time period`;
-      req.flash("error", error_message);
-      return false;
-    }
-    // Check route condition
-    origin = route.slice(0, 3);
-    const routeConditionResult = await db.query(
-      "SELECT fs.* FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND (fs.departure_date < $3 OR fs.departure_time < $3) ORDER BY fs.departure_date DESC LIMIT 1",
-      [aircraftCode, origin, departureDate],
-    );
-    const routeCondition = routeConditionResult.rows.length > 0;
-    if (!routeCondition) {
-      const error_message =
-        `Aircraft ${aircraftCode} is not currently at ${origin} airport!! Please choose another aircraft`;
-      req.flash("error", error_message);
-      return false;
-    }
-    return true;
-  } catch (error) {
-    req.flash("error", "Error checking flight schedule conditions");
-    console.error("Error checking flight schedule conditions:", error.message);
-    return false;
-  }
-}
+// async function checkFlightScheduleConditions(
+//   req,
+//   aircraftCode,
+//   departureDate,
+//   arrivalDate,
+//   route,
+// ) {
+//   try {
+//     // Check aircraft condition
+//     const aircraftConditionResult = await db.query(
+//       "SELECT * FROM flight_schedule WHERE aircraft = $1 AND ($2, $3) OVERLAPS (departure_date, arrival_date)",
+//       [aircraftCode, departureDate, arrivalDate],
+//     );
+//     const aircraftCondition = aircraftConditionResult.rows.length === 0;
+//     if (!aircraftCondition) {
+//       const error_message =
+//         `Aircraft ${aircraftCode} has another flight schedule for the selected time period`;
+//       req.flash("error", error_message);
+//       return false;
+//     }
+//     // Check route condition
+//     origin = route.slice(0, 3);
+//     const routeConditionResult = await db.query(
+//       "SELECT fs.* FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND fs.departure_date < $3 ORDER BY fs.departure_date DESC LIMIT 1",
+//       [aircraftCode, origin, departureDate],
+//     );
+//     const routeCondition = routeConditionResult.rows.length > 0;
+//     if (!routeCondition) {
+//       const error_message =
+//         `Aircraft ${aircraftCode} is not currently at ${origin} airport!! Please choose another aircraft`;
+//       req.flash("error", error_message);
+//       return false;
+//     }
+//     return true;
+//   } catch (error) {
+//     req.flash("error", "Error checking flight schedule conditions");
+//     console.error("Error checking flight schedule conditions:", error.message);
+//     return false;
+//   }
+// }
 router.post("/schedule", isLoggedInAdmin, async (req, res) => {
   const {
     action,
@@ -124,13 +136,13 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
     if (action === "add") {
       const departureDateTime = new Date(`${departure_date} ${departure_time}`);
       const arrivalDateTime = new Date(`${arrival_date} ${arrival_time}`);
-      const aircraftCondition = await checkFlightScheduleConditions(
-        req,
-        aircraft,
-        departureDateTime,
-        arrivalDateTime,
-        route,
-      );
+      // const aircraftCondition = await checkFlightScheduleConditions(
+      //   req,
+      //   aircraft,
+      //   departureDateTime,
+      //   arrivalDateTime,
+      //   route,
+      // );
 
       if (existingFlight.rows.length > 0) {
         const error_message =
@@ -144,14 +156,8 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         req.flash("error", error_message);
         res.redirect("/schedule");
         return;
-      } else if (!aircraftCondition) {
-        res.redirect("/schedule");
-        return;
       } else {
         const currentDateTime = new Date();
-        const departureDateTime = new Date(
-          `${departure_date} ${departure_time}`,
-        );
         const timeDifference = departureDateTime - currentDateTime;
 
         if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds

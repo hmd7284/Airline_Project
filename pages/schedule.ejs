@@ -81,8 +81,17 @@
                 <label for="aircraft">Airplane Code:</label>
                 <input type="text" id="aircraft" name="aircraft" pattern="AC\d{3}" maxlength="5" placeholder="Enter an airplane code (e.g., AC123)" required>
                 <br>
-                <label for="route">Flight Route Code:</label>
+                <label for="route">Flight Route </label>
                 <input type="text" id="route" name="route" required>
+                <label for="route">Flight Route:</label>
+                <select id="route" name="route" onchange="updateRouteCode('route')" required>
+                  <% flightroutes.forEach(flightroute=> { %>
+                    <option value="<%= flightroute.route_code %>">
+              <%= flightroute.route_code %> (<%= flightroute.origin_name %>, <%= flightroute.origin_address %> --> <%= flightroute.destination_name %>, <%= flightroute.destination_address %>)
+                    </option>
+                    <% }) %>
+                </select>
+                <br>
                 <br>
                 <button type="submit">Add Flight</button>
               </form>
@@ -194,6 +203,16 @@
               $("#flash-message").delay(5000).fadeOut("slow");
             });
           </script>
+          <script>
+            function updateRouteCodeCode(type) {
+              const dropdown = document.getElementById(type);
+              const codeInput = document.getElementById(`${type}_code`);
+              const selectedOption = dropdown.options[dropdown.selectedIndex];
+              console.log(type, selectedOption.value);
+              codeInput.value = selectedOption.value;
+            }
+          </script>
+
   </body>
 
 </html>
