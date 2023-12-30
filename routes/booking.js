@@ -94,6 +94,7 @@ router.post("/flight_booking", isLoggedIn, async (req, res) => {
   const { flight_code, type, quantity } = req.body;
   const client = await db.connect();
   try {
+    await client.query("BEGIN");
     const flight_query = await client.query(
       "SELECT business_seat, economy_seat FROM flight_schedule WHERE flight_code = $1",
       [flight_code],

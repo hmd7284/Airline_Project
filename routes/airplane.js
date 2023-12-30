@@ -15,8 +15,7 @@ async function fetchAircraftFromDatabase() {
   }
 }
 
-// Function to check if an aircraft has associated flights
-async function checkFlightsForAircraft(aircraftCode) {
+async function checkFlightsForAircraft(req, aircraftCode, action) {
   const currentTime = new Date();
 
   // Check for associated flights
@@ -33,10 +32,18 @@ async function checkFlightsForAircraft(aircraftCode) {
     // Check if the flight has departed in the last hour or hasn't arrived yet
     const hasAssociatedFlightsInAir = departureTime <= currentTime &&
       arrivalTime >= currentTime;
-
+    const hasAssociatedFlightsInFuture = departureTime > currentTime;
+    if (hasAssociatedFlightsInFuture) {
+      if (action === "update") {
+        await db.query(
+          "DELETE FROM transactions_order WHERE flight_code = ANY( SELECT flight_code FROM flight_schedule WHERE aircraft = $1)",
+          [aircraftCode],
+        );
+      }
+    }
     if (hasAssociatedFlightsInAir) {
       const error_message =
-        `Aircraft ${aircraftCode} cannot be deactivated. Associated flights are currently in the air.`;
+        `Aircraft ${aircraftCode} cannot be deactivated. Associated flight is currently in the air.`;
       req.flash(
         "error",
         error_message,
@@ -105,7 +112,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         return;
       }
       const result = await db.query(
-        "INSERT INTO aircraft (aircraft_code, aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+        "INSERT INTO aircraft (aircraft_code, aircraft_name, capacity, status, mfd_com, mfd_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING aircraft_code",
         [aircraftCode1, aircraftName, capacity, status1, mfdCom, mfdDate],
       );
       if (result.rows.length > 0) {
@@ -137,7 +144,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
         const result = await db.query(
-          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING *",
+          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code",
           [status2, aircraftCode2],
         );
         if (result.rows.length > 0) {
@@ -155,7 +162,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         }
       } else if (status2 === "Inactive") {
         const hasAssociatedFlights = await checkFlightsForAircraft(
-          aircraftCode2,
+          req, aircraftCode2, action
         );
         if (existingAircraft2.rows[0].status === "Inactive") {
           const error_message =
@@ -169,15 +176,14 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
         const result = await db.query(
-          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING *",
-          [status2, aircraftCode2],
+          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code", [status2, aircraftCode2],
         );
         if (result.rows.length > 0) {
           const success_message =
             `Aircraft ${aircraftCode2} status updated successfully`;
           req.flash("success", success_message);
           res.redirect("/airplane");
-          return;
+          return; f
         } else {
           const error_message =
             `Aircraft ${aircraftCode2} status not updated!! Please try again`;
@@ -192,6 +198,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       res.status(400).json({ success: false, message: "Invalid action" });
     }
   } catch (error) {
+    req.flash("error", "Error")
     console.error("Error managing aircraft:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }

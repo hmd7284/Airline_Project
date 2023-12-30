@@ -8,6 +8,7 @@ const homeadminRouter = require("./routes/home_admin");
 const usersRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
 const bookingRouter = require("./routes/booking");
+const bookinghistoryRouter = require("./routes/booking_history");
 const app = express();
 const port = 5000;
 
@@ -41,7 +42,7 @@ app.use(usersRouter);
 app.use(homeadminRouter);
 app.use(adminRouter);
 app.use(bookingRouter);
-
+app.use(bookinghistoryRouter);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
