@@ -1,0 +1,80 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Search</title>
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+
+<div class="booking__container">
+  <form id="flightSearchForm">
+        <div class="form__group">
+          <div class="input__group">
+            <input type="text" />
+            <label>From</label>
+          </div>
+          <p>Your departure?</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="text" />
+            <label>To</label>
+          </div>
+          <p>Your arrival</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="date" />
+          </div>
+          <p>When do you want to fly ?</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="number" />
+            <label>Number</label>
+          </div>
+          <p>Number of tickets</p>
+        </div>
+      <button class="btn"><i class="ri-search-line"></i></button>
+    </div>
+  </form>
+  <button class="btn" onclick="searchFlights()">Search</button>
+</div>
+
+<div class="modal" id="resultModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <table id="resultTable">
+      <!-- Table content will be inserted here dynamically -->
+    </table>
+  </div>
+</div>
+
+<script src="home.js"></script>
+<script>
+  async function searchFlights() {
+    const form = document.getElementById('flightSearchForm');
+    const from = form.querySelector('input[name="from"]').value;
+    const to = form.querySelector('input[name="to"]').value;
+    const date = form.querySelector('input[type="date"]').value;
+    const numberOfTickets = form.querySelector('input[type="number"]').value;
+
+    const response = await fetch('/searchFlights', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from, to, date, numberOfTickets }),
+    });
+
+    const data = await response.json();
+    console.log(data); // Handle the response data as needed
+  }
+</script>
+
+</body>
+</html>

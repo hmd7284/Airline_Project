@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Page</title>
+</head>
+<body>
+  <!-- Your HTML content here -->
+
+  <form action="/search" method="post">
+    <label for="origin">From</label>
+    <input type="text" id="origin" name="origin" required>
+    
+    <label for="destination">To</label>
+    <input type="text" id="destination" name="destination" required>
+    
+    <label for="departureDate">When do you want to fly?</label>
+    <input type="date" id="departureDate" name="departureDate" required>
+    
+    <button type="submit">Search</button>
+  </form>
+  <div class="search-results" id="searchResults"></div>
+  <% var results = results || []; %>
+
+  <% if (results.length > 0) { %>
+    <h2>Search Results</h2>
+    <ul>
+      <% results.forEach(result => { %>
+        <li>
+          Flight Code: <%= result.flight_code %><br>
+          Origin: <%= result.origin_name %><br>
+          Destination: <%= result.destination_name %><br>
+          Departure Date: <%= result.departure_date %><br>
+          Departure Time: <%= result.departure_time %><br>
+        </li>
+      <% }); %>
+    </ul>
+  <% } else { %>
+    <p>No results found.</p>
+  <% } %>
+
+</body>
+</html>

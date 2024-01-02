@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Search</title>
+</head>
+
+<body>
+  <form action="/search" method="post">
+    <div class="form__group">
+      <label>From</label>
+      <input type="text" name="origin" required>
+    </div>
+    <div class="form__group">
+      <label>To</label>
+      <input type="text" name="destination" required>
+    </div>
+    <div class="form__group">
+      <label>When do you want to fly?</label>
+      <input type="date" name="departureDate" required>
+    </div>
+    <div class="form__group">
+      <label>Number of tickets</label>
+      <input type="number" name="numberOfTickets">
+    </div>
+    <button class="btn" type="submit"><i class="ri-search-line"></i> Search</button>
+  </form>
+
+  <!-- Display search results here -->
+  <div>
+    <h2>Search Results</h2>
+    <table border="1">
+      <tr>
+        <th>Flight Code</th>
+        <th>Origin</th>
+        <th>Destination</th>
+        <th>Departure Date</th>
+        <th>Departure Time</th>
+      </tr>
+      <% flights.forEach(flight => { %>
+        <tr>
+          <td><%= flight.flight_code %></td>
+          <td><%= flight.origin_name %></td>
+          <td><%= flight.destination_name %></td>
+          <td><%= flight.departure_date %></td>
+          <td><%= flight.departure_time %></td>
+        </tr>
+      <% }); %>
+    </table>
+  </div>
+</body>
+
+</html>

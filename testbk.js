@@ -50,7 +50,7 @@ testbk.get('/getFlightInfo', async (req, res) => {
 
 // Handle other routes (e.g., root route)
 testbk.get('*', (req, res) => {
-  res.sendFile(__dirname + '/public/testbooking.html'); // Adjust the path based on your file structure
+  res.sendFile(__dirname + '/public/user_booking.html'); // Adjust the path based on your file structure
 });
 
 testbk.listen(port, () => {

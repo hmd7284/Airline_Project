@@ -438,24 +438,196 @@ nav {
     text-decoration: none;
   }
 
-  table {
-    border-collapse: collapse;
+
+  #queue-container {
+    align-items: center;
     width: 100%;
+    max-width: 80%; /* Adjust the width to match the max-width of header__container */
+    margin: 5rem auto; /* Adjust margin for centering */
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 2rem; /* Adjust border-radius to match the header__container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
     margin-bottom: 20px;
-    text-decoration-color: #000;
-}
-
-th, td {
-    border: 1px solid black;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
     text-align: left;
-    padding: 12px;
-}
+  }
+  
+  thead {
+    background-color: #f2f2f2;
+  }
+  
+  #queue-container form {
+    width: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  
+  
+  #queue-container .input__group {
+    width: 100%;
+    position: relative;
+  }
 
-td {
-    color: #000;
-}
+  #review {
+    align-items: center;
+    width: 100%;
+    margin: 5rem auto; /* Adjust margin for centering */
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 2rem; /* Adjust border-radius to match the header__container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  #review form {
+    align-items: center;
+  width: 100%;
+  max-width: 98%;
+  display: flex; /* Allow items to wrap to the next line */
+  gap: 1rem;
+  }
+  
+  #review .form__group {
+    flex: 1 1 calc(25% - 1rem); /* Chia chiều rộng thành 25% và giảm khoảng cách bằng 1rem */
+    margin-bottom: 1rem;
+  }
+  
+  #review .input__group {
+    position: relative;
+  }
+  
+  #review label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    pointer-events: none;
+    transition: 0.3s;
+  }
+  
+  #review input,
+  #review select {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1rem;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid var(--primary-color);
+    color: var(--text-dark);
+  }
+  
+  #review input:focus ~ label,
+  #review select:focus ~ label {
+    font-size: 0.8rem;
+    top: 0;
+  }
+  
+  #review .form__group p {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  #review .btn {
+    padding: 1rem;
+    outline: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--white);
+    background-color: var(--primary-color);
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  #review .btn:hover {
+    background-color: var(--primary-color-dark);
+  }
+  
 
-th {
-    background-color: rgba(0, 0, 0, 0.734);
-    color: #ffffff;
-}
+  
+  
+  #queue-container label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    pointer-events: none;
+    transition: 0.3s;
+  }
+  
+  
+  #queue-container input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1rem;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid var(--primary-color);
+    color: var(--text-dark);
+  }
+  
+  
+  #queue-container input:focus ~ label {
+    font-size: 0.8rem;
+    top: 0;
+  }
+  
+  
+  #queue-container select {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1rem;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1px solid var(--primary-color);
+    color: var(--text-dark);
+  }
+  
+  
+  #queue-container .form__group p {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  
+  #queue-container .btn {
+    padding: 1rem;
+    outline: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--white);
+    background-color: var(--primary-color);
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  
+  #queue-container .btn:hover {
+    background-color: var(--primary-color-dark);
+  }
+  
+  
+  
