@@ -4,7 +4,15 @@
 CREATE OR REPLACE FUNCTION update_on_deletion_trans_func ()
     RETURNS TRIGGER
     AS $$
+DECLARE
+    total_orders int;
 BEGIN
+    SELECT
+        COUNT(order_id) INTO total_orders
+    FROM
+        transactions_order
+    WHERE
+        transaction_id = OLD.transaction_id;
     UPDATE
         transactions
     SET
@@ -25,6 +33,14 @@ BEGIN
             business_seat = business_seat + OLD.quantity
         WHERE
             flight_code = OLD.flight_code;
+    END IF;
+    IF (total_orders = 0) THEN
+        UPDATE
+            transactions
+        SET
+            status = 'Failed'
+        WHERE
+            transaction_id = OLD.transaction_id;
     END IF;
     RETURN NULL;
 END;

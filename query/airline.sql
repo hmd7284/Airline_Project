@@ -70,7 +70,7 @@ CREATE TABLE airfare (
 );
 
 CREATE TABLE employee (
-    employee_id serial PRIMARY KEY,
+    employee_code serial PRIMARY KEY,
     name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
     phone_number varchar(12) NOT NULL
@@ -93,10 +93,10 @@ CREATE TABLE flight_schedule (
 
 CREATE TABLE flight_staff (
     flight_code varchar(6) NOT NULL,
-    employee_id int NOT NULL,
-    PRIMARY KEY (flight_code, employee_id),
+    employee_code int NOT NULL,
+    PRIMARY KEY (flight_code, employee_code),
     CONSTRAINT staff_sch_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT staff_em_fk FOREIGN KEY (employee_id) REFERENCES employee (employee_id)
+    CONSTRAINT staff_em_fk FOREIGN KEY (employee_code) REFERENCES employee (employee_code)
 );
 
 CREATE TABLE discount (
