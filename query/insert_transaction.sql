@@ -96,12 +96,12 @@ CREATE OR REPLACE TRIGGER update_transaction
 
 -- Insert table transactions first (the transactions_id can be automatically increased by 1)
 -- NEED to set total = 0 when initializing and if dont have discount then set it to be NULL
-INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
-    VALUES (CURRENT_DATE, '2', 0, NULL);
-
--- Then insert table transactions_order repectively from 1 ...
-INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
-
-INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);
+-- INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
+--     VALUES (CURRENT_DATE, '2', 0, NULL);
+--
+-- -- Then insert table transactions_order repectively from 1 ...
+-- INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+--     VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
+--
+-- INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+--     VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);

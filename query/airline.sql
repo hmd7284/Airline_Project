@@ -82,7 +82,7 @@ CREATE TABLE flight_schedule (
     departure_time time NOT NULL,
     arrival_date date NOT NULL,
     arrival_time time NOT NULL,
-    status varchar(30),
+    status varchar(30) DEFAULT 'Success',
     aircraft varchar(5) NOT NULL,
     route varchar(6) NOT NULL,
     business_seat integer,
@@ -137,7 +137,7 @@ CREATE TABLE transactions_order (
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
-CREATE OR REPLACE FUNCTION reset_order_id_sequence()
+CREATE OR REPLACE FUNCTION reset_order_id_sequence ()
     RETURNS TRIGGER
     AS $$
 BEGIN
