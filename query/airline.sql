@@ -89,8 +89,8 @@ CREATE TABLE flight_schedule (
     economy_seat integer,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT fsch_check_date CHECK (arrival_date >= departure_date),
-    CONSTRAINT fsch_check_stt CHECK (status = 'Success' or status = 'Canceled')
+    CONSTRAINT fsch_check CHECK (arrival_date >= departure_date),
+    CONSTRAINT fsch_check_stt CHECK (status = 'Success' OR status = 'Canceled')
 );
 
 CREATE TABLE flight_staff (
