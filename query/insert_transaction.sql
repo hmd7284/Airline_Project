@@ -101,7 +101,7 @@ INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
 
 -- Then insert table transactions_order repectively from 1 ...
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL0002', 'Economy', 1);
+    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
 
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
-    VALUES (currval('transactions_transaction_id_seq'), 'FL0002', 'Business', 2);
+    VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);
