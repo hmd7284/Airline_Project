@@ -59,8 +59,16 @@ RETURNING
     aircraft_code;
 
 -- 3.2.2 Cancel all the flights scheduled for the aircraft
+UPDATE
+    flight_schedule
+SET
+    status = 'Canceled'
+WHERE
+    aircraft = $1;
+
+-- 3.2.3 Cancel all the tickets booked for the aircraft
 DELETE FROM transactions_order
-WHERE flight_code = ANY (
+WHERE flight_code IN (
         SELECT
             flight_code
         FROM
