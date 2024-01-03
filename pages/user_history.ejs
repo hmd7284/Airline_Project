@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="user_history.css" />
+    <title>KDD Airline - Booking</title>
+
+    <style>
+      #flash-message {
+        position: fixed;
+        top: 250px;
+        right: 10px;
+        z-index: 99999;
+      }
+
+      .alert-danger {
+        color: #f0162c;
+        background-color: #fdecea;
+
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav__logo">
+        <a href="#" style="color: black;">
+          <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; "> KDD Airline
+        </a>
+      </div>
+      <ul class="nav__links">
+        <li class="link"><a href="home_user.ejs/">Home</a></li>
+        <li class="link"><a href="home_user.ejs/#review">Review</a></li>
+        <li class="link"><a href="home_user.ejs/#about">About</a></li>
+        <li class="link"><a href="user_booking.html">Booking </a></li>
+        <li class="active"><a href="#" style="color: black;"><strong>Booking history</strong></a></li>
+        <li class="link"><a href="home_user.ejs/#about">My Profile</a></li>
+        <li class="link"><a href="/user_logout">Log out</a></li>
+      </ul>
+    </nav>
+    <% if (message.success) { %>
+      <div id="flash-message" class="alert alert-success" role="alert">
+        <%= message.success %>
+      </div>
+      <% } else if (message.error) { %>
+        <div id="flash-message" class="alert alert-danger" role="alert">
+          <%= message.error %>
+        </div>
+        <% } %>
+
+          <section id="review" class="client">
+            <div id="review">
+              <h2>Search Flight</h2>
+              <form action="/booking_history" method="get">
+                <input type="hidden" name="action" value="search">
+                <div class="form__group">
+                  <div class="input__group">
+                    <input type="date" id="startDate" name="startDate" required />
+                  </div>
+                  <p>Start Date</p>
+                </div>
+                <div class="form__group">
+                  <div class="input__group">
+                    <input type="date" id="endDate" name="endDate" required />
+                  </div>
+                  <p>End Date</p>
+                </div>
+                <button type="submit" class="btn"><i class="ri-search-line"></i></button>
+              </form>
+            </div>
+
+            <table>
+              <h2>Transactions History</h2>
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Transaction Information</th>
+                  <th>Order ID</th>
+                  <th>Flight code:</th>
+                  <th>Type:</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                  <th>Cancel Order</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% transactions.forEach(transaction=> { %>
+                  <tr>
+                    <td rowspan="<%= transaction.orders.length + 1 %>">
+                      <%= transaction.transaction_id %>
+                    </td>
+
+                    <td rowspan="<%= transaction.orders.length + 1 %>">
+
+                      Booking Date: <%= transaction.booking_date %><br>
+                        Status: <%= transaction.status %><br>
+                          Discount code: <%= transaction.discount %><br>
+                            Total Amount: <%= transaction.total_amount %><br>
+                              <% if (transaction.status === 'Success' && transaction.orders.length> 0) { %>
+                                <form action="/booking_history/cancel/<%= transaction.transaction_id %>" method="post">
+                                  <button type="submit"
+                                    onclick="return confirm('Are you sure you want to cancel this transaction?')">Cancel
+                                    Transaction</button>
+                                </form>
+                                <% } %>
+                    </td>
+                  </tr>
+                  <% if (Array.isArray(transaction.orders) && transaction.orders.length > 0) { %>
+                    <% transaction.orders.forEach(order=> { %>
+                      <tr>
+                        <td>
+                          <%= order.order_id %>
+                        </td>
+                        <td>
+                          <%= order.flight_code %>
+                        </td>
+                        <td>
+                          <%= order.type %>
+                        </td>
+                        <td>
+                          <%= order.price %>
+                        </td>
+                        <td>
+                          <%= order.quantity %>
+                        </td>
+                        <td>
+                          <%= order.total %>
+                        </td>
+                        <!-- Add cancel button for each order -->
+                        <td>
+                          <% if (transaction.status==='Success' ) { %>
+                            <% if (transaction.orders.length> 0) { %>
+                              <form
+                                action="/booking_history/cancel/order/<%= transaction.transaction_id %>/<%= order.order_id %>"
+                                method="post">
+                                <button type="submit"
+                                  onclick="return confirm('Are you sure you want to cancel this order?')">Cancel
+                                  Order</button>
+                              </form>
+                              <% } %>
+                                <% } %>
+                        </td>
+                      </tr>
+                      <% }); %>
+                        <% } %>
+                          <% }); %>
+              </tbody>
+            </table>
+
+            <br>
+          </section>
+
+          <footer id="about" class="footer">
+            <div class="section__container footer__container">
+              <div class="footer__col">
+                <img src="images/logo.png" alt="Logo" style="height: 150px; width: auto;">
+                <h3>KDD Airline</h3>
+                <p>
+                  At KDD Airline, we go beyond flying; we create experiences. Our commitment to safety, comfort, and
+                  personalized service ensures that every journey with us is nothing short of extraordinary. Discover
+                  seamless travel from check-in to touchdown.
+                </p>
+                <p>
+                  Explore the world confidently, knowing that KDD Airline's modern fleet and dedicated crew prioritize
+                  your well-being. Immerse yourself in the elevated comfort of our cabins, where each detail is designed
+                  to enhance your travel experience.
+                </p>
+                <p>
+                  For inquiries, reservations, or personalized assistance, our friendly team is ready to assist. Contact
+                  us at <strong>
+                    <italic>kddairline@contact.us</italic>
+                  </strong> and let us tailor your travel journey. Choose KDD Airline – Elevating Travel, Redefining
+                  Journeys.
+                </p>
+              </div>
+            </div>
+            <div class="footer__bar">
+              Copyright © 2023 Killer Daylight Coop. All rights reserved.
+            </div>
+          </footer>
+          <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+          <script>
+            $(document).ready(function () {
+              $("#flash-message").delay(5000).fadeOut("slow");
+            }); 
+          </script>
+
+  </body>
+
+</html>

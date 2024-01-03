@@ -39,10 +39,11 @@ app.use((req, res, next) => {
 app.use(homeRouter);
 app.use(homeuserRouter);
 app.use(usersRouter);
+app.use(bookinghistoryRouter);
 app.use(homeadminRouter);
 app.use(adminRouter);
 app.use(bookingRouter);
-app.use(bookinghistoryRouter);
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

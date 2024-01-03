@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/home", (req, res) => {
-  res.render("new_home.ejs");
+  res.render("home.ejs");
 });
 
 router.get("/home_user", (req, res) => {

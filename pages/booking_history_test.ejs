@@ -56,10 +56,10 @@
           <%= message.error %>
         </div>
         <% } %>
-          <div class="flex-container">
+                    <div class="flex-container">
             <div class="form-container">
+              <h2>Booking History</h2>
               <form action="/booking_history" method="get">
-                <h2>Booking History</h2>
                 <input type="hidden" name="action" value="search">
                 <label for="startDate">Starting Date:</label>
                 <input type="date" id="startDate" name="startDate" required>
@@ -70,40 +70,58 @@
             </div>
             <div class="table-container">
               <div class="content-container">
-                <table>
-                  <h2>Transactions History</h2>
-                  <thead>
-                    <tr>
-                      <th>Transaction ID</th>
-                      <th>Transaction Information</th>
-                      <th>Order ID</th>
-                      <th>Flight code:</th>
-                      <th>Type:</th>
-                      <th>Price</th>
-                      <th>Quantity</th>
-                      <th>Total</th>
-                      <th>Cancel Order</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% transactions.forEach(transaction=> { %>
+                <% transactions.forEach(transaction=> { %>
+                  <!-- Transaction Information -->
+                  <table>
+                    <thead>
                       <tr>
-                        <td rowspan="<%= transaction.orders.length + 1 %>">
+                        <th>Transaction ID</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                        <th>Discount</th>
+                        <th>Total Amount</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
                           <%= transaction.transaction_id %>
                         </td>
-                        <td rowspan="<%= transaction.orders.length + 1 %>">
-                          Booking Date: <%= transaction.booking_date %><br>
-                            Status: <%= transaction.status %><br>
-                              Discount code: <%= transaction.discount %><br>
-                                Total Amount: <%= transaction.total_amount %><br>
-                                  <form action="/booking_history/cancel/<%= transaction.transaction_id %>"
-                                    method="post">
-                                    <button type="submit"
-                                      onclick="return confirm('Are you sure you want to cancel this transaction?')">Cancel
-                                      Transaction</button>
-                                  </form>
+                        <td>
+                          <%= transaction.booking_date %>
+                        </td>
+                        <td>
+                          <%= transaction.status %>
+                        </td>
+                        <td>
+                          <%= transaction.discount %>
+                        </td>
+                        <td>
+                          <%= transaction.total_amount %>
+                        </td>
+                        <td>
+                          <form action="/booking_history/cancel/<%= transaction.transaction_id %>" method="post">
+                            <button type="submit"
+                              onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
+                          </form>
                         </td>
                       </tr>
+                    </tbody>
+                  </table>
+                  <!-- Order Details -->
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Order ID</th>
+                        <th>Flight Code</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       <% transaction.orders.forEach(order=> { %>
                         <tr>
                           <td>
@@ -124,21 +142,16 @@
                           <td>
                             <%= order.total %>
                           </td>
-                          <!-- Add cancel button for each order -->
                           <td>
-                            <form
-                              action="/booking_history/cancel/order/<%= transaction.transaction_id %>/<%= order.order_id %>"
-                              method="post">
-                              <button type="submit"
-                                onclick="return confirm('Are you sure you want to cancel this order?')">Cancel
-                                Order</button>
-                            </form>
-                          </td>
+                    <form action="/booking_history/cancel/order/<%= order.order_id %>" method="post">
+                      <button type="submit" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</button>
+                    </form>
+                  </td>
                         </tr>
                         <% }); %>
-                          <% }); %>
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                  <% }); %>
               </div>
             </div>
           </div>

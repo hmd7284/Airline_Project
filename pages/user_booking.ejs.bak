@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="user_booking.css" />
+    <script src="../javascript/home.js"></script>
+    <title>KDD Airline - Booking</title>
+  </head>
+  <body>
+    <nav>
+      <div class="nav__logo">
+        <a href="#" style="color: black;">
+          <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; ">   KDD Airline
+        </a>
+      </div>
+      <ul class="nav__links">
+        <li class="link"><a href="home_user.ejs/">Home</a></li>
+        <li class="link"><a href="home_user.ejs/#review">Review</a></li>
+        <li class="link"><a href="home_user.ejs/#about">About</a></li>
+        <li class="active"><a href="#" style="color: black;"><strong>Booking</strong></a></li>
+        <li class="link"><a href="user_history.ejs">Booking history</a></li>
+        <li class="link"><a href="home_user.ejs/#about">My Profile</a></li>
+        <li class="link"><a href="home_guest.ejs">Log out</a></li>
+      </ul>
+    </nav>
+    
+    <header class="section__container header__container">
+      <div class="header__image__container">
+        <div class="header__content">
+          <h1>Enjoy Your Dream Flights</h1>
+          <p>Experience the best services at affordable prices throughout your journey with KDD.</p>
+        </div>
+        <div class="booking__container">
+            <form id="fsty" method="POST" onsubmit="addToQueue(event)">
+                <div class="form__group">
+                    <div class="input__group">
+                        <label for="fcode"></label>
+                        <input type="text" name="fcode" placeholder="Flight Code" id="fcode"/>
+                    </div>
+                    <p>Flight code</p>
+                </div>
+                <div class="form__group">
+                    <div class="input__group">
+                        <label for="type"></label>
+                        <select name="type">
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
+                        </select>
+                    </div>
+                    <p>Class</p>
+                </div>
+                <div class="form__group">
+                    <div class="input__group">
+                        <label for="amount"></label>
+                        <input type="number" name="amount" placeholder="Amount" id="amount"/>
+                    </div>
+                    <p>Amount of tickets</p>
+                </div>
+                <button type="submit" class="btn" name="submit" value="Add ticket"><i class="ri-add-line"></i></button>
+            </form>
+            <p id="error-message"></p>
+        </div>
+      </div>
+    </header>
+
+    <div id="queue-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Flight Code</th>
+                    <th>Type of Ticket</th>
+                    <th>Price</th>
+                    <th>From</th>
+                    <th>To </th>
+                    <th>Departure date</th>
+                    <th>Departure time</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="queue-list"></tbody>
+        </table>
+        <br>
+        <form id="discount-form" method="POST" onsubmit="applyDiscount(event)">
+          <div class="form__group">
+              <div class="input__group">
+                  <input type="text" name="discount" placeholder="Discount code" id="discountcode">
+              </div>
+              <p>Discount code</p>
+          </div>
+          <br>
+          <button type="submit" class="btn" name="submit" value="Add ticket"><i class="ri-shopping-cart-line"></i></button>
+      </form>
+    </div>
+
+    <section id="review" class="client">
+    <div id="review">
+      <h2>Search Flight</h2>
+      <form action="/search" method="post">
+        <div class="form__group">
+          <div class="input__group">
+            <input type="text" id="origin" name="origin" required/>
+          </div>
+          <p>Your departure?</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="text" id="destination" name="destination" required/>
+          </div>
+          <p>Your arrival</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="date" id="departureDate" name="departureDate" required/>
+          </div>
+          <p>When do you want to fly ?</p>
+        </div>
+        <div class="form__group">
+          <div class="input__group">
+            <input type="number" name="numberOfTickets"/>
+          </div>
+          <p>Number of tickets</p>
+        </div>
+        <button type="submit" class="btn"><i class="ri-search-line"></i></button>
+      </form>
+    </div>
+
+    <section id="searchResultsSection" class="section__container">
+      <div class="search-results" id="searchResults">
+        <% if (typeof results !== 'undefined' && results.length > 0) { %>
+          <h2>Search Results</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Flight Code</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Departure Date</th>
+                <th>Departure Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% results.forEach(result => { %>
+                <tr>
+                  <td><%= result.flight_code %></td>
+                  <td><%= result.origin_name %></td>
+                  <td><%= result.destination_name %></td>
+                  <td><%= result.departure_date %></td>
+                  <td><%= result.departure_time %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else if (typeof results !== 'undefined' && results.length === 0) { %>
+          <h2>No Flight found</h2>
+        <% } %>
+      </div>
+    </section>
+    </section>
+
+    <footer id="about" class="footer">
+      <div class="section__container footer__container">
+        <div class="footer__col">
+          <img src="images/logo.png" alt="Logo" style="height: 150px; width: auto;">   
+          <h3>KDD Airline</h3>
+          <p>
+            At KDD Airline, we go beyond flying; we create experiences. Our commitment to safety, comfort, and personalized service ensures that every journey with us is nothing short of extraordinary. Discover seamless travel from check-in to touchdown.
+          </p>
+          <p>
+Explore the world confidently, knowing that KDD Airline's modern fleet and dedicated crew prioritize your well-being. Immerse yourself in the elevated comfort of our cabins, where each detail is designed to enhance your travel experience.
+          </p>
+          <p>
+For inquiries, reservations, or personalized assistance, our friendly team is ready to assist. Contact us at <strong><italic>kddairline@contact.us</italic></strong> and let us tailor your travel journey. Choose KDD Airline – Elevating Travel, Redefining Journeys.
+          </p>
+        </div>
+      </div>
+      <div class="footer__bar">
+        Copyright © 2023 Killer Daylight Coop. All rights reserved.
+      </div>
+    </footer>
+    <script src="../testbk.js"></script>
+    <script>
+        function removeFromQueue(row) {
+            var tableBody = document.getElementById("queue-list");
+            tableBody.removeChild(row);
+        }
+        
+        document.getElementById("fsty").addEventListener("submit", function(event) {
+    event.preventDefault(); // Ngăn chặn form gửi đi
+
+    // Gọi hàm xử lý submit
+    addToQueue(event);
+});
+
+        function addToQueue(event) {
+    event.preventDefault();
+        
+            var fcode = document.getElementById("fcode").value;
+            var type = document.querySelector("select[name='type']").value;
+            var amountValue = document.getElementById("amount").value;
+
+        
+            if (fcode === "" || type === "" || amountValue === "") {
+                document.getElementById("error-message").innerText = "Please fill in all fields.";
+                return;
+            }
+        
+            document.getElementById("error-message").innerText = "";
+        
+            var tableRow = document.createElement("tr");
+        
+            var flightCodeCell = document.createElement("td");
+            flightCodeCell.innerText = fcode;
+            tableRow.appendChild(flightCodeCell);
+        
+            var typeCell = document.createElement("td");
+            typeCell.innerText = type;
+            tableRow.appendChild(typeCell);
+        
+            var priceCell = document.createElement("td");
+            tableRow.appendChild(priceCell);
+        
+            var fromCell = document.createElement("td");
+            tableRow.appendChild(fromCell);
+        
+            var toCell = document.createElement("td");
+            tableRow.appendChild(toCell);
+        
+            var departureDateCell = document.createElement("td");
+            tableRow.appendChild(departureDateCell);
+        
+            var departureTimeCell = document.createElement("td");
+            tableRow.appendChild(departureTimeCell);
+        
+            var amountCell = document.createElement("td");
+            amountCell.innerText = amountValue;
+            tableRow.appendChild(amountCell);
+        
+            var actionCell = document.createElement("td");
+            var removeButton = document.createElement("button");
+            removeButton.innerText = "Remove";
+            removeButton.addEventListener("click", function() {
+                removeFromQueue(tableRow);
+            });
+            actionCell.appendChild(removeButton);
+            tableRow.appendChild(actionCell);
+        
+            document.getElementById("queue-list").appendChild(tableRow);
+        
+            fetch(`/getFlightInfo?flight_code=${fcode}&type=${type}`)
+                .then(response => response.json())
+                .then(data => {
+                    priceCell.innerText = data.price;
+        
+                    // Format the date and time
+                    var departureDate = new Date(data.departure_date);
+                    var formattedDate = departureDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    var formattedTime = departureDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric'
+                    });
+        
+                    fromCell.innerText = data.origin;
+                    toCell.innerText = data.destination;
+                    departureDateCell.innerText = formattedDate;
+                    departureTimeCell.innerText = formattedTime;
+                })
+                .catch(error => {
+                    console.error('Error fetching flight information:', error);
+                });
+        
+            document.getElementById("fsty").reset();
+        }
+        </script>  
+
+  </body>
+</html>
