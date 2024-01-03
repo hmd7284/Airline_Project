@@ -82,13 +82,15 @@ CREATE TABLE flight_schedule (
     departure_time time NOT NULL,
     arrival_date date NOT NULL,
     arrival_time time NOT NULL,
+    status varchar(30),
     aircraft varchar(5) NOT NULL,
     route varchar(6) NOT NULL,
     business_seat integer,
     economy_seat integer,
     CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
     CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
-    CONSTRAINT fsch_check CHECK (arrival_date >= departure_date)
+    CONSTRAINT fsch_check_date CHECK (arrival_date >= departure_date),
+    CONSTRAINT fsch_check_stt CHECK (status = 'Success' or status = 'Canceled')
 );
 
 CREATE TABLE flight_staff (
@@ -135,7 +137,7 @@ CREATE TABLE transactions_order (
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
-CREATE OR REPLACE FUNCTION reset_order_id_sequence ()
+CREATE OR REPLACE FUNCTION reset_order_id_sequence()
     RETURNS TRIGGER
     AS $$
 BEGIN
