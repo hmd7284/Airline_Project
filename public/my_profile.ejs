@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/user_profile.css" />
+  <script src="../javascript/home.js"></script>
+  <title>KDD Airline - Home</title>
+</head>
+<body>
+    <nav>
+        <div class="nav__logo">
+          <a href="#" style="color: black;">
+            <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; ">   KDD Airline
+          </a>
+        </div>
+        <ul class="nav__links">
+            <li class="link"><a href="home_user.ejs">Home</a></li>
+            <li class="link"><a href="home_user.ejs/#review">Review</a></li>
+            <li class="link"><a href="home_user.ejs/#about">About</a></li>
+            <li class="link"><a href="user_booking.html">Booking history</a></li>
+            <li class="link"><a href="user_history.ejs">Booking history</a></li>
+            <li class="active"><a href="my_profile.ejs" style="color: black;"><strong>My Profile</strong></a></li>
+            <li class="link"><a href="home_guest.ejs">Log out</a></li>
+        </ul>
+      </nav>
+
+  <section id="review" class="client">
+    <div id="review">
+      <form action="/my_profile" method="post">
+        <div class="form__group">
+            <div class="input__group">
+            <label for="email"></label>
+              <input type="text" id="email" name="email" required/>
+            </div>
+            <p>Email customer</p>
+          </div>
+          <button type="submit" class="btn"><i class="ri-search-line"></i></button>
+      </form>
+      <br>
+
+      <% var customer = customer || {} %>
+      <% if (customer) { %>
+        <div class="customer-info">
+          <p>ID: <%= customer.id %></p>
+          <p>Name: <span id="customerName"><%= customer.name %></span></p>
+          <p>Date of Birth: <span id="customerDob"><%= customer.dob %></span></p>
+          <p>Address: <span id="customerAddress"><%= customer.address %></span></p>
+          <p>Phone Number: <span id="customerPhoneNumber"><%= customer.phone_number %></span></p>
+
+          <!-- Edit button triggers the display of edit fields -->
+          <button id="editButton">Edit</button>
+
+          <form action="/update_profile" method="post">
+            <input type="hidden" name="customerId" value="<%= customer.id %>">
+
+            <div id="editFields" style="display: none;">
+              <label for="editedName"></label>
+              <input type="text" id="editedName" name="editedName" value="<%= customer.name %>" required>
+
+              <label for="editedDob"></label>
+              <input type="date" id="editedDob" name="editedDob" value="<%= customer.dob %>" required>
+
+              <label for="editedAddress"></label>
+              <input type="text" id="editedAddress" name="editedAddress" value="<%= customer.address %>" required>
+
+              <label for="editedPhoneNumber"></label>
+              <input type="text" id="editedPhoneNumber" name="editedPhoneNumber" value="<%= customer.phone_number %>" required>
+
+              <!-- Save button to save changes -->
+              <button id="saveButton" type="submit">Save</button>
+            </div>
+          </form>
+        </div>
+      <% } else { %>
+        <p>No customer data available</p>
+      <% } %>
+    </div>
+  </section>
+  <footer id="about" class="footer">
+    <div class="section__container footer__container">
+      <div class="footer__col">
+        <img src="images/logo.png" alt="Logo" style="height: 150px; width: auto;">   
+        <h3>KDD Airline</h3>
+        <p>
+          At KDD Airline, we go beyond flying; we create experiences. Our commitment to safety, comfort, and personalized service ensures that every journey with us is nothing short of extraordinary. Discover seamless travel from check-in to touchdown.
+        </p>
+        <p>
+Explore the world confidently, knowing that KDD Airline's modern fleet and dedicated crew prioritize your well-being. Immerse yourself in the elevated comfort of our cabins, where each detail is designed to enhance your travel experience.
+        </p>
+        <p>
+For inquiries, reservations, or personalized assistance, our friendly team is ready to assist. Contact us at <strong><italic>kddairline@contact.us</italic></strong> and let us tailor your travel journey. Choose KDD Airline – Elevating Travel, Redefining Journeys.
+        </p>
+      </div>
+    </div>
+    <div class="footer__bar">
+      Copyright © 2023 Killer Daylight Coop. All rights reserved.
+    </div>
+  </footer>
+      <script>
+        // Add JavaScript for toggling edit fields
+        document.addEventListener('DOMContentLoaded', function () {
+          const editButton = document.getElementById('editButton');
+          const editFields = document.getElementById('editFields');
+
+          editButton.addEventListener('click', function () {
+            // Toggle the visibility of edit fields
+            editFields.style.display = editFields.style.display === 'none' ? 'block' : 'none';
+          });
+        });
+      </script>
+
+</body>
+</html>
