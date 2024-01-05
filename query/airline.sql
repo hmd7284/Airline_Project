@@ -152,4 +152,4 @@ LANGUAGE plpgsql;
 CREATE TRIGGER reset_order_id_trigger
     AFTER INSERT ON transactions
     FOR EACH STATEMENT
-    EXECUTE FUNCTION reset_order_id_sequence ();
+    EXECUTE FUNCTION reset_order_id_sequence();
