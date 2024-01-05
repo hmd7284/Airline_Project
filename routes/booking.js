@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database");
-const { connect } = require("./admin_login_logout");
 
 function isLoggedOut(req, res, next) {
   if (req.session.userId) {
@@ -20,9 +19,31 @@ async function fetchAirportsFromDatabase() {
 
   try {
     const result = await client.query(
-      "SELECT * FROM airport",
+      "SELECT airport_code,address FROM airport",
     );
     return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
+async function SearchResults(
+  origin,
+  destination,
+  departureDate,
+  numberOfTickets,
+) {
+  const client = await db.connect();
+  try {
+    const result = await client.query(
+      "SELECT f.flight_code, f.departure_date, f.departure_time, r.origin, r.destination, a.aircraft_code, a.aircraft_name, af1.price as economy_price, af2.price as business_price FROM aircraft a JOIN flight_schedule f ON a.aircraft_code = f.aircraft JOIN route r ON f.route = r.route_code JOIN airfare af1 ON af1.route = r.route_code AND af1.TYPE = 'Economy' JOIN airfare af2 ON af2.route = r.route_code AND af2.TYPE = 'Business' WHERE r.origin = $1 AND r.destination = $2 AND f.departure_date = $3 AND (f.business_seat + f.economy_seat >= $4) ORDER BY f.departure_time ASC",
+      [origin, destination, departureDate, numberOfTickets],
+    );
+    console.log(result.rows);
+    return result.rows;
+  } catch (error) {
+    console.error("Error during booking:", error);
+    res.status(500).json({ message: "Internal server error" });
   } finally {
     client.release();
   }
@@ -31,60 +52,49 @@ async function fetchAirportsFromDatabase() {
 router.get("/flight_search", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    res.render("flight_page.ejs", {
+    const { origin, destination, departureDate, numberOfTickets } = req.query;
+    console.log(req.query);
+    req.session.userInput = req.query;
+    const userInput = req.session.userInput || {};
+    if (origin && destination && departureDate && numberOfTickets) {
+      if (origin === destination) {
+        req.flash("errors", "Origin and destination cannot be the same!");
+        res.render("user_booking.ejs", {
+          airports,
+          results: [], // or any other default value
+          userInput,
+          scrollToResults: false,
+        });
+        return;
+      }
+      const results = await SearchResults(
+        origin,
+        destination,
+        departureDate,
+        numberOfTickets,
+      );
+      console.log(results);
+      res.render("user_booking.ejs", {
+        airports,
+        results,
+        userInput,
+        scrollToResults: true,
+      });
+    }
+    res.render("user_booking.ejs", {
       airports,
-      section: "search",
-      messages: req.flash("errors"),
+      userInput,
+      scrollToResults: false,
     });
   } catch (error) {
-    req.flash("errors", "Error fetching airport data");
-    console.error("Error fetching airport data:", error);
+    req.flash("errors", "Error fetching data");
+    console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-});
-
-router.post("/flight_search", isLoggedIn, async (req, res) => {
-  const { origin, destination, departure_date, number_of_seats } = req.body;
-
-  const client = await db.connect();
-  try {
-    const result = await client.query(
-      "SELECT f.flight_code, f.departure_time, r.origin, r.destination, a.aircraft_code, a.aircraft_name, af1.price as economy_price, af2.price as business_price FROM aircraft a JOIN flight_schedule f ON a.aircraft_code = f.aircraft JOIN route r ON f.route = r.route_code JOIN airfare af1 ON af1.route = r.route_code AND af1.TYPE = 'Economy' JOIN airfare af2 ON af2.route = r.route_code AND af2.TYPE = 'Business' WHERE r.origin = $1 AND r.destination = $2 AND f.departure_date = $3 AND (f.business_seat + f.economy_seat >= $4) ORDER BY f.departure_time ASC",
-      [origin, destination, departure_date, number_of_seats],
-    );
-    if (result.rows.length > 0) {
-      const flights = result.rows;
-      res.render("flight_page.ejs", {
-        flights,
-        section: "results",
-        messages: req.flash("errors"),
-      });
-    } else {
-      req.flash(
-        "errors",
-        "Sorry! We have no flight that match your requirements!",
-      );
-      res.redirect("/flight_search");
-    }
-  } catch (error) {
-    console.error("Error during booking:", error);
-    res.status(500).json({ message: "Internal server error" });
-  } finally {
-    client.release();
-  }
-});
-
-router.get("/flight_results", isLoggedIn, (req, res) => {
-  // Assuming you have 'flights' data available
-  res.render("flight_page.ejs", {
-    flights,
-    section: "results",
-    messages: req.flash("errors"),
-  });
 });
 
 router.get("/flight_booking", isLoggedIn, (req, res) => {
-  res.render("flight_page.ejs", {
+  res.render("user_booking.ejs", {
     section: "booking",
     messages: req.flash("errors"),
   });

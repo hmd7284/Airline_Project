@@ -103,7 +103,7 @@ async function fetchBookingHistoryWithDateRange(
   }
 }
 
-async function checkUncancellableOrders(transactionId, req) {
+async function checkUncancellableOrders(transactionId) {
   const result = await db.query(
     "SELECT o.order_id, (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1",
     [transactionId],
@@ -167,9 +167,9 @@ router.post(
       const uncancellableOrders = await checkUncancellableOrders(transactionId);
 
       if (uncancellableOrders.length > 0) {
-        const errorMessage =
-          `Ordera ${uncancellableOrders.join(", ")
-          } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
+        const errorMessage = `Ordera ${
+          uncancellableOrders.join(", ")
+        } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
         req.flash("error", errorMessage);
         res.redirect("/booking_history");
         return;

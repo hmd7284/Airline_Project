@@ -96,11 +96,11 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
   req.session.userInput = req.body;
   try {
     const existingAircraft1 = await db.query(
-      "SELECT * FROM aircraft WHERE aircraft_code = $1",
+      "SELECT aircraft_name FROM aircraft WHERE aircraft_code = $1",
       [aircraftCode1],
     );
     const existingAircraft2 = await db.query(
-      "SELECT * FROM aircraft WHERE aircraft_code = $1",
+      "SELECT aircraft_name FROM aircraft WHERE aircraft_code = $1",
       [aircraftCode2],
     );
     if (action === "add") {
@@ -162,7 +162,9 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         }
       } else if (status2 === "Inactive") {
         const hasAssociatedFlights = await checkFlightsForAircraft(
-          req, aircraftCode2, action
+          req,
+          aircraftCode2,
+          action,
         );
         if (existingAircraft2.rows[0].status === "Inactive") {
           const error_message =
@@ -176,14 +178,15 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
         const result = await db.query(
-          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code", [status2, aircraftCode2],
+          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code",
+          [status2, aircraftCode2],
         );
         if (result.rows.length > 0) {
           const success_message =
             `Aircraft ${aircraftCode2} status updated successfully`;
           req.flash("success", success_message);
           res.redirect("/airplane");
-          return; f
+          return;
         } else {
           const error_message =
             `Aircraft ${aircraftCode2} status not updated!! Please try again`;
@@ -198,7 +201,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       res.status(400).json({ success: false, message: "Invalid action" });
     }
   } catch (error) {
-    req.flash("error", "Error")
+    req.flash("error", "Error");
     console.error("Error managing aircraft:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }

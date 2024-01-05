@@ -18,6 +18,7 @@
       .alert-danger {
         color: #f0162c;
         background-color: #fdecea;
+        border: 1px solid #f5c6cb;
 
       }
 
@@ -106,6 +107,11 @@
                         Status: <%= transaction.status %><br>
                           Discount code: <%= transaction.discount %><br>
                             Total Amount: <%= transaction.total_amount %><br>
+                            <span style="color: red; font-style: italic;">
+    NOTE: Transaction can only be cancelled if all orders can be cancelled.
+  </span> 
+              <br>
+              <br>
                               <% if (transaction.status === 'Success' && transaction.orders.length> 0) { %>
                                 <form action="/booking_history/cancel/<%= transaction.transaction_id %>" method="post">
                                   <button type="submit"
@@ -140,6 +146,10 @@
                         <td>
                           <% if (transaction.status==='Success' ) { %>
                             <% if (transaction.orders.length> 0) { %>
+                                <span style="color: red; font-style: italic;"> NOTE: Order can only be cancelled at most 6 hours before departure_time.
+      </span>
+      <br>
+              <br>
                               <form
                                 action="/booking_history/cancel/order/<%= transaction.transaction_id %>/<%= order.order_id %>"
                                 method="post">
@@ -195,7 +205,7 @@
             crossorigin="anonymous"></script>
           <script>
             $(document).ready(function () {
-              $("#flash-message").delay(5000).fadeOut("slow");
+              $("#flash-message").delay(3000).fadeOut("slow");
             }); 
           </script>
 

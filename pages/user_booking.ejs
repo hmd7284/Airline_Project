@@ -8,7 +8,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="user_booking.css" />
-    <script src="../javascript/home.js"></script>
     <title>KDD Airline - Booking</title>
   </head>
   <body>
@@ -19,7 +18,7 @@
         </a>
       </div>
       <ul class="nav__links">
-        <li class="link"><a href="home_user.ejs/">Home</a></li>
+              <li class="link"><a href="/home_user">Home</a></li>
         <li class="link"><a href="home_user.ejs/#review">Review</a></li>
         <li class="link"><a href="home_user.ejs/#about">About</a></li>
         <li class="active"><a href="#" style="color: black;"><strong>Booking</strong></a></li>
@@ -98,19 +97,35 @@
       </form>
     </div>
 
-    <section id="review" class="client">
+    <section id="searchSection" class="client">
     <div id="review">
       <h2>Search Flight</h2>
-      <form action="/search" method="post">
+      <form action="/flight_search" method="get">
+        <input type="hidden" id="origin_code" name="origin_code" value="">
+      <input type="hidden" id="destination_code" name="destination_code" value="">
         <div class="form__group">
           <div class="input__group">
-            <input type="text" id="origin" name="origin" required/>
+            <!-- <input type="text" id="origin" name="origin" required/> -->
+            <select id="origin" name="origin" onchange="updateAirportCode('origin')" required>
+        <% airports.forEach(airport=> { %>
+          <option value="<%= airport.airport_code %>">
+            <%= airport.airport_code %> - <%= airport.address %>
+          </option>
+          <% }) %>
+      </select>
           </div>
           <p>Your departure?</p>
         </div>
         <div class="form__group">
           <div class="input__group">
-            <input type="text" id="destination" name="destination" required/>
+            <!-- <input type="text" id="destination" name="destination" required/> -->
+            <select id="destination" name="destination" onchange="updateAirportCode('destination')" required>
+        <% airports.forEach(airport=> { %>
+          <option value="<%= airport.airport_code %>">
+            <%= airport.airport_code %> - <%= airport.address %>
+          </option>
+          <% }) %>
+      </select>
           </div>
           <p>Your arrival</p>
         </div>
@@ -122,7 +137,7 @@
         </div>
         <div class="form__group">
           <div class="input__group">
-            <input type="number" name="numberOfTickets"/>
+            <input type="number" name="numberOfTickets" min="1" required/>
           </div>
           <p>Number of tickets</p>
         </div>
@@ -142,21 +157,29 @@
                 <th>Destination</th>
                 <th>Departure Date</th>
                 <th>Departure Time</th>
+                <th>Aircraft Code</th>
+                <th>Aircraft Name</th>
+                <th>Economy Price</th>
+                <th>Business Price</th>
               </tr>
             </thead>
             <tbody>
               <% results.forEach(result => { %>
                 <tr>
                   <td><%= result.flight_code %></td>
-                  <td><%= result.origin_name %></td>
-                  <td><%= result.destination_name %></td>
+                  <td><%= result.origin %></td>
+                  <td><%= result.destination %></td>
                   <td><%= result.departure_date %></td>
                   <td><%= result.departure_time %></td>
+                  <td><%= result.aircraft_code %></td>
+                  <td><%= result.aircraft_name %></td>
+                  <td><%= result.economy_price %></td>
+                  <td><%= result.business_price %></td>
                 </tr>
               <% }); %>
             </tbody>
           </table>
-        <% } else if (typeof results !== 'undefined' && results.length === 0) { %>
+        <% } else if(typeof results !== 'undefined' && results.length === 0) { %>
           <h2>No Flight found</h2>
         <% } %>
       </div>
@@ -183,7 +206,32 @@ For inquiries, reservations, or personalized assistance, our friendly team is re
         Copyright © 2023 Killer Daylight Coop. All rights reserved.
       </div>
     </footer>
-    <script src="../testbk.js"></script>
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Check if scrollToResults flag is set to true
+    const scrollToResults = <%= scrollToResults %>;
+
+    if (scrollToResults) {
+      // Scroll to the search results section
+      const searchResultsSection = document.getElementById("searchResultsSection");
+      if (searchResultsSection) {
+        searchResultsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  });
+</script>
+
+         <script>
+      // JavaScript function to update hidden input fields with selected airport codes
+      function updateAirportCode(type) {
+        const dropdown = document.getElementById(type);
+        const codeInput = document.getElementById(`${type}_code`);
+        const selectedOption = dropdown.options[dropdown.selectedIndex];
+        console.log(type, selectedOption.value);
+        codeInput.value = selectedOption.value;
+      }
+    </script>
+
     <script>
         function removeFromQueue(row) {
             var tableBody = document.getElementById("queue-list");
