@@ -2,106 +2,1002 @@
 SELECT
     setval('transactions_transaction_id_seq', 1, FALSE);
 
--- Create function which update some values
-CREATE OR REPLACE FUNCTION update_transaction_func ()
+CREATE OR REPLACE FUNCTION reset_order_id_sequence()
     RETURNS TRIGGER
     AS $$
-DECLARE
-    temp_route varchar(6);
-    temp_airfare varchar(7);
-    temp_price double precision;
-    temp_discount integer;
 BEGIN
-    -- Define the airfare_code
-    temp_route := (
-        SELECT
-            route
-        FROM
-            flight_schedule
-        WHERE
-            flight_code = NEW.flight_code);
-    IF (NEW.type = 'Economy') THEN
-        temp_airfare := 'E' || temp_route;
-    ELSE
-        temp_airfare := 'B' || temp_route;
-    END IF;
-    -- Define the price of the airfare
-    temp_price = (
-        SELECT
-            price
-        FROM
-            airfare
-        WHERE
-            airfare_code = temp_airfare);
-    -- Define the discount amount (if exist)
-    temp_discount = (
-        SELECT
-            amount
-        FROM
-            discount
-        WHERE
-            discount_code = (
-                SELECT
-                    discount
-                FROM
-                    transactions
-                WHERE
-                    transaction_id = NEW.transaction_id));
-    IF (temp_discount IS NULL) THEN
-        temp_discount := 0;
-    END IF;
-    -- Update the airfare, price, total of the table transactions_order
-    UPDATE
-        transactions_order
-    SET
-        airfare = temp_airfare,
-        price = temp_price,
-        total = NEW.quantity * temp_price * (100 - temp_discount) / 100.0
-    WHERE
-        order_id = NEW.order_id
-        AND transaction_id = NEW.transaction_id;
-    -- Update the total_amoun of the table transactions
-    UPDATE
-        transactions
-    SET
-        total_amount = total_amount + (NEW.quantity * temp_price * (100 - temp_discount) / 100.0)
-    WHERE
-        transaction_id = NEW.transaction_id;
-    -- Update the remaning seat of the flight
-    IF (NEW.type = 'Economy') THEN
-        UPDATE
-            flight_schedule
-        SET
-            economy_seat = economy_seat - NEW.quantity
-        WHERE
-            flight_code = NEW.flight_code;
-    ELSE
-        UPDATE
-            flight_schedule
-        SET
-            business_seat = business_seat - NEW.quantity
-        WHERE
-            flight_code = NEW.flight_code;
-    END IF;
-    RETURN NULL;
+    -- Reset the sequence to 1
+    EXECUTE 'ALTER SEQUENCE transactions_order_order_id_seq RESTART WITH 1';
+    RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
 
+-- Create a trigger to call the function after an insert on the transactions table
+CREATE TRIGGER reset_order_id_trigger
+    AFTER INSERT ON transactions
+    FOR EACH STATEMENT
+    EXECUTE FUNCTION reset_order_id_sequence();
+
+-- Create trigger function to update some value after insert a new record on transactions_order
+CREATE OR REPLACE FUNCTION update_transaction_func() RETURNS TRIGGER AS
+$$
+DECLARE temp_route varchar(6); 
+        temp_airfare varchar(7); 
+        temp_price double precision;
+        temp_discount integer;
+BEGIN
+    -- Define the airfare_code
+    temp_route := (SELECT route FROM flight_schedule WHERE flight_code = NEW.flight_code);
+    IF (NEW.type = 'Economy') THEN 
+        temp_airfare := 'E' || temp_route; 
+    ELSE
+        temp_airfare := 'B' || temp_route;
+    END IF;
+    -- Define the price of the airfare
+    temp_price = (SELECT price FROM airfare WHERE airfare_code = temp_airfare);
+    -- Define the discount amount (if exist)
+    temp_discount = (SELECT amount FROM discount 
+                    WHERE discount_code = (SELECT discount FROM transactions
+                                        WHERE transaction_id = NEW.transaction_id)); 
+    IF (temp_discount IS NULL) 
+    THEN 
+        temp_discount := 0;
+    END IF;
+    -- Update the airfare, price, total of the table transactions_order
+    UPDATE transactions_order SET airfare = temp_airfare,
+                                price = temp_price,
+                                total = NEW.quantity * temp_price * (100 - temp_discount) / 100.0
+    WHERE order_id = NEW.order_id and transaction_id = NEW.transaction_id;
+    -- Update the total_amoun of the table transactions
+    UPDATE transactions SET total_amount = total_amount + (NEW.quantity * temp_price * (100 - temp_discount) / 100.0)
+    WHERE transaction_id = NEW.transaction_id;
+    -- Update the remaning seat of the flight
+    IF (NEW.type = 'Economy') 
+    THEN
+        UPDATE flight_schedule SET economy_seat = economy_seat - NEW.quantity
+        WHERE flight_code = NEW.flight_code;
+    ELSE
+        UPDATE flight_schedule SET business_seat = business_seat - NEW.quantity
+        WHERE flight_code = NEW.flight_code;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
 -- Create trigger to update value
 CREATE OR REPLACE TRIGGER update_transaction
-    AFTER INSERT ON transactions_order
-    FOR EACH ROW
-    EXECUTE PROCEDURE update_transaction_func ();
+AFTER INSERT ON transactions_order
+FOR EACH ROW
+EXECUTE PROCEDURE update_transaction_func();
 
 -- Insert table transactions first (the transactions_id can be automatically increased by 1)
--- NEED to set total = 0 when initializing and if dont have discount then set it to be NULL
--- INSERT INTO transactions (booking_date, customer_id, total_amount, discount)
---     VALUES (CURRENT_DATE, '2', 0, NULL);
---
--- -- Then insert table transactions_order repectively from 1 ...
--- INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
---     VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Economy', 1);
---
--- INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
---     VALUES (currval('transactions_transaction_id_seq'), 'FL002', 'Business', 2);
+-- NEED to set total = 00 when initializing and if dont have discount then set it to be NULL
+-- Transaction 1
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-01', 1, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0001', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0002', 'Economy', 1);
+
+-- Transaction 2
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-02', 2, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0003', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0004', 'Business', 2);
+
+-- Transaction 3
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-03', 3, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0005', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0006', 'Business', 2);
+
+-- Transaction 4
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-04', 4, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0061', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0062', 'Economy', 2);
+
+-- Transaction 5
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-05', 5, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0063', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0064', 'Business', 3);
+
+-- Transaction 6
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-06', 6, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0065', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0066', 'Business', 1);
+
+-- Transaction 7
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-07', 7, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0001', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0002', 'Business', 2);
+
+-- Transaction 8
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-08', 8, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0003', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0004', 'Business', 3);
+
+-- Transaction 9
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-09', 9, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0005', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0006', 'Economy', 1);
+
+-- Transaction 10
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-10', 10, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0061', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0062', 'Business', 1);
+
+-- Transaction 11
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-11', 11, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0001', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0002', 'Economy', 1);
+
+-- Transaction 12
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-12', 12, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0003', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0004', 'Business', 2);
+
+-- Transaction 13
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-13', 13, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0005', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0006', 'Business', 2);
+
+-- Transaction 14
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-14', 14, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0061', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0062', 'Economy', 2);
+
+-- Transaction 15
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-15', 15, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0063', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0064', 'Business', 3);
+
+-- Transaction 16
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-16', 16, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0065', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0066', 'Business', 1);
+
+-- Transaction 17
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-17', 17, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0001', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0002', 'Business', 2);
+
+-- Transaction 18
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-18', 18, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0003', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0004', 'Business', 3);
+
+-- Transaction 19
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-19', 19, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0005', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0006', 'Economy', 1);
+
+-- Transaction 20
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-20', 20, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0061', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0062', 'Business', 1);
+
+-- Transaction 21
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-01', 21, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0007', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0008', 'Economy', 1);
+
+-- Transaction 22
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-02', 22, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0009', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0010', 'Business', 2);
+
+-- Transaction 23
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-03', 23, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0011', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0012', 'Business', 2);
+
+-- Transaction 24
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-04', 24, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0013', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0014', 'Business', 2);
+
+-- Transaction 25
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-05', 25, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0067', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0068', 'Economy', 1);
+
+-- Transaction 26
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-06', 26, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0069', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0070', 'Business', 2);
+
+-- Transaction 27
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-07', 27, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0071', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0072', 'Business', 2);
+
+-- Transaction 28
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-08', 28, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0073', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0074', 'Business', 2);
+
+-- Transaction 29
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-09', 29, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0007', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0008', 'Economy', 1);
+
+-- Transaction 30
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-10', 30, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0009', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0010', 'Business', 2);
+
+-- Transaction 31
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-11', 31, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0011', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0012', 'Business', 2);
+
+-- Transaction 32
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-12', 32, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0013', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0014', 'Business', 2);
+
+-- Transaction 33
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-13', 33, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0067', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0068', 'Economy', 1);
+
+-- Transaction 34
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-14', 34, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0069', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0070', 'Business', 2);
+
+-- Transaction 35
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-15', 35, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0071', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0072', 'Business', 2);
+
+-- Transaction 36
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-16', 36, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0073', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0074', 'Business', 2);
+
+-- Transaction 37
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-17', 37, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0007', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0008', 'Economy', 1);
+
+-- Transaction 38
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-18', 38, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0009', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0010', 'Business', 2);
+
+-- Transaction 39
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-19', 39, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0011', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0012', 'Business', 2);
+
+-- Transaction 40
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-20', 40, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0013', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0014', 'Business', 2);
+
+-- Transaction 41
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-01', 41, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Economy', 2);
+
+-- Transaction 42
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-02', 42, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Economy', 1);
+
+-- Transaction 43
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-03', 43, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Economy', 2);
+
+-- Transaction 44
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-04', 44, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Economy', 1);
+
+-- Transaction 45
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-05', 45, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Economy', 1);
+
+-- Transaction 46
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-06', 46, 'Failed', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Business', 2);
+
+-- Transaction 47
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-07', 47, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Economy', 1);
+
+-- Transaction 48
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-08', 48, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Business', 2);
+
+-- Transaction 49
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-09', 49, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Business', 2);
+
+-- Transaction 50
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-10', 50, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Business', 1);
+
+-- Transaction 51
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-11', 51, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Business', 2);
+
+-- Transaction 52
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-12', 52, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Business', 2);
+
+-- Transaction 53
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-13', 53, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Business', 2);
+
+-- Transaction 54
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-14', 54, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Economy', 1);
+
+-- Transaction 55
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-15', 55, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Economy', 2);
+
+-- Transaction 56
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-16', 56, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 1);
+
+-- Transaction 57
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-17', 57, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Economy', 1);
+
+-- Transaction 58
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-18', 58, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Business', 1);
+
+-- Transaction 59
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-19', 59, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0015', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0016', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0017', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0018', 'Business', 2);
+
+-- Transaction 60
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-20', 60, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0019', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0020', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0021', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0022', 'Business', 2);
+
+-- Transaction 61
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-01', 61, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0027', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0028', 'Business', 3);
+
+-- Transaction 62
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-02', 62, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0029', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0030', 'Economy', 1);
+
+-- Transaction 63
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-03', 63, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0031', 'Business', 4),
+    (currval('transactions_transaction_id_seq'), 'FL0032', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0033', 'Business', 2);
+
+-- Transaction 64
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-04', 64, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0029', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0030', 'Economy', 3);
+
+-- Transaction 65
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-05', 65, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0031', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0032', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0033', 'Business', 4);
+
+-- Transaction 66
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-06', 66, 'Failed', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0027', 'Business', 1);
+
+-- Transaction 67
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-07', 67, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0028', 'Economy', 4);
+
+-- Transaction 68
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-08', 68, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0025', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Economy', 2);
+
+-- Transaction 69
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-09', 69, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0027', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0028', 'Economy', 3);
+
+-- Transaction 70
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-10', 70, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0029', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0030', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0031', 'Economy', 1);
+
+-- Transaction 71
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-11', 71, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0032', 'Economy', 4),
+    (currval('transactions_transaction_id_seq'), 'FL0033', 'Business', 2);
+
+-- Transaction 72
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-12', 72, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0027', 'Economy', 3);
+
+-- Transaction 73
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-13', 73, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0028', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0029', 'Economy', 1);
+
+-- Transaction 74
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-14', 74, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0030', 'Business', 4);
+
+-- Transaction 75
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-15', 75, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0031', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0032', 'Business', 1);
+
+-- Transaction 76
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-16', 76, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0033', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Business', 2);
+
+-- Transaction 77
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-17', 77, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0027', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0028', 'Economy', 4);
+
+-- Transaction 78
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-18', 78, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0029', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0030', 'Economy', 2);
+
+-- Transaction 79
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-19', 79, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0031', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0032', 'Economy', 3);
+
+-- Transaction 80
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-20', 80, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0033', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0026', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 81
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-21', 81, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Business', 3);
+
+-- Thêm dữ liệu cho customer_id 82
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-22', 82, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Economy', 1);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id từ 83 đến 100
+-- Copy các đoạn lệnh tương tự như trên và điều chỉnh customer_id và ngày đặt vé
+
+-- Thêm dữ liệu cho customer_id 83
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-23', 83, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Business', 4),
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Business', 2);
+
+-- Thêm dữ liệu cho customer_id 84
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-24', 84, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 85
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-25', 85, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Business', 4);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id từ 86 đến 100
+-- Copy các đoạn lệnh tương tự như trên và điều chỉnh customer_id và ngày đặt vé
+
+-- Thêm dữ liệu cho customer_id 86
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-26', 86, 'Failed', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Business', 1);
+
+-- Thêm dữ liệu cho customer_id 87
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-27', 87, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Economy', 4);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id từ 88 đến 100
+-- Copy các đoạn lệnh tương tự như trên và điều chỉnh customer_id và ngày đặt vé
+-- Thêm dữ liệu cho customer_id 88
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-28', 88, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 89
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-29', 89, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Economy', 3);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id từ 90 đến 100
+-- Copy các đoạn lệnh tương tự như trên và điều chỉnh customer_id và ngày đặt vé
+
+-- Thêm dữ liệu cho customer_id 90
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-30', 90, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Business', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 91
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-12-31', 91, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Economy', 4),
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Business', 2);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id từ 92 đến 100
+-- Copy các đoạn lệnh tương tự như trên và điều chỉnh customer_id và ngày đặt vé
+
+-- Thêm dữ liệu cho customer_id 92
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-01', 92, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 93
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-02', 93, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 94
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-03', 94, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 95
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-04', 95, 'Failed', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Business', 4);
+
+-- Thêm dữ liệu cho customer_id 96
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-05', 96, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Business', 1);
+
+-- Thêm dữ liệu cho customer_id 97
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-06', 97, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Economy', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0034', 'Business', 2);
+
+-- Thêm dữ liệu cho customer_id 98
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-07', 98, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0035', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0036', 'Economy', 4);
+
+-- Thêm dữ liệu cho customer_id 99
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-08', 99, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0037', 'Business', 3),
+    (currval('transactions_transaction_id_seq'), 'FL0038', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 100
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2024-01-09', 100, 'Success', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0039', 'Business', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0040', 'Economy', 3);
