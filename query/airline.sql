@@ -137,19 +137,3 @@ CREATE TABLE transactions_order (
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
-CREATE OR REPLACE FUNCTION reset_order_id_sequence ()
-    RETURNS TRIGGER
-    AS $$
-BEGIN
-    -- Reset the sequence to 1
-    EXECUTE 'ALTER SEQUENCE transactions_order_order_id_seq RESTART WITH 1';
-    RETURN NEW;
-END;
-$$
-LANGUAGE plpgsql;
-
--- Create a trigger to call the function after an insert on the transactions table
-CREATE TRIGGER reset_order_id_trigger
-    AFTER INSERT ON transactions
-    FOR EACH STATEMENT
-    EXECUTE FUNCTION reset_order_id_sequence();
