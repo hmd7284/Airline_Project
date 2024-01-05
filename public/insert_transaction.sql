@@ -4,16 +4,6 @@ SELECT
 
 INSERT INTO transactions (booking_date, customer_id, status, discount)
 VALUES
-    ('2023-12-01', 1, 'Success', NULL),
-    ('2023-12-02', 2, 'Success', NULL),
-    ('2023-12-03', 3, 'Success', NULL),
-    ('2023-12-04', 4, 'Success', NULL),
-    ('2023-12-05', 5, 'Success', NULL),
-    ('2023-12-06', 6, 'Success', NULL),
-    ('2023-12-07', 7, 'Success', NULL),
-    ('2023-12-08', 8, 'Success', NULL),
-    ('2023-12-09', 9, 'Success', NULL),
-    ('2023-12-10', 10, 'Success', NULL),
     ('2023-12-11', 11, 'Success', NULL),
     ('2023-12-12', 12, 'Success', NULL),
     ('2023-12-13', 13, 'Success', NULL),
@@ -87,26 +77,6 @@ VALUES
 
 INSERT INTO transactions_order (transaction_id, flight_code, type, airfare, price, quantity, total)
 VALUES
-    (1, 'FL0001', 'Business', 'BHANSGN', 750.0, 2, 1500.0),
-    (1, 'FL0002', 'Economy', 'EHANDAD', 450.0, 1, 450.0),
-    (2, 'FL0003', 'Business', 'BSGNHAN', 720.0, 3, 2160.0),
-    (2, 'FL0004', 'Business', 'BDADHAN', 825.0, 2, 1650.0),
-    (3, 'FL0005', 'Economy', 'ESGNDAD', 520.0, 1, 520.0),
-    (3, 'FL0006', 'Business', 'BDADSGN', 795.0, 2, 1590.0),
-    (4, 'FL0061', 'Business', 'BHANSGN', 750.0, 1, 750.0),
-    (4, 'FL0062', 'Economy', 'EHANDAD', 450.0, 2, 900.0),
-    (5, 'FL0063', 'Business', 'BSGNHAN', 720.0, 1, 720.0),
-    (5, 'FL0064', 'Business', 'BDADHAN', 825.0, 3, 2475.0),
-    (6, 'FL0065', 'Economy', 'ESGNDAD', 520.0, 2, 1040.0),
-    (6, 'FL0066', 'Business', 'BDADSGN', 795.0, 1, 795.0),
-    (7, 'FL0001', 'Economy', 'EHANSGN', 500.0, 3, 1500.0),
-    (7, 'FL0002', 'Business', 'BHANDAD', 675.0, 2, 1350.0),
-    (8, 'FL0003', 'Economy', 'ESGNHAN', 480.0, 1, 480.0),
-    (8, 'FL0004', 'Business', 'BDADHAN', 825.0, 3, 2475.0),
-    (9, 'FL0005', 'Business', 'BSGNDAD', 780.0, 2, 1560.0),
-    (9, 'FL0006', 'Economy', 'EDADSGN', 530.0, 1, 530.0),
-    (10, 'FL0061', 'Economy', 'EHANSGN', 500.0, 2, 1000.0),
-    (10, 'FL0062', 'Business', 'BHANDAD', 675.0, 1, 675.0),
     (11, 'FL0001', 'Business', 'BHANSGN', 750.0, 2, 1500.0),
     (11, 'FL0002', 'Economy', 'EHANDAD', 450.0, 1, 450.0),
     (12, 'FL0003', 'Business', 'BSGNHAN', 720.0, 3, 2160.0),
