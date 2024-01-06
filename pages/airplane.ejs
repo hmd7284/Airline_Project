@@ -104,7 +104,12 @@
                 </select>
                 <br>
                 <br>
-                <button type="submit">Update Airplane Status</button>
+                <span style="color: red;">
+    NOTE: Aircraft can only be deactivated if there is no associated flight at the moment.!! Deactivating aircraft will cancel all upcoming flights in the future!!.
+  </span> 
+          <br>
+          <br>
+                <button type="submit" onclick="return confirm('Are you sure you want to update the status of this airplane?')">Update Airplane Status</button>
               </form>
             </div>
             <div class="table-container">

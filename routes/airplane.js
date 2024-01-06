@@ -15,46 +15,6 @@ async function fetchAircraftFromDatabase() {
   }
 }
 
-async function checkFlightsForAircraft(req, aircraftCode, action) {
-  const currentTime = new Date();
-
-  // Check for associated flights
-  const result = await db.query(
-    "SELECT * FROM flight_schedule WHERE aircraft = $1",
-    [aircraftCode],
-  );
-
-  for (const flight of result.rows) {
-    // Check if the flight has already departed and not arrived yet
-    const departureTime = new Date(flight.departure_time);
-    const arrivalTime = new Date(flight.arrival_time);
-
-    // Check if the flight has departed in the last hour or hasn't arrived yet
-    const hasAssociatedFlightsInAir = departureTime <= currentTime &&
-      arrivalTime >= currentTime;
-    const hasAssociatedFlightsInFuture = departureTime > currentTime;
-    if (hasAssociatedFlightsInFuture) {
-      if (action === "update") {
-        await db.query(
-          "DELETE FROM transactions_order WHERE flight_code = ANY( SELECT flight_code FROM flight_schedule WHERE aircraft = $1)",
-          [aircraftCode],
-        );
-      }
-    }
-    if (hasAssociatedFlightsInAir) {
-      const error_message =
-        `Aircraft ${aircraftCode} cannot be deactivated. Associated flight is currently in the air.`;
-      req.flash(
-        "error",
-        error_message,
-      );
-      return true; // Aircraft cannot be deactivated
-    }
-  }
-
-  return false; // No associated flights that prevent deactivation
-}
-
 router.get("/airplane", isLoggedInAdmin, async (req, res) => {
   try {
     const aircrafts = await fetchAircraftFromDatabase();
@@ -100,7 +60,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       [aircraftCode1],
     );
     const existingAircraft2 = await db.query(
-      "SELECT aircraft_name FROM aircraft WHERE aircraft_code = $1",
+      "SELECT aircraft_name,status FROM aircraft WHERE aircraft_code = $1",
       [aircraftCode2],
     );
     if (action === "add") {
@@ -144,8 +104,8 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
         const result = await db.query(
-          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code",
-          [status2, aircraftCode2],
+          "UPDATE aircraft SET status = 'Active' WHERE aircraft_code = $1 RETURNING aircraft_code",
+          [aircraftCode2],
         );
         if (result.rows.length > 0) {
           const success_message =
@@ -161,11 +121,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
       } else if (status2 === "Inactive") {
-        const hasAssociatedFlights = await checkFlightsForAircraft(
-          req,
-          aircraftCode2,
-          action,
-        );
         if (existingAircraft2.rows[0].status === "Inactive") {
           const error_message =
             `Aircraft with code ${aircraftCode2} is already Inactive!!`;
@@ -173,13 +128,38 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           res.redirect("/airplane");
           return;
         }
-        if (hasAssociatedFlights) {
+        const flightInAir = await db.query(
+          "SELECT flight_code FROM flight_schedule WHERE aircraft = $1 AND (current_timestamp(0) BETWEEN CAST(departure_date || ' ' || departure_time AS timestamp) AND CAST(arrival_date || ' ' || arrival_time AS timestamp))",
+          [aircraftCode2],
+        );
+        if (flightInAir.rows.length > 0) {
+          const error_message =
+            `Aircraft ${aircraftCode2} cannot be deactivated. Associated flight is currently in the air.`;
+          req.flash("error", error_message);
           res.redirect("/airplane");
           return;
         }
+
+        const upcomingFlights = await db.query(
+          "SELECT flight_code FROM flight_schedule WHERE aircraft = $1 AND CAST(departure_date || ' ' || departure_time AS timestamp) > current_timestamp(0)",
+          [aircraftCode2],
+        );
+        const upcomingFlightsresult = upcomingFlights.rows[0].flight_code;
+        if (upcomingFlights.rows.length > 0) {
+          const cancelFlights = await db.query(
+            "UPDATE flight_schedule SET status = 'Canceled' where flight_code IN ($1)",
+            [upcomingFlightsresult],
+          );
+          if (cancelFlights.rows.length > 0) {
+            const deleteorders = await db.query(
+              "DELETE FROM transactions_order where flight_code IN ($1)",
+              [upcomingFlightsresult],
+            );
+          }
+        }
         const result = await db.query(
-          "UPDATE aircraft SET status = $1 WHERE aircraft_code = $2 RETURNING aircraft_code",
-          [status2, aircraftCode2],
+          "UPDATE aircraft SET status = 'Inactive' WHERE aircraft_code = $1 RETURNING aircraft_code",
+          [aircraftCode2],
         );
         if (result.rows.length > 0) {
           const success_message =
