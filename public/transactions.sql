@@ -3013,3 +3013,323 @@ VALUES ('2023-03-20', 340, 'Success', NULL);
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
 VALUES
     (currval('transactions_transaction_id_seq'), 'FL0115', 'Business', 1);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id còn lại từ 341 đến 350
+-- Đổi giá trị của booking_date và flight_code ngẫu nhiên cho mỗi customer_id
+-- Đảm bảo giữ nguyên cấu trúc của các câu lệnh INSERT
+
+-- Thêm dữ liệu cho customer_id 341
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-21', 341, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 342
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-22', 342, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 343
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-23', 343, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 344
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-24', 344, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 345
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-25', 345, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 346
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-26', 346, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 347
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-27', 347, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 348
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-28', 348, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 349
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-29', 349, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 350
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-03-30', 350, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id còn lại từ 351 đến 360
+-- Đổi giá trị của booking_date và flight_code ngẫu nhiên cho mỗi customer_id
+-- Đảm bảo giữ nguyên cấu trúc của các câu lệnh INSERT
+
+-- Thêm dữ liệu cho customer_id 351
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-01', 351, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 352
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-02', 352, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 353
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-03', 353, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0118', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 354
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-04', 354, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 355
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-05', 355, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 356
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-06', 356, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0118', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 357
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-07', 357, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 358
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-08', 358, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 359
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-09', 359, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0118', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 360
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-10', 360, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 1);
+
+
+-- Tiếp tục thêm dữ liệu cho các customer_id còn lại từ 361 đến 376
+-- Đổi giá trị của booking_date và flight_code ngẫu nhiên cho mỗi customer_id
+-- Đảm bảo giữ nguyên cấu trúc của các câu lệnh INSERT
+
+-- Thêm dữ liệu cho customer_id 361
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-11', 361, 'Success', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0110', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0111', 'Economy', 2);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id còn lại từ 362 đến 376...
+-- (Đổi giá trị của booking_date và flight_code ngẫu nhiên cho mỗi customer_id)
+
+-- Thêm dữ liệu cho customer_id 362
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-12', 362, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0112', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0113', 'Economy', 3);
+
+-- Tiếp tục thêm dữ liệu cho các customer_id còn lại từ 363 đến 376...
+-- (Đổi giá trị của booking_date và flight_code ngẫu nhiên cho mỗi customer_id)
+
+-- Thêm dữ liệu cho customer_id 363
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-13', 363, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0114', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0115', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 364
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-14', 364, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 365
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-15', 365, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0118', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0119', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 366
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-16', 366, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0110', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0111', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 367
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-17', 367, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0112', 'Economy', 2),
+    (currval('transactions_transaction_id_seq'), 'FL0113', 'Economy', 1);
+
+-- Thêm dữ liệu cho customer_id 368
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-18', 368, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0114', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0115', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 369
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-19', 369, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 370
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-20', 370, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0118', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 371
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-21', 371, 'Success', 'DIS70');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0119', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 372
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-22', 372, 'Failed', 'DIS30');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0110', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 373
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-23', 373, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0111', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0112', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 374
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-24', 374, 'Success', 'DIS50');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0113', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0114', 'Economy', 2);
+
+-- Thêm dữ liệu cho customer_id 375
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-25', 375, 'Failed', 'DIS10');
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0115', 'Economy', 3);
+
+-- Thêm dữ liệu cho customer_id 376
+INSERT INTO transactions (booking_date, customer_id, status, discount)
+VALUES ('2023-04-26', 376, 'Success', NULL);
+
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+VALUES
+    (currval('transactions_transaction_id_seq'), 'FL0116', 'Economy', 1),
+    (currval('transactions_transaction_id_seq'), 'FL0117', 'Economy', 2);
+
