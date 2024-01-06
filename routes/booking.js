@@ -19,7 +19,7 @@ async function fetchAirportsFromDatabase() {
 
   try {
     const result = await client.query(
-      "SELECT airport_code,address FROM airport",
+      "SELECT airport_code, address FROM airport",
     );
     console.log(result.rows);
     return result.rows;
@@ -50,48 +50,9 @@ async function SearchResults(
   }
 }
 
-// router.get("/flight_search", isLoggedOut, (req, res) => {
-//   try {
-//     const airports = fetchAirportsFromDatabase();
-//     res.render("user_booking.ejs", {
-//       airports,
-//       scrollToResults: false,
-//       scrollToSearch: true,
-//       results: [], // or any other default value
-//     });
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     res.status(500).json({ message: "Internal server error" });
-// }
 router.get("/flight_search", isLoggedIn, async (req, res) => {
   try {
-    const { origin, destination, departureDate, numberOfTickets } = req.query;
-    console.log(req.query);
     const airports = await fetchAirportsFromDatabase();
-    if (origin && destination && departureDate && numberOfTickets) {
-      if (origin === destination) {
-        req.flash("errors", "Origin and destination cannot be the same!");
-        res.render("user_booking.ejs", {
-          airports,
-          results: [], // or any other default value
-          scrollToResults: false,
-          scrollToSearch: true,
-        });
-      }
-      const results = await SearchResults(
-        origin,
-        destination,
-        departureDate,
-        numberOfTickets,
-      );
-      console.log(results);
-      res.render("user_booking.ejs", {
-        airports,
-        results,
-        scrollToResults: true,
-        scrollToSearch: false,
-      });
-    }
     res.render("user_booking.ejs", {
       airports,
       scrollToResults: false,
@@ -104,10 +65,66 @@ router.get("/flight_search", isLoggedIn, async (req, res) => {
   }
 });
 
-router.get("/flight_booking", isLoggedIn, (req, res) => {
-  res.render("user_booking.ejs", {
-    messages: req.flash("errors"),
-  });
+router.get("/flight_search_results", isLoggedIn, async (req, res) => {
+  try {
+    const { origin, destination, departureDate, numberOfTickets } = req.query;
+    const airports = await fetchAirportsFromDatabase();
+
+    if (origin && destination && departureDate && numberOfTickets) {
+      if (origin === destination) {
+        req.flash("errors", "Origin and destination cannot be the same!");
+        res.render("user_booking.ejs", {
+          airports,
+          results: [],
+          scrollToResults: false,
+          scrollToSearch: true,
+        });
+        return;
+      }
+
+      const results = await SearchResults(
+        origin,
+        destination,
+        departureDate,
+        numberOfTickets,
+      );
+
+      res.render("user_booking.ejs", {
+        airports,
+        results,
+        scrollToResults: true,
+        scrollToSearch: false,
+      });
+      return;
+    }
+
+    // Render the search form when parameters are missing
+    res.render("user_booking.ejs", {
+      airports,
+      results: [],
+      scrollToResults: false,
+      scrollToSearch: true,
+    });
+  } catch (error) {
+    req.flash("errors", "Error fetching data");
+    console.error("Error fetching data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/flight_booking", isLoggedIn, async (req, res) => {
+  try {
+    const airports = await fetchAirportsFromDatabase();
+    res.render("user_booking.ejs", {
+      airports,
+      scrollToResults: false,
+      scrollToSearch: false,
+    });
+  } catch (error) {
+    req.flash("errors", "Error fetching data");
+    console.error("Error fetching data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.post("/flight_booking", isLoggedIn, async (req, res) => {
@@ -119,20 +136,23 @@ router.post("/flight_booking", isLoggedIn, async (req, res) => {
       [fcode],
     );
     if (flight_query.rows.length === 0) {
+      console.log("Flight not found!");
       req.flash(
         "errors",
         "Flight not found! Make sure you enter the correct flight code.",
       );
-      res.redirect("/flight_booking");
+      res.redirect("/flight_search_results");
       return;
     }
     const flight = flight_query.rows[0];
     if (type === "Business" && flight.business_seat < amount) {
+      console.log("Not enough business seats available!");
       req.flash("errors", "Not enough business seats available!");
       res.redirect("/flight_booking");
       return;
     }
     if (type === "Economy" && flight.economy_seat < amount) {
+      console.log("Not enough economy seats available!");
       req.flash("errors", "Not enough economy seats available!");
       res.redirect("/flight_booking");
       return;
@@ -147,10 +167,11 @@ router.post("/flight_booking", isLoggedIn, async (req, res) => {
       [transactionId, fcode, type, amount],
     );
     if (orderResult.rows.length > 0) {
+      console.log("Successfully booked ticket!");
       req.flash("sucess", "Successfully booked ticket!");
-      res.redirect("/flight_booking");
-      return;
+      res.redirect("/confirmation");
     } else {
+      console.log("Error during booking");
       req.flash("errors", "Error during booking");
       res.redirect("/flight_booking");
       return;

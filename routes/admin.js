@@ -19,11 +19,13 @@ const airportRouter = require("./airport");
 const airplaneRouter = require("./airplane");
 const scheduleRouter = require("./schedule");
 const flightRouteRouter = require("./flight_route");
+const discountRouter = require("./sales");
 router.use("/", loginlogoutRouter);
 router.use("/", airportRouter);
 router.use("/", airplaneRouter);
 router.use("/", scheduleRouter);
 router.use("/", flightRouteRouter);
+router.use("/", discountRouter);
 // async function fetchAirportFromDatabase() {
 //   const client = await db.connect();
 //   try {

@@ -7,28 +7,12 @@ router.get("/home_admin", (req, res) => {
   res.render("home_admin.ejs");
 });
 
-router.get("/flight_time", (req, res) => {
-  res.render("flight_time.ejs");
-});
-
-router.get("/maintenance", (req, res) => {
-  res.render("maintenance.ejs");
-});
-
 router.get("/revenue", (req, res) => {
   res.render("revenue.ejs");
 });
 
-router.get("/sales", (req, res) => {
-  res.render("sales.ejs");
-});
-
 router.get("/staff", (req, res) => {
   res.render("staff.ejs");
-});
-
-router.get("/status", (req, res) => {
-  res.render("status.ejs");
 });
 
 module.exports = router;

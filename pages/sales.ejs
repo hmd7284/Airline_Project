@@ -5,8 +5,16 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="admin/admin.css">
+	<link rel="stylesheet" type="text/css" href="admin/adminset.css">
 </head>
+<style>
+      #flash-message {
+        position: fixed;
+        top: 120px;
+        right: 10px;
+        z-index: 99999;
+      }
+    </style>
 
 <body>
 
@@ -38,17 +46,104 @@
 		</div>
 	</nav>
   <!--NavBar End-->
-  <h2>Sales</h2>
-    <form>
+  <% if (message.success) { %>
+      <div id="flash-message" class="alert alert-success" role="alert">
+        <%= message.success %>
+      </div>
+      <% } else if (message.error) { %>
+        <div id="flash-message" class="alert alert-danger" role="alert">
+          <%= message.error %>
+        </div>
+        <% } %>
+    <div class="flex-container">
+            <div class="form-container">
+    <form action="/sales" method="post">
+        <h2>Add discount</h2>
+          <input type="hidden" name="action" value="add">
         <label for="discountCode">Discount Code:</label>
-        <input type="text" id="discountCode" name="discountCode">
+        <input type="text" id="discountCode" name="discountCode" pattern="DIS\d{2}" maxlength="5" placeholder="Enter a discount code (e.g., DIS40)" required>
         <br>
-        <label for="discountLevel">Discount Level:</label>
-        <input type="number" id="discountLevel" name="discountLevel">
+        <label for="titlle">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="discountAmount">Discount Amount:</label>
+        <input type="number" id="discountAmount" name="discountAmount" required>
         <br>
+        <label for="Description">Description:</label>
+        <input type="text" id="Description" name="Description">
+      <br>
         <button type="submit">Add Discount Code</button>
-        <button type="submit">Delete Discount Code</button>
     </form>
+        <br>
+      <form action="/sales" method="post">
+        <h2>Delete discount</h2>
+          <input type="hidden" name="action" value="delete">
+        <label for="discountCode">Discount Code:</label>
+        <input type="text" id="discountCode" name="discountCode" pattern="DIS\d{2}" maxlength="5" placeholder="Enter a discount code (e.g., DIS40)" required>
+        <span style="color: red;">
+    NOTE: Deleting discount code will delete all related sales records. Be careful!
+  </span> 
+          <br>
+          <br>
+          <button type="submit" onclick="return confirm('Are you sure you want to delete this discount code?')">Delete Discount Code</button>
+          </form>
+          <br>
+          <br>
+          </div>
+      <div class="table-container">
+              <div class="content-container">
+                <table>
+                  <h2>Discount Information</h2>
+                  <br>
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Discount Code</th>
+                      <th>Title</th>
+                      <th>Amount</th>
+                      <th>Description</th>
+                                          </tr>
+                  </thead>
+                  <tbody>
+                    <% discounts.forEach((discount, index)=> { %>
+                      <tr>
+                        <td>
+                          <%= startIdx + index + 1 %>
+                        </td>
+                        <td>
+                          <%= discount.discount_code %>
+                        </td>
+                        <td>
+                          <%= discount.title %>
+                        </td>
+                        <td>
+                          <%= discount.amount %>
+                        </td>
+                        <td>
+                          <%= discount.description %>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+                <br>
+                <!-- Pagination links -->
+                <div class="pagination">
+                  <% for (let i=1; i <=pageCount; i++) { %>
+                    <a href="?page=<%= i %>" <%=i===currentPage ? ' style="font-weight: bold;"' : '' %>><%= i %></a>
+                    <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+          <script>
+            $(document).ready(function () {
+              $("#flash-message").delay(5000).fadeOut("slow");
+            }); 
+          </script>
 
 </body>
 </html>
