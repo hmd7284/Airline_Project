@@ -23,16 +23,16 @@ CREATE TABLE countries (
 CREATE TABLE cities (
     city_code varchar(3) PRIMARY KEY,
     city_name varchar(255) NOT NULL,
-    country varchar(3) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT cit_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code)
+    country varchar(3) NOT NULL,
+    CONSTRAINT cit_coun_fk FOREIGN KEY (country) REFERENCES countries (country_code) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE airport (
     airport_code varchar(3) PRIMARY KEY,
     airport_name varchar(255) NOT NULL,
     address varchar(255),
-    city varchar(3) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code)
+    city varchar(3) NOT NULL,
+    CONSTRAINT ap_ct_fk FOREIGN KEY (city) REFERENCES cities (city_code) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE account (
@@ -54,18 +54,18 @@ CREATE TABLE customers (
 
 CREATE TABLE route (
     route_code varchar(6) PRIMARY KEY,
-    origin varchar(3) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
-    destination varchar(3) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT rto_ap_fk FOREIGN KEY (origin) REFERENCES airport (airport_code),
-    CONSTRAINT rtd_ap_fk FOREIGN KEY (destination) REFERENCES airport (airport_code)
+    origin varchar(3) NOT NULL,
+    destination varchar(3) NOT NULL,
+    CONSTRAINT rto_ap_fk FOREIGN KEY (origin) REFERENCES airport (airport_code) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT rtd_ap_fk FOREIGN KEY (destination) REFERENCES airport (airport_code) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE airfare (
     airfare_code varchar(7) PRIMARY KEY,
     type VARCHAR(30) NOT NULL,
-    route varchar(6) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
+    route varchar(6) NOT NULL,
     price double precision NOT NULL,
-    CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
+    CONSTRAINT af_rt_fk FOREIGN KEY (route) REFERENCES route (route_code) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
 
@@ -83,12 +83,12 @@ CREATE TABLE flight_schedule (
     arrival_date date NOT NULL,
     arrival_time time NOT NULL,
     status varchar(30) DEFAULT 'Success',
-    aircraft varchar(5) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
-    route varchar(6) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
+    aircraft varchar(5) NOT NULL,
+    route varchar(6) NOT NULL,
     business_seat integer,
     economy_seat integer,
-    CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code),
-    CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code),
+    CONSTRAINT fsch_acr_fk FOREIGN KEY (aircraft) REFERENCES aircraft (aircraft_code) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fsch_rt_fk FOREIGN KEY (route) REFERENCES route (route_code) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fsch_check CHECK (arrival_date >= departure_date),
     CONSTRAINT fsch_check_stt CHECK (status = 'Success' OR status = 'Canceled')
 );
@@ -112,29 +112,27 @@ CREATE TABLE discount (
 CREATE TABLE transactions (
     transaction_id serial PRIMARY KEY,
     booking_date date NOT NULL,
-    customer_id int NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
+    customer_id int NOT NULL,
     status varchar(10) DEFAULT 'Success',
-    discount varchar(5) ON DELETE CASCADE ON UPDATE CASCADE,
+    discount varchar(5),
     total_amount double precision DEFAULT 0,
     CONSTRAINT check_status CHECK (status = 'Success' OR status = 'Failed'),
-    CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code),
-    CONSTRAINT trans_cus_fk FOREIGN KEY (customer_id) REFERENCES customers (id)
+    CONSTRAINT trans_dis_fk FOREIGN KEY (discount) REFERENCES discount (discount_code) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT trans_cus_fk FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Create the transactions_order table
 CREATE TABLE transactions_order (
     order_id serial,
     transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    flight_code varchar(6) NOT NULL ON DELETE CASCADE ON UPDATE CASCADE,
+    flight_code varchar(6) NOT NULL,
     type VARCHAR(30),
-    airfare varchar(7) ON DELETE CASCADE ON UPDATE CASCADE,
+    airfare varchar(7),
     price double precision,
     quantity integer NOT NULL,
     total double precision,
     CONSTRAINT trans_order_pk PRIMARY KEY (transaction_id, order_id),
-    CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code),
-    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code),
+    CONSTRAINT order_flight_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT order_airfare_fk FOREIGN KEY (airfare) REFERENCES airfare (airfare_code) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT af_type_check CHECK (type = 'Economy' OR type = 'Business')
 );
-
-
