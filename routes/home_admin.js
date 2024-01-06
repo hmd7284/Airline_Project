@@ -7,14 +7,6 @@ router.get("/home_admin", (req, res) => {
   res.render("home_admin.ejs");
 });
 
-router.get("/admin_login", (req, res) => {
-  res.render("admin_login.ejs");
-});
-
-router.get("/airport", (req, res) => {
-  res.render("airport.ejs");
-});
-
 router.get("/flight_time", (req, res) => {
   res.render("flight_time.ejs");
 });

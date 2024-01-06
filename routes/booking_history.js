@@ -116,7 +116,7 @@ async function checkUncancellableOrders(transactionId) {
     if (timeDifferenceInHours === undefined) {
       uncancellableOrders.push(order.order_id);
     } else if (timeDifferenceInHours !== undefined) {
-      if (Math.abs(timeDifferenceInHours) < 6) {
+      if (Math.abs(timeDifferenceInHours) < 3) {
         uncancellableOrders.push(order.order_id);
       }
     }
@@ -175,7 +175,7 @@ router.post(
         return;
       }
       const result = await db.query(
-        "DELETE FROM transactions_order WHERE transaction_id = $1 RETURNING transaction_id",
+        "UPDATE transactions SET status = 'Failed' WHERE transaction_id = $1 RETURNING transaction_id",
         [transactionId],
       );
       if (result.rows.length === 0) {
@@ -238,7 +238,7 @@ router.post(
             timeDifferenceInSeconds < 60 && timeDifferenceInSeconds > 0
           ) {
             const error_message =
-              `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
+              `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
             req.flash("error", error_message);
             res.redirect("/booking_history");
             return;
@@ -253,7 +253,7 @@ router.post(
           timeDifferenceInMinutes < 60 && timeDifferenceInMinutes > 0
         ) {
           const error_message =
-            `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
+            `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
           req.flash("error", error_message);
           res.redirect("/booking_history");
           return;
@@ -269,10 +269,10 @@ router.post(
 
       if (
         timeDifferenceInHours !== undefined &&
-        Math.abs(timeDifferenceInHours) < 6
+        Math.abs(timeDifferenceInHours) < 3
       ) {
         const error_message =
-          `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
+          `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
         req.flash("error", error_message);
         res.redirect("/booking_history");
         return;

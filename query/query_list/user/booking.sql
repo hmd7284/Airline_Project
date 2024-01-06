@@ -13,6 +13,7 @@ SELECT
     r.origin,
     r.destination,
     a.aircraft_code,
+    f.status,
     a.aircraft_name,
     af1.price AS economy_price,
     af2.price AS business_price
@@ -28,6 +29,8 @@ WHERE
     r.origin = $1
     AND r.destination = $2
     AND f.departure_date = $3
+    AND f.status = 'Success'
+    AND ((CAST(f.departure_date || ' ' || f.departure_time AS timestamp))::timestamptz >= CURRENT_TIMESTAMP + INTERVAL '4 hours')
     AND (f.business_seat + f.economy_seat >= $4)
 ORDER BY
     f.departure_time ASC;
@@ -36,3 +39,7 @@ ORDER BY
 -- $2: destination airport code
 -- $3: departure date
 -- $4: number of tickets
+
+-- 3. Booking
+-- 3.1 Create transaction
+

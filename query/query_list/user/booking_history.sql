@@ -37,7 +37,7 @@ WHERE
     t.customer_id = $1
     AND t.booking_date BETWEEN $2 AND $3;
 
--- 3. Cancel a transaction
+-- 3. Delete a transaction
 -- 3.1 Check if transaction is cancellable by checking the time difference between departure timestamp and current_timestamp
 SELECT
     o.order_id,
@@ -49,12 +49,16 @@ WHERE
     o.transaction_id = $1;
 
 -- 3.2 Cancel transaction
-DELETE FROM transactions_order
-WHERE transaction_id = $1
+UPDATE
+    transactions_order
+SET
+    status = 'Failed'
+WHERE
+    transaction_id = $1
 RETURNING
     transaction_id;
 
--- 4. Cancel order
+-- 4. Delete order
 -- 4.1 Check if order is cancellable by checking the time difference between departure timestamp and current_timestamp
 SELECT
     (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) AS time_difference
