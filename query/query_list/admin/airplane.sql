@@ -7,7 +7,7 @@ FROM
 -- I. Insert a new Aircraft
 -- 1. Check if the aircraft already exists
 SELECT
-    *
+    aircraft_name
 FROM
     aircraft
 WHERE
