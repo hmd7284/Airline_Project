@@ -1,0 +1,14 @@
+How to use cho các a zai generate data
+Bước 1 vô CMD cài 
+
+pip install psycopg2-binary
+pip install numpy
+
+Bước 2 để chạy file thì vô CMD chạy 
+
+python ten_file.py
+
+Lưu ý: Nhớ thay tên đổi họ trong 2 file ở phần database vì nó đang connect với em, sau khi tạo data thì check giúp em 
+vì lượng data rất lớn em ko check hết được, cứ coi 1000 data đầu oke thì thôi nha
+
+
