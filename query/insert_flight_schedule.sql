@@ -60,6 +60,26 @@ CREATE OR REPLACE TRIGGER check_update_ac
     WHEN (OLD.aircraft IS DISTINCT FROM NEW.aircraft)
     EXECUTE PROCEDURE check_insert_update_ac_func ();
 
+CREATE OR REPLACE FUNCTION delete_order_trigger ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Check if the flight status is being set to 'Canceled'
+    IF NEW.status = 'Canceled' AND OLD.status != 'Canceled' THEN
+        -- Delete all orders related to the canceled flight
+        DELETE FROM transactions_order
+        WHERE flight_code = NEW.flight_code;
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER delete_order_trigger
+    AFTER UPDATE ON flight_schedule
+    FOR EACH ROW
+    EXECUTE FUNCTION delete_order_trigger ();
+
 -- Insert 60 records into flight_schedule
 INSERT INTO flight_schedule (flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route)
     VALUES ('FL0001', '2024-01-01', '08:00:00', '2024-01-01', '10:30:00', 'AC001', 'SGNHAN'),

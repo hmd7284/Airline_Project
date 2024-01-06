@@ -104,14 +104,29 @@ WHERE
 RETURNING
     flight_code;
 
--- 2.4 Remove orders
-DELETE FROM transactions_order
-WHERE flight_code = $1
-RETURNING
-    order_id;
+-- 2.4. Trigger to delete all associated tickets
+CREATE OR REPLACE FUNCTION delete_order_trigger ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Check if the flight status is being set to 'Canceled'
+    IF NEW.status = 'Canceled' AND OLD.status != 'Canceled' THEN
+        -- Delete all orders related to the canceled flight
+        DELETE FROM transactions_order
+        WHERE flight_code = NEW.flight_code;
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER delete_order_trigger
+    AFTER UPDATE ON flight_schedule
+    FOR EACH ROW
+    EXECUTE FUNCTION delete_order_trigger ();
 
 -- 3. Update flight time
---.2.1 Check if flight exists and get departure,arrival timestamp
+--.3.1 Check if flight exists and get departure,arrival timestamp
 SELECT
     (CAST(departure_date || ' ' || departure_time AS timestamp)) AS departure_timestamp,
     (CAST(arrival_date || ' ' || arrival_time AS timestamp)) AS arrival_timestamp
@@ -120,7 +135,7 @@ FROM
 WHERE
     flight_code = $1;
 
--- 2.2. Check if flight is cancelled
+-- 3.2. Check if flight is cancelled
 SELECT
     status
 FROM
@@ -128,7 +143,7 @@ FROM
 WHERE
     flight_code = $1;
 
--- 2.3 Update flight time
+-- 3.3 Update flight time
 UPDATE
     flight_schedule
 SET

@@ -140,23 +140,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           return;
         }
 
-        const upcomingFlights = await db.query(
-          "SELECT flight_code FROM flight_schedule WHERE aircraft = $1 AND CAST(departure_date || ' ' || departure_time AS timestamp) > current_timestamp(0)",
-          [aircraftCode2],
-        );
-        const upcomingFlightsresult = upcomingFlights.rows[0].flight_code;
-        if (upcomingFlights.rows.length > 0) {
-          const cancelFlights = await db.query(
-            "UPDATE flight_schedule SET status = 'Canceled' where flight_code IN ($1)",
-            [upcomingFlightsresult],
-          );
-          if (cancelFlights.rows.length > 0) {
-            const deleteorders = await db.query(
-              "DELETE FROM transactions_order where flight_code IN ($1)",
-              [upcomingFlightsresult],
-            );
-          }
-        }
         const result = await db.query(
           "UPDATE aircraft SET status = 'Inactive' WHERE aircraft_code = $1 RETURNING aircraft_code",
           [aircraftCode2],

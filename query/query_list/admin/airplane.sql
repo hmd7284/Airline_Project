@@ -61,29 +61,30 @@ WHERE
     AND (current_timestamp(0) BETWEEN CAST(departure_date || ' ' || departure_time AS timestamp)
         AND CAST(arrival_date || ' ' || arrival_time AS timestamp));
 
--- 2.3 Check if the aircraft has any scheduled flights in the future
-SELECT
-    flight_code
-FROM
-    flight_schedule
-WHERE
-    aircraft = $1
-    AND CAST(departure_date || ' ' || departure_time AS timestamp) > current_timestamp(0);
+-- 2.3 Trigger to cancel all upcoming flights
+CREATE OR REPLACE FUNCTION cancel_flights_trigger ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    IF NEW.status = 'Inactive' THEN
+        UPDATE
+            flight_schedule
+        SET
+            status = 'Canceled'
+        WHERE
+            aircraft = NEW.aircraft_code
+            AND CAST(departure_date || ' ' || departure_time AS timestamp) > current_timestamp(0);
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
 
--- 2.3.1 If there are scheduled flights, cancel them
-UPDATE
-    flight_schedule
-SET
-    status = 'Canceled'
-WHERE
-    flight_code IN ($1);
+CREATE OR REPLACE TRIGGER cancel_flights_trigger
+    AFTER UPDATE ON aircraft
+    FOR EACH ROW
+    EXECUTE FUNCTION cancel_flights_trigger ();
 
--- $1: flight_code from 2.3
--- 2.3.2 Cancel all the tickets booked for the aircraft
-DELETE FROM transactions_order
-WHERE flight_code IN ($1);
-
--- $1: flight_code from 2.3
 -- 2.4 Set the status to 'Inactive'
 UPDATE
     aircraft
