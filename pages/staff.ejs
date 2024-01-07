@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="admin/admin.css">
+	<link rel="stylesheet" type="text/css" href="admin/adminset.css">
 </head>
 
 <body>
@@ -14,7 +14,7 @@
 	<nav class="navbar navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
-				<a href="/home_admin" class="navbar-brand"> GDC AIRWAYS</a>
+				<a href="/home_admin" class="navbar-brand"> KDD AIRWAYS</a>
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
 	        		<span class="sr-only">Toggle navigation</span>
 	      </button>
@@ -38,26 +38,52 @@
 		</div>
 	</nav>
   <!--NavBar End-->
-  <h2>Staff</h2>
+  <div class="flex-container">
+  <div class="form-container">
     <form>
-        <label for="staffCode">Code:</label>
-        <input type="text" id="staffCode" name="staffCode">
+        <h2>Working Schedule</h2>
         <br>
-        <label for="staffName">Name:</label>
-        <input type="text" id="staffName" name="staffName">
+        <label for="flight_code">Code:</label>
+        <input type="text" id="flight_code" name="flight_code">
         <br>
-        <label for="airport">Airport:</label>
-        <input type="text" id="airport" name="airport">
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email">
-        <br>
-        <label for="phoneNumber">Phone Number:</label>
-        <input type="text" id="phoneNumber" name="phoneNumber">
-        <br>
-        <button type="submit">Add Staff</button>
-        <button type="submit">Delete Staff</button>
+        <button type="submit">Search</button>
     </form>
-
+<br>
+  <form>
+    <h2>Employee Schedule</h2>
+    <br>
+    <label for="flight_code">Code:</label>
+    <input type="text" id="flight_code" name="flight_code">
+    <br>
+    <label for="employee_id">Employee ID:</label>
+    <input type="text" id="employee_id" name="employee_id">
+    <br>
+    <button type="submit">Add Schedule</button>
+    <button type="submit">Delete Schedule</button>
+</form>
+<br>
+  </div>
+  <div class="table-container">
+    <div class="content-container">
+    <table>
+        <h2>Flight Schedule Information</h2>
+        <br>
+        <h3 style="color: black; font-size: medium;">Flight Code:</h3>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Employee ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <td>No</td>
+                    <td><%= schedule.flight_code %></td>
+                </tr>
+        </tbody>
+    </table>
+<br>
+    </div>
+  </div>
+  </div>
 </body>
 </html>

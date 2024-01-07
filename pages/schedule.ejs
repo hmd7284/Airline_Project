@@ -101,8 +101,8 @@
                   <h2>Cancel Flight</h2>
                   <input type="hidden" name="action" value="delete">
                   <label for="flight_code">Flight Code:</label>
-                  <input type="text" id="flight_code" name="flight_code" pattern="FL\d{4}"
-                    placeholder="Enter a flight code (e.g., FL1234)" required>
+                  <input type="text" id="flight_code" name="flight_code" pattern="FL\d{5}"
+                    placeholder="Enter a flight code (e.g., FL12345)" required>
                   <button type="submit" onclick="return confirm('Are you sure you want to cancel this flight?')">Cancel
                     Flight</button>
                 </form>
@@ -111,8 +111,8 @@
                   <h2>Update Flight Time</h2>
                   <input type="hidden" name="action" value="update">
                   <label for="flight_code">Flight Code:</label>
-                  <input type="text" id="flight_code" name="flight_code" pattern="FL\d{4}"
-                    placeholder="Enter a flight code (e.g., FL1234)" required>
+                  <input type="text" id="flight_code" name="flight_code" pattern="FL\d{5}"
+                    placeholder="Enter a flight code (e.g., FL12345)" required>
                   <label for=" departure_date">Departure Date:</label>
                   <input type="date" id="departure_date" name="departure_date">
                   <br>
@@ -127,6 +127,23 @@
                   <br>
                   <button type="submit" onclick="return confirm('Are you sure you want to update schedule for this flight?')">Update Flight</button>
                 </form>
+                <br>
+                <form action="/schedule" method="post">
+                <h2>Delete Flight</h2>
+                <input type="hidden" name="action" value="del">
+                <label for="flight_code">Flight Code:</label>
+
+                <input type="text" id="flight_code" name="flight_code" pattern="FL\d{5}"
+                    placeholder="Enter a flight code (e.g., FL12345)" required>
+
+                                <br>
+
+                <button type="submit"
+                  onclick="return confirm('Are you sure you want to delete this flight? All associated orders will also be deleted!!')">Delete
+                  Flight</button>
+                <br>
+              </form>
+
               </div>
               <div class="table-container">
                 <div class="content-container">

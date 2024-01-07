@@ -46,6 +46,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
     action,
     aircraftCode1,
     aircraftCode2,
+    aircraftCode3,
     aircraftName,
     capacity,
     status1,
@@ -63,6 +64,11 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       "SELECT aircraft_name,status FROM aircraft WHERE aircraft_code = $1",
       [aircraftCode2],
     );
+    const existingAircraft3 = await db.query(
+      "SELECT aircraft_name,status FROM aircraft WHERE aircraft_code = $1",
+      [aircraftCode3],
+    );
+
     if (action === "add") {
       if (existingAircraft1.rows.length > 0) {
         const error_message =
@@ -83,6 +89,31 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       } else {
         const error_message =
           `Aircraft ${aircraftCode1} not added!! Please try again`;
+        req.flash("error", error_message);
+        res.redirect("/airplane");
+        return;
+      }
+    } else if (action === "delete") {
+      if (existingAircraft3.rows.length === 0) {
+        const error_message =
+          `Aircraft with code ${aircraftCode3} not found!! Cannot delete`;
+        req.flash("error", error_message);
+        res.redirect("/airplane");
+        return;
+      }
+      const result = await db.query(
+        "DELETE FROM aircraft WHERE aircraft_code = $1 RETURNING aircraft_code",
+        [aircraftCode3],
+      );
+      if (result.rows.length > 0) {
+        const success_message =
+          `Aircraft ${aircraftCode3} deleted successfully`;
+        req.flash("success", success_message);
+        res.redirect("/airplane");
+        return;
+      } else {
+        const error_message =
+          `Aircraft ${aircraftCode3} not deleted!! Please try again`;
         req.flash("error", error_message);
         res.redirect("/airplane");
         return;

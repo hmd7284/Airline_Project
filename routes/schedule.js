@@ -243,6 +243,29 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         res.redirect("/schedule");
         return;
       }
+    } else if (action === "del") {
+      if (existingFlight.rows.length === 0) {
+        const error_message =
+          `Flight with code ${flight_code} not found!! Cannot delete`;
+        req.flash("error", error_message);
+        res.redirect("/schedule");
+        return;
+      }
+      const result = await db.query(
+        "DELETE FROM flight_schedule WHERE flight_code = $1 RETURNING flight_code",
+        [flight_code],
+      );
+      if (result.rows.length > 0) {
+        const success_message = `Flight ${flight_code} deleted successfully`;
+        req.flash("success", success_message);
+        res.redirect("/schedule");
+      } else {
+        const error_message =
+          `Flight ${flight_code} not deleted!! Please try again`;
+        req.flash("error", error_message);
+        res.redirect("/schedule");
+        return;
+      }
     } else if (action === "update") {
       if (existingFlight.rows.length === 0) {
         const error_message =
