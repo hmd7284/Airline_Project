@@ -51,9 +51,9 @@ SELECT
 FROM
     flight_schedule
 WHERE
-    aircraft = $1
-    AND (CAST($2 || ' ' || $3 AS timestamp),
-        CAST($4 || ' ' || $5 AS timestamp))
+    aircraft = 'AC001'
+    AND (CAST('2024-01-01' || ' ' || '01:00' AS timestamp),
+        CAST('2024-01-01' || ' ' || '12:00' AS timestamp))
     OVERLAPS(CAST(departure_date || ' ' || departure_time AS timestamp), CAST(arrival_date || ' ' || arrival_time AS timestamp));
 
 -- 1.4.Check if aircraft is at the airport

@@ -26,12 +26,12 @@ FROM
     JOIN airfare af2 ON af2.route = r.route_code
         AND af2.TYPE = 'Business'
 WHERE
-    r.origin = $1
-    AND r.destination = $2
-    AND f.departure_date = $3
+    r.origin = 'HAN'
+    AND r.destination = 'SGN'
+    AND f.departure_date = '2024-01-01'
     AND f.status = 'Success'
     AND ((CAST(f.departure_date || ' ' || f.departure_time AS timestamp))::timestamptz >= CURRENT_TIMESTAMP + INTERVAL '4 hours')
-    AND (f.business_seat + f.economy_seat >= $4)
+    AND (f.business_seat + f.economy_seat >= 2)
 ORDER BY
     f.departure_time ASC;
 
