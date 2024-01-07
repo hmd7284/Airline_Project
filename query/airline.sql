@@ -77,7 +77,7 @@ CREATE TABLE employee (
 );
 
 CREATE TABLE flight_schedule (
-    flight_code varchar(6) PRIMARY KEY,
+    flight_code varchar(7) PRIMARY KEY,
     departure_date date NOT NULL,
     departure_time time NOT NULL,
     arrival_date date NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE flight_schedule (
 );
 
 CREATE TABLE flight_staff (
-    flight_code varchar(6) NOT NULL,
+    flight_code varchar(7) NOT NULL,
     employee_id int NOT NULL,
     PRIMARY KEY (flight_code, employee_id),
     CONSTRAINT staff_sch_fk FOREIGN KEY (flight_code) REFERENCES flight_schedule (flight_code) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -125,7 +125,7 @@ CREATE TABLE transactions (
 CREATE TABLE transactions_order (
     order_id serial,
     transaction_id integer REFERENCES transactions (transaction_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    flight_code varchar(6) NOT NULL,
+    flight_code varchar(7) NOT NULL,
     type VARCHAR(30),
     airfare varchar(7),
     price double precision,
