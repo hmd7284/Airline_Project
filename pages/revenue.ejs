@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="admin/admin.css">
+    <link rel="stylesheet" type="text/css" href="admin/adminset.css">
   </head>
 
   <body>
@@ -40,18 +40,36 @@
         </div>
       </div>
     </nav>
-    <!--NavBar End-->
-    <h2>Revenue</h2>
-    <form>
-      <label for="startDate">Start Date:</label>
-      <input type="date" id="startDate" name="startDate">
-      <br>
-      <label for="endDate">End Date:</label>
-      <input type="date" id="endDate" name="endDate">
-      <br>
-      <button type="submit">Get Revenue Statistics</button>
-    </form>
+    <div class="table-container">
+      <div class="content-container">
+               <table>
+            <h2>Revenue Statistics</h2>
+            <br>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>General information</th>
+                </tr>
+            </thead>
+            <tbody>
+  <% insights.forEach(insight => { %>
+    <tr>
+      <td><%= insight.month %>/<%= insight.year %></td>
+      <td>
+        Total Revenue: <%= insight.total_revenue %>$<br><br>
+        Number of flights: <%= insight.number_of_flights %><br><br>
+        Number of tickets sold: <%= insight.number_of_tickets %><br><br>
+        Most popular routes: <%= insight.most_popular_route %><br><br>
+        Least popular routes: <%= insight.least_popular_route %><br><br>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
 
+                    </table>        
+    <br>
+      </div>
+    </div>
   </body>
 
 </html>

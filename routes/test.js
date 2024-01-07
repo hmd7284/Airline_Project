@@ -102,7 +102,7 @@ router.get("/flight_search", isLoggedIn, async (req, res) => {
       req.session.transactionId,
     );
 
-    res.render("user_booking.ejs", {
+    res.render("new_user_booking.ejs", {
       airports,
       transactions,
       scrollToResults: false,
@@ -127,7 +127,7 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
     if (origin && destination && departureDate && numberOfTickets) {
       if (origin === destination) {
         req.flash("errors", "Origin and destination cannot be the same!");
-        res.render("user_booking.ejs", {
+        res.render("new_user_booking.ejs", {
           airports,
           transactions,
           results: [],
@@ -144,7 +144,7 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
         numberOfTickets,
       );
 
-      res.render("user_booking.ejs", {
+      res.render("new_user_booking.ejs", {
         airports,
         transactions,
         results,
@@ -155,7 +155,7 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
     }
 
     // Render the search form when parameters are missing
-    res.render("user_booking.ejs", {
+    res.render("new_user_booking.ejs", {
       airports,
       transactions,
       results: [],
@@ -177,7 +177,7 @@ router.get("/flight_booking", isLoggedIn, async (req, res) => {
       req.session.transactionId,
     );
 
-    res.render("user_booking.ejs", {
+    res.render("new_user_booking.ejs", {
       airports,
       transactions,
       scrollToResults: false,
@@ -268,7 +268,7 @@ router.get("/booking_queue", isLoggedIn, async (req, res) => {
       req.session.transactionId,
     );
 
-    res.render("user_booking.ejs", {
+    res.render("new_user_booking.ejs", {
       airports,
       transactions,
       scrollToResults: false,
@@ -287,7 +287,7 @@ router.get("/booking_queue/confirmation", isLoggedIn, async (req, res) => {
       req.session.userId,
       req.session.transactionId,
     );
-    res.render("user_booking.ejs", {
+    res.render("new_user_booking.ejs", {
       airports,
       transactions,
       scrollToResults: false,

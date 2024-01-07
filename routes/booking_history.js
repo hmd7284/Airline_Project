@@ -272,7 +272,7 @@ router.post(
         Math.abs(timeDifferenceInHours) < 3
       ) {
         const error_message =
-          `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
+          `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
         req.flash("error", error_message);
         res.redirect("/booking_history");
         return;

@@ -7,10 +7,6 @@ router.get("/home_admin", (req, res) => {
   res.render("home_admin.ejs");
 });
 
-router.get("/revenue", (req, res) => {
-  res.render("revenue.ejs");
-});
-
 router.get("/staff", (req, res) => {
   res.render("staff.ejs");
 });

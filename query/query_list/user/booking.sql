@@ -39,7 +39,37 @@ ORDER BY
 -- $2: destination airport code
 -- $3: departure date
 -- $4: number of tickets
-
 -- 3. Booking
--- 3.1 Create transaction
+-- 3.1 Check if flight exists and get remaining seats
+SELECT
+    business_seat,
+    economy_seat
+FROM
+    flight_schedule
+WHERE
+    flight_code = $1;
 
+--3.2 Create transaction
+INSERT INTO transactions (booking_date, customer_id, discount, total_amount)
+    VALUES (CURRENT_DATE, $1, $2, $3)
+RETURNING
+    transaction_id;
+
+-- 3..3 Create order:
+INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
+    VALUES ($1, $2, $3, $4);
+
+-- 3.4 Delete order
+DELETE FROM transactions_order
+WHERE transaction_id = $1
+    AND order_id = $2
+RETURNING
+    order_id;
+
+-- 3.5 Check transaction status
+SELECT
+    status
+FROM
+    transactions
+WHERE
+    transaction_id = $1;
