@@ -34,8 +34,8 @@ FROM
     transactions t
     LEFT JOIN transactions_order o ON t.transaction_id = o.transaction_id
 WHERE
-    t.customer_id = $1
-    AND t.booking_date BETWEEN $2 AND $3;
+    t.customer_id = 1
+    AND t.booking_date BETWEEN '2024-01-01' AND '2024-01-02';
 
 -- 3. Delete a transaction
 -- 3.1 Check if transaction is cancellable by checking the time difference between departure timestamp and current_timestamp
@@ -50,7 +50,7 @@ WHERE
 
 -- 3.2 Cancel transaction
 UPDATE
-    transactions_order
+    transactions
 SET
     status = 'Failed'
 WHERE
