@@ -55,6 +55,49 @@ async function fetchBookingHistory(userId) {
   }
 }
 
+async function fetchBooking(userId, transactionId) {
+  const client = await db.connect();
+  try {
+    const result = await client.query(
+      "SELECT t.transaction_id, t.booking_date, t.status, t.discount, t.total_amount, o.order_id, o.flight_code, r.origin, r.destination, o.type, o.price, o.quantity, o.total FROM transactions t LEFT JOIN transactions_order o ON t.transaction_id = o.transaction_id JOIN flight_schedule fs ON o.flight_code = fs.flight_code JOIN route r ON fs.route = r.route_code WHERE t.customer_id = $1 and t.transaction_id = $2",
+      [userId, transactionId],
+    );
+    const transactions = [];
+    let currentTransaction = null;
+    for (const row of result.rows) {
+      if (
+        !currentTransaction ||
+        currentTransaction.transaction_id !== row.transaction_id
+      ) {
+        // New transaction
+        currentTransaction = {
+          transaction_id: row.transaction_id,
+          booking_date: row.booking_date,
+          status: row.status,
+          discount: row.discount,
+          total_amount: row.total_amount,
+          orders: [],
+        };
+        transactions.push(currentTransaction);
+      }
+
+      // Add order information to the current transaction
+      currentTransaction.orders.push({
+        order_id: row.order_id,
+        flight_code: row.flight_code,
+        origin: row.origin,
+        destination: row.destination,
+        type: row.type,
+        price: row.price,
+        quantity: row.quantity,
+        total: row.total,
+      });
+    }
+    return transactions;
+  } finally {
+    client.release();
+  }
+}
 async function fetchBookingHistoryWithDateRange(
   userId,
   startDate,
@@ -158,6 +201,16 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
   }
 });
 
+router.get("/booking_history/:transactionId", isLoggedIn, async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const transactions = await fetchBooking(req.session.userId, transactionId);
+    res.render("user_history.ejs", { transactions });
+  } catch (error) {
+    console.error("Error retrieving booking history:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 router.post(
   "/booking_history/cancel/:transactionId",
   isLoggedIn,

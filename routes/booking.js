@@ -306,83 +306,6 @@ router.post(
   async (req, res) => {
     const { transactionId, orderId } = req.params;
     try {
-      // const timeDifferenceResult = await db.query(
-      //   "SELECT (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1 AND o.order_id = $2",
-      //   [transactionId, orderId],
-      // );
-      // console.log(timeDifferenceResult.rows[0].time_difference);
-      // if (
-      //   !timeDifferenceResult.rows[0] ||
-      //   timeDifferenceResult.rows[0].time_difference === null
-      // ) {
-      //   const error_message =
-      //     `Unable to determine time difference for order ${orderId} of transaction ${transactionId}`;
-      //   req.flash("error", error_message);
-      //   res.redirect("/booking_queue");
-      //   return;
-      // }
-      // const timeDifferenceInHours =
-      //   timeDifferenceResult.rows[0].time_difference.hours;
-      // const timeDifferenceInMinutes =
-      //   timeDifferenceResult.rows[0].time_difference.minutes;
-      // const timeDifferenceInSeconds =
-      //   timeDifferenceResult.rows[0].time_difference.seconds;
-      // console.log(timeDifferenceInHours);
-      // if (timeDifferenceInHours === undefined) {
-      //   if (timeDifferenceInMinutes === undefined) {
-      //     if (
-      //       timeDifferenceInSeconds !== undefined && timeDifferenceInSeconds < 0
-      //     ) {
-      //       // Departure time has passed
-      //       const error_message =
-      //         `Cancellation of orders is not allowed after departure time`;
-      //       req.flash("error", error_message);
-      //       return res.redirect("/booking_queue");
-      //     } else if (
-      //       timeDifferenceInSeconds !== undefined &&
-      //       timeDifferenceInSeconds < 60 && timeDifferenceInSeconds > 0
-      //     ) {
-      //       const error_message =
-      //         `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
-      //       req.flash("error", error_message);
-      //       res.redirect("/booking_queue");
-      //       return;
-      //     }
-      //   } else if (timeDifferenceInMinutes < 0) {
-      //     // Departure time has passed
-      //     const error_message =
-      //       `Cancellation of orders is not allowed after departure time`;
-      //     req.flash("error", error_message);
-      //     return res.redirect("/booking_queue");
-      //   } else if (
-      //     timeDifferenceInMinutes < 60 && timeDifferenceInMinutes > 0
-      //   ) {
-      //     const error_message =
-      //       `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
-      //     req.flash("error", error_message);
-      //     res.redirect("/booking_queue");
-      //     return;
-      //   }
-      // }
-      // if (timeDifferenceInHours !== undefined && timeDifferenceInHours < 0) {
-      //   // Departure time has passed
-      //   const error_message =
-      //     `Cancellation of orders is not allowed after departure time`;
-      //   req.flash("error", error_message);
-      //   res.redirect("/booking_queue");
-      //   return;
-      // }
-      //
-      // if (
-      //   timeDifferenceInHours !== undefined &&
-      //   Math.abs(timeDifferenceInHours) < 3
-      // ) {
-      //   const error_message =
-      //     `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
-      //   req.flash("error", error_message);
-      //   res.redirect("/booking_queue");
-      //   return;
-      // }
       const result = await db.query(
         "DELETE FROM transactions_order WHERE transaction_id = $1 AND order_id = $2 RETURNING order_id",
         [transactionId, orderId],
@@ -434,9 +357,10 @@ router.post("/booking_queue/confirmation", isLoggedIn, async (req, res) => {
     console.error("Error confirming transaction:", error);
     res.status(500).send("Internal Server Error");
   } finally {
+    req.session.scrollToTransaction = req.session.transactionId;
     req.session.transactionId = null;
     client.release();
-    res.redirect("/booking_queue");
+    res.redirect("/booking_history/:transactionId");
   }
 });
 module.exports = router;

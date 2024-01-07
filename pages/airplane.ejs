@@ -111,6 +111,22 @@
           <br>
                 <button type="submit" onclick="return confirm('Are you sure you want to update the status of this airplane?')">Update Airplane Status</button>
               </form>
+        <br>
+              <form action="/airplane" method="post">
+                <h2>Delete Airplane</h2>
+                <input type="hidden" name="action" value="delete">
+                <label for="aircraftCode3">Aircraft Code:</label>
+                 <input type="text" id="deleteAircraftCode" name="aircraftCode3" pattern="AC\d{3}" maxlength="5"
+                  placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode3 %>" required>
+    
+          <br>
+
+                <button type="submit"
+                  onclick="return confirm('Are you sure you want to delete this aircraft? All associated flight schedule and orders will also be deleted!!')">Delete
+                  Aircraft</button>
+                <br>
+              </form>
+
             </div>
             <div class="table-container">
               <div class="content-container">
