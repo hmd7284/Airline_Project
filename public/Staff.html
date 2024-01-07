@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GDC Airways</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Paytone+One" rel="stylesheet">
+	<link rel="stylesheet" href="css/adminset.css">
+    <script src="../javascript/flight.js"></script>
+</head>
+
+<body>
+
+  <!--NavBar-->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand"> GDC AIRWAYS</a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        		<span class="sr-only">Toggle navigation</span>
+	      </button>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li><a href="GDC-Admin.html"><strong>Home</strong></a></li>
+                    <li><a href="GDC-Admin2.html"><strong>Airport</strong></a></li>
+                    <li><a href="GDC-Admin1.html"><strong>Airplane</strong></a></li>
+                    <li><a href="GDC-Admin3.html"><strong>Maintenance</strong></a></li>
+                    <li><a href="GDC-Admin4.html"><strong>Route</strong></a></li>
+                    <li><a href="GDC-Admin5.html"><strong>Status</strong></a></li>
+                    <li class="active"><a href="#"><strong>Schedule</strong></a></li>
+                    <li><a href="GDC-Admin7.html"><strong>Flight Time</strong></a></li>
+                    <li><a href="GDC-Admin8.html"><strong>Staff</strong></a></li>
+                    <li><a href="GDC-Admin9.html"><strong>Sales</strong></a></li>
+                    <li><a href="GDC-Admin10.html"><strong>Revenue</strong></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+  <!--NavBar End-->
+  <div class="flex-container">
+  <div class="form-container">
+  <form>
+    <h2>Working Schedule</h2>
+    <br>
+    <label for="flight_code">Code:</label>
+    <input type="text" id="flight_code" name="flight_code">
+    <br>
+    <label for="employee_id">Employee ID:</label>
+    <input type="text" id="employee_id" name="employee_id">
+    <br>
+    <button type="submit">Add Schedule</button>
+    <button type="submit">Delete Schedule</button>
+</form>
+<br>
+  </div>
+  <div class="table-container">
+    <div class="content-container">
+    <table>
+        <h2>Flight Schedule Information</h2>
+        <br>
+        <h3 style="color: black; font-size: medium;">Employee ID:</h3>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Flight Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            <td>No</td>
+                    <td><%= schedule.flight_code %></td>
+                </tr>
+        </tbody>
+    </table>
+<br>
+    </div>
+  </div>
+  </div>
+
+
+</body>
+</html>
