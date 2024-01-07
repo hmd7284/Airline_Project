@@ -3,6 +3,18 @@ const router = express.Router();
 const path = require("path");
 const db = require("../database");
 
+function isLoggedOut(req, res, next) {
+  if (req.session.userId) {
+    res.redirect("/flight_booking");
+  } else next();
+}
+
+function isLoggedIn(req, res, next) {
+  if (req.session.userId) {
+    next();
+  } else res.redirect("/home");
+}
+
 router.get("/home_user", (req, res) => {
   res.render("home_user.ejs");
 });

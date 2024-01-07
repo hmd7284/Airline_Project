@@ -7,8 +7,4 @@ router.get("/home_admin", (req, res) => {
   res.render("home_admin.ejs");
 });
 
-router.get("/staff", (req, res) => {
-  res.render("staff.ejs");
-});
-
 module.exports = router;
