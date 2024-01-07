@@ -209,7 +209,16 @@
               $("#flash-message").delay(4000).fadeOut("slow");
             }); 
           </script>
-
+    <script>
+  // Use JavaScript to scroll to the specific transaction row
+  <% if (scrollToTransaction) { %>
+    const transactionIdToScroll = "<%= scrollToTransaction %>";
+    const targetRow = document.getElementById(`transaction-${transactionIdToScroll}`);
+    if (targetRow) {
+      targetRow.scrollIntoView({ behavior: 'smooth' });
+    }
+  <% } %>
+</script>
   </body>
 
 </html>
