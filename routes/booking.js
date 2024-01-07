@@ -360,7 +360,7 @@ router.post("/booking_queue/confirmation", isLoggedIn, async (req, res) => {
     req.session.scrollToTransaction = req.session.transactionId;
     req.session.transactionId = null;
     client.release();
-    res.redirect("/booking_history/:transactionId");
+    res.redirect("/booking_history");
   }
 });
 module.exports = router;

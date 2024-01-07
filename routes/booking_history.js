@@ -171,6 +171,8 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
     const { startDate, endDate } = req.query;
     const userInput = req.session.userInput || {};
     req.session.userInput = req.query;
+    const transactionId = req.query.transactionId;
+
     let transactions;
 
     if (startDate && endDate) {
@@ -191,26 +193,39 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
           "You made no transaction in the specified date range.";
         req.flash("error", error_message);
       }
+    } else if (transactionId) {
+      const transactions = await fetchBooking(
+        req.session.userId,
+        transactionId,
+      );
+      res.render("user_history.ejs", {
+        transactions,
+        scrollToTransaction: transactionId, // Pass transactionId to the template
+      });
     } else {
       transactions = await fetchBookingHistory(req.session.userId);
     }
-    res.render("user_history.ejs", { transactions, userInput });
+    res.render("user_history.ejs", {
+      transactions,
+      scrollToTransaction: transactionId,
+      userInput,
+    });
   } catch (error) {
     console.error("Error retrieving booking history:", error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-router.get("/booking_history/:transactionId", isLoggedIn, async (req, res) => {
-  try {
-    const { transactionId } = req.params;
-    const transactions = await fetchBooking(req.session.userId, transactionId);
-    res.render("user_history.ejs", { transactions });
-  } catch (error) {
-    console.error("Error retrieving booking history:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+// router.get("/booking_history/:transactionId", isLoggedIn, async (req, res) => {
+//   try {
+//     const { transactionId } = req.params;
+//     const transactions = await fetchBooking(req.session.userId, transactionId);
+//     res.render("user_history.ejs", { transactions });
+//   } catch (error) {
+//     console.error("Error retrieving booking history:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 router.post(
   "/booking_history/cancel/:transactionId",
   isLoggedIn,

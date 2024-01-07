@@ -57,19 +57,18 @@ WHERE
     OVERLAPS(CAST(departure_date || ' ' || departure_time AS timestamp), CAST(arrival_date || ' ' || arrival_time AS timestamp));
 
 -- 1.4.Check if aircraft is at the airport
-SELECT
-    fs.flight_code
-FROM
-    flight_schedule fs
-    JOIN route r ON fs.route = r.route_code
-WHERE
-    fs.aircraft = $1
-    AND r.destination = $2
-    AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp))
-ORDER BY
-    fs.departure_date DESC
-LIMIT 1;
-
+-- SELECT
+--     fs.flight_code
+-- FROM
+--     flight_schedule fs
+--     JOIN route r ON fs.route = r.route_code
+-- WHERE
+--     fs.aircraft = $1
+--     AND r.destination = $2
+--     AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp))
+-- ORDER BY
+--     fs.departure_date DESC
+-- LIMIT 1;
 -- 1.5. Insert flight
 INSERT INTO flight_schedule (flight_code, departure_date, departure_time, arrival_date, arrival_time, aircraft, route)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
