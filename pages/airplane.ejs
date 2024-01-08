@@ -24,7 +24,7 @@
     <nav class="navbar navbar-inverse">
       <div class="container">
         <div class="navbar-header">
-          <a href="/home_admin" class="navbar-brand"> GDC AIRWAYS</a>
+          <a href="/home_admin" class="navbar-brand"> KDD AIRWAYS</a>
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
             data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
             <span class="sr-only">Toggle navigation</span>
@@ -60,7 +60,7 @@
                 <h2>Add Airplane</h2>
                 <input type="hidden" name="action" value="add">
                 <label for="aircraft_code">Code:</label>
-                <input type="text" id="aircraft_code" name="aircraftCode1" pattern="AC\d{3}" maxlength="5"
+                <input type="text" id="aircraft_code" name="aircraftCode1" maxlength="5"
                   placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode1 %>">
                 <br>
                 <label for="addAircraftName">Name:</label>
@@ -96,7 +96,7 @@
                 <h2>Update Airplane Status</h2>
                 <input type="hidden" name="action" value="update">
                 <label for="deleteAircraftCode">Code:</label>
-                <input type="text" id="deleteAircraftCode" name="aircraftCode2" pattern="AC\d{3}" maxlength="5"
+                <input type="text" id="deleteAircraftCode" name="aircraftCode2" maxlength="5"
                   placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode2 %>" required>
             <select id="status" name="status2" value="<%= userInput.status2 %>" required>
                   <option value="Active">Active</option>
@@ -116,7 +116,7 @@
                 <h2>Delete Airplane</h2>
                 <input type="hidden" name="action" value="delete">
                 <label for="aircraftCode3">Aircraft Code:</label>
-                 <input type="text" id="deleteAircraftCode" name="aircraftCode3" pattern="AC\d{3}" maxlength="5"
+                 <input type="text" id="deleteAircraftCode" name="aircraftCode3" maxlength="5"
                   placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraftCode3 %>" required>
     
           <br>
