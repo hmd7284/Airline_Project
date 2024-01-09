@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/staff_flight.css" />
+    <script src="../javascript/home.js"></script>
+    <title>KDD Airline - Booking</title>
+  </head>
+  <body>
+    <nav>
+      <div class="nav__logo">
+        <a href="#" style="color: black;">
+          <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; ">KDD Airline - Staff
+        </a>
+      </div>
+      <ul class="nav__links">
+        <li class="link"><a href="#" >Home</a></li>
+        <li class="active"><a href="#" style="color: black;"><strong>Working Shift</strong></a></li>
+        <li class="link"><a href="#" >Log out</a></li>
+      </ul>
+    </nav>
+
+    <section id="review" class="client">
+        <table>
+            <h2>Working schedule</h2>
+            <br>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Flight Code</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Departure </th>
+                    <th>Arrival</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% workschedule.forEach(schedule => { %>
+                    <tr>
+                        <td>No</td>
+                        <td><%= schedule.code %></td>
+                        <td><%= schedule.origin %></td>
+                        <td><%= schedule.departure %></td>
+                        <td><%= schedule.departure_date + schedule.departure_time %></td>
+                        <td><%= schedule.arrival_date + schedule.arrival_time %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <br>
+    </section>
+
+      <footer id="about" class="footer">
+        <div class="section__container footer__container">
+          <div class="footer__col">
+            <img src="images/logo.png" alt="Logo" style="height: 150px; width: auto;">   
+            <h3>KDD Airline</h3>
+            <p>
+              At KDD Airline, we go beyond flying; we create experiences. Our commitment to safety, comfort, and personalized service ensures that every journey with us is nothing short of extraordinary. Discover seamless travel from check-in to touchdown.
+            </p>
+            <p>
+  Explore the world confidently, knowing that KDD Airline's modern fleet and dedicated crew prioritize your well-being. Immerse yourself in the elevated comfort of our cabins, where each detail is designed to enhance your travel experience.
+            </p>
+            <p>
+  For inquiries, reservations, or personalized assistance, our friendly team is ready to assist. Contact us at <strong><italic>kddairline@contact.us</italic></strong> and let us tailor your travel journey. Choose KDD Airline – Elevating Travel, Redefining Journeys.
+            </p>
+          </div>
+        </div>
+        <div class="footer__bar">
+          Copyright © 2023 Killer Daylight Coop. All rights reserved.
+        </div>
+      </footer>
+
+    </body>
+    </html>

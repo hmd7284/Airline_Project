@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="user_history.css" />
     <title>KDD Airline - Booking</title>
 
-       <style>
+    <style>
       #flash-message {
         position: fixed;
         top: 250px;
@@ -96,7 +96,7 @@
               </thead>
               <tbody>
                 <% transactions.forEach(transaction=> { %>
-                  <tr>
+                  <tr id="transaction-<%= transaction.transaction_id %>">
                     <td rowspan="<%= transaction.orders.length + 1 %>">
                       <%= transaction.transaction_id %>
                     </td>
@@ -106,7 +106,7 @@
                       Booking Date: <%= transaction.booking_date %><br>
                         Status: <%= transaction.status %><br>
                           Discount code: <%= transaction.discount %><br>
-                            Total Amount: <%= transaction.total_amount %><br>
+                            Total Amount: $<%= transaction.total_amount %><br>
                               <span style="color: red;">
                                 NOTE: Transaction can only be cancelled if all orders can be cancelled.
                               </span>
@@ -140,7 +140,7 @@
                           <%= order.quantity %>
                         </td>
                         <td>
-                          <%= order.total %>
+                          $<%= order.total %>
                         </td>
                         <!-- Add cancel button for each order -->
                         <td>
@@ -164,6 +164,7 @@
                       </tr>
                       <% }); %>
                         <% } %>
+
                           <% }); %>
               </tbody>
             </table>
@@ -209,16 +210,41 @@
               $("#flash-message").delay(4000).fadeOut("slow");
             }); 
           </script>
-    <script>
-  // Use JavaScript to scroll to the specific transaction row
-  <% if (scrollToTransaction) { %>
-    const transactionIdToScroll = "<%= scrollToTransaction %>";
-    const targetRow = document.getElementById(`transaction-${transactionIdToScroll}`);
-    if (targetRow) {
-      targetRow.scrollIntoView({ behavior: 'smooth' });
-    }
-  <% } %>
-</script>
+          <script>
+            // Use JavaScript to scroll to the specific transaction row
+            // <% if (scrollToTransaction) { %>
+            //   const transactionIdToScroll = "<%= scrollToTransaction %>";
+            //             /* const targetRow = document.getElementById(`transaction-${transactionIdToScroll}`); */
+            //             const targetRow = document.getElementById(transactionIdToScroll);
+            //             if (targetRow) {
+            //               targetRow.scrollIntoView({ behavior: 'smooth' });
+            //             }
+            // <% } %>
+            // Check if scrollToTransaction is present in the template
+
+            // const scrollToTransaction = "<%= scrollToTransaction %>";
+            // if (scrollToTransaction) {
+            //   // Scroll to the corresponding transaction row
+            //   const transactionRow = document.getElementById(`transaction-${scrollToTransaction}`);
+            //   if (transactionRow) {
+            //     transactionRow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            //   }
+            // }
+            document.addEventListener("DOMContentLoaded", function () {
+              // Check if scrollToTransaction is present in the template
+              const scrollToTransaction = "<%= scrollToTransaction %>";
+
+              if (scrollToTransaction) {
+                // Scroll to the corresponding transaction row
+                const anchorLink = document.getElementById(`transaction-${scrollToTransaction}`);
+
+                if (anchorLink) {
+                  anchorLink.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }
+            });
+          </script>
+
   </body>
 
 </html>
