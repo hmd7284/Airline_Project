@@ -154,7 +154,6 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
       return;
     }
 
-    // Render the search form when parameters are missing
     res.render("user_booking.ejs", {
       airports,
       transactions,

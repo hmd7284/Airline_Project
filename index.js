@@ -9,6 +9,7 @@ const usersRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
 const bookingRouter = require("./routes/booking");
 const bookinghistoryRouter = require("./routes/booking_history");
+const employeeRouter = require("./routes/employee");
 const app = express();
 const port = 5000;
 
@@ -43,7 +44,7 @@ app.use(bookinghistoryRouter);
 app.use(homeadminRouter);
 app.use(adminRouter);
 app.use(bookingRouter);
-
+app.use(employeeRouter);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

@@ -280,8 +280,7 @@ SELECT
 FROM
     flight_schedule
 WHERE
-    aircraft = 'AC007';
-
+    aircraft = 'AC007'
     AND (current_timestamp(0) BETWEEN CAST(departure_date || ' ' || departure_time AS timestamp)
         AND CAST(arrival_date || ' ' || arrival_time AS timestamp));
 
@@ -496,7 +495,8 @@ WHERE flight_code = 'FL00047';
 -- V. Flight staff queries
 -- 1. Fetch flight staff data
 SELECT
-    *
+    f.*,
+    e.name
 FROM
     flight_staff f
     JOIN employee e ON f.employee_id = e.employee_id;
