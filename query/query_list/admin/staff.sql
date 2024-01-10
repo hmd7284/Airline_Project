@@ -45,5 +45,5 @@ WHERE
 
 --3.3 Delete flight staff
 DELETE FROM flight_staff
-WHERE flight_code = $1
-    AND employee_id = $2;
+WHERE flight_code = 'FL0001'
+    AND employee_id = 1;

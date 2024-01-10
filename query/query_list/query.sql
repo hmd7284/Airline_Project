@@ -183,7 +183,7 @@ RETURNING
 
 -- PART 2: ADMIN QUERIES
 -- I. Airport queries
--- 1. Fetch airport data
+-- 1. Fetch airport data - Kien
 SELECT
     ap.*,
     c.city_name
@@ -356,7 +356,7 @@ RETURNING
     route_code;
 
 -- IV. Flight schedule queries
--- 1. Fetch schedule data from the database
+-- 1. Fetch schedule data from the database - Kien
 SELECT
     fs.*,
     o.airport_code AS origin_code,
@@ -371,7 +371,7 @@ FROM
     JOIN airport o ON r.origin = o.airport_code
     JOIN airport d ON r.destination = d.airport_code;
 
--- 2. Fetch route data from the database
+-- 2. Fetch route data from the database 
 SELECT
     r.route_code,
     o.airport_code AS origin_code,
@@ -403,7 +403,7 @@ FROM
 WHERE
     aircraft_code = 'AC007';
 
--- 3.3 Check if aircraft has schedule conflict
+-- 3.3 Check if aircraft has schedule conflict - Kien
 SELECT
     flight_code
 FROM

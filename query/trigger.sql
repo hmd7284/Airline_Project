@@ -242,3 +242,18 @@ CREATE OR REPLACE TRIGGER update_on_deletion_trans
 AFTER DELETE ON transactions_order
 FOR EACH ROW
 EXECUTE PROCEDURE update_on_deletion_trans_func ();
+--10 Auto create email for employee
+CREATE OR REPLACE FUNCTION create_emp_email_func() RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE employee 
+    SET email = lower(NEW.first_name) || lower(NEW.last_name) || employee_id || '@kdd.airline.com'
+    WHERE employee_id = NEW.employee_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER create_emp_email
+AFTER INSERT ON employee
+FOR EACH ROW
+EXECUTE PROCEDURE create_emp_email_func();
