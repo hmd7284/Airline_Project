@@ -35,10 +35,6 @@ WHERE
 ORDER BY
     f.departure_time ASC;
 
--- $1: origin airport code
--- $2: destination airport code
--- $3: departure date
--- $4: number of tickets
 -- 3. Booking
 -- 3.1 Check if flight exists and get remaining seats
 SELECT

@@ -38,6 +38,34 @@ FROM
     airport;
 
 -- 2. Search for flights with given origin, destination, departure date, number of tickets
+-- SELECT
+--     f.flight_code,
+--     f.departure_date,
+--     f.departure_time,
+--     r.origin,
+--     r.destination,
+--     a.aircraft_code,
+--     f.status,
+--     a.aircraft_name,
+--     af1.price AS economy_price,
+--     af2.price AS business_price
+-- FROM
+--     aircraft a
+--     JOIN flight_schedule f ON a.aircraft_code = f.aircraft
+--     JOIN route r ON f.route = r.route_code
+--     JOIN airfare af1 ON af1.route = r.route_code
+--         AND af1.TYPE = 'Economy'
+--     JOIN airfare af2 ON af2.route = r.route_code
+--         AND af2.TYPE = 'Business'
+-- WHERE
+--     r.origin = 'HAN'
+--     AND r.destination = 'SGN'
+--     AND f.departure_date = '2024-08-01'
+--     AND f.status = 'Success'
+--     AND ((CAST(f.departure_date || ' ' || f.departure_time AS timestamp))::timestamptz >= CURRENT_TIMESTAMP + INTERVAL '4 hours')
+--     AND (f.business_seat + f.economy_seat >= 1)
+-- ORDER BY
+--     f.departure_time ASC;
 SELECT
     f.flight_code,
     f.departure_date,
@@ -58,11 +86,10 @@ FROM
     JOIN airfare af2 ON af2.route = r.route_code
         AND af2.TYPE = 'Business'
 WHERE
-    r.origin = 'HAN'
-    AND r.destination = 'SGN'
-    AND f.departure_date = '2024-08-01'
+    r.origin = 'WHP'
+    AND r.destination = 'HAN'
+    AND f.departure_date = '2024-01-13'
     AND f.status = 'Success'
-    AND ((CAST(f.departure_date || ' ' || f.departure_time AS timestamp))::timestamptz >= CURRENT_TIMESTAMP + INTERVAL '4 hours')
     AND (f.business_seat + f.economy_seat >= 1)
 ORDER BY
     f.departure_time ASC;
@@ -71,30 +98,73 @@ ORDER BY
 -- 3.1 Check if flight exists and get remaining seats
 SELECT
     business_seat,
-    economy_seat
+    economy_seat,
+    (CAST(departure_date || ' ' || departure_time AS timestamp)) AS departure_timestamp
 FROM
     flight_schedule
 WHERE
-    flight_code = 'FL00047';
+    flight_code = 'FL00062';
 
---3.2 Create transaction
-INSERT INTO transactions (booking_date, customer_id, discount, total_amount)
-    VALUES (CURRENT_DATE, $1, $2, $3)
+-- 3.2 Check if discount exists
+SELECT
+    title
+FROM
+    discount
+WHERE
+    discount_code = 'DIS10';
+
+--3.3 Create transaction
+INSERT INTO transactions (booking_date, customer_id, discount)
+    VALUES (CURRENT_DATE, 2, 'DIS10')
 RETURNING
     transaction_id;
 
--- 3..3 Create order:
+-- 3.4 Create order:
 INSERT INTO transactions_order (transaction_id, flight_code, type, quantity)
     VALUES (1, 'FL00047', 'Economy', 1);
 
--- 3.4 Delete order
+-- 3.5 Display transaction details
+SELECT
+    t.transaction_id,
+    t.booking_date,
+    t.status,
+    t.discount,
+    t.total_amount,
+    o.order_id,
+    o.flight_code,
+    r.origin,
+    r.destination,
+    o.type,
+    o.price,
+    o.quantity,
+    o.total
+FROM
+    transactions t
+    LEFT JOIN transactions_order o ON t.transaction_id = o.transaction_id
+    JOIN flight_schedule fs ON o.flight_code = fs.flight_code
+    JOIN route r ON fs.route = r.route_code
+WHERE
+    t.customer_id = 2
+    AND t.transaction_id = 246;
+
+-- 3.6 Delete order
 DELETE FROM transactions_order
 WHERE transaction_id = 1
     AND order_id = 1
 RETURNING
     order_id;
 
--- 3.5 Check transaction status
+-- 3.7 Cancle transaction
+UPDATE
+    transactions
+SET
+    status = 'Failed'
+WHERE
+    transaction_id = 1
+RETURNING
+    transaction_id;
+
+-- 3.8 Check transaction status
 SELECT
     status
 FROM
@@ -120,7 +190,7 @@ FROM
     transactions t
     LEFT JOIN transactions_order o ON t.transaction_id = o.transaction_id
 WHERE
-    customer_id = 10;
+    customer_id = 2;
 
 -- 2.Fetch Transaction History in a date range
 SELECT
@@ -139,14 +209,22 @@ FROM
     transactions t
     LEFT JOIN transactions_order o ON t.transaction_id = o.transaction_id
 WHERE
-    t.customer_id = $1
+    t.customer_id = 2
     AND t.booking_date BETWEEN '2023-01-01' AND '2024-01-01';
 
 -- 3. Delete a transaction
 -- 3.1 Check if transaction is cancellable by checking the time difference between departure timestamp and current_timestamp
+-- SELECT
+--     o.order_id,
+--     (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) AS time_difference
+-- FROM
+--     flight_schedule fs
+--     JOIN transactions_order o ON fs.flight_code = o.flight_code
+-- WHERE
+--     o.transaction_id = 1;
 SELECT
     o.order_id,
-    (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) AS time_difference
+    (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp)) AS departure_timestamp
 FROM
     flight_schedule fs
     JOIN transactions_order o ON fs.flight_code = o.flight_code
@@ -165,8 +243,16 @@ RETURNING
 
 -- 4. Delete order
 -- 4.1 Check if order is cancellable by checking the time difference between departure timestamp and current_timestamp
+-- SELECT
+--     (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) AS time_difference
+-- FROM
+--     flight_schedule fs
+--     JOIN transactions_order o ON fs.flight_code = o.flight_code
+-- WHERE
+--     o.transaction_id = 1
+--     AND o.order_id = 1;
 SELECT
-    (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) AS time_difference
+    (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp)) AS departure_timestamp
 FROM
     flight_schedule fs
     JOIN transactions_order o ON fs.flight_code = o.flight_code
@@ -493,13 +579,19 @@ DELETE FROM flight_schedule
 WHERE flight_code = 'FL00047';
 
 -- V. Flight staff queries
--- 1. Fetch flight staff data
+-- 1. Search flight staff
 SELECT
-    f.*,
-    e.name
+    e.name,
+    s.*,
+    fs.departure_date,
+    fs.departure_time,
+    fs.status
 FROM
-    flight_staff f
-    JOIN employee e ON f.employee_id = e.employee_id;
+    employee e
+    JOIN flight_staff s ON e.employee_id = s.employee_id
+    JOIN flight_schedule fs ON s.flight_code = fs.flight_code
+WHERE
+    s.flight_code = 'FL00063';
 
 -- 2. Add flight staff
 -- 2.1 Check if employee exists
@@ -510,38 +602,55 @@ FROM
 WHERE
     employee_id = 1;
 
--- 2.2 Check if flight exists and flight status
+-- 2.2 Check if flight exists and get flight status, departure timestamp
 SELECT
-    status
+    status,
+    (CAST(departure_date || ' ' | departure_time AS timestamp)) AS departure_timestamp
 FROM
     flight_schedule
 WHERE
     flight_code = 'FL00047';
 
--- 2.3 Insert flight staff
+-- 2.3 Check if staff has already been asigned to the flight
+SELECT
+    flight_code
+FROM
+    flight_staff
+WHERE
+    employee_id = 1
+    AND flight_code = 'FL00063';
+
+-- 2.4 Check for schedule conflict
+SELECT
+    fst2.flight_code
+FROM
+    flight_staff fst1
+    JOIN flight_staff fst2 ON fst1.employee_id = fst2.employee_id
+    JOIN flight_schedule fs1 ON fst1.flight_code = fs1.flight_code
+    JOIN flight_schedule fs2 ON fst2.flight_code = fs2.flight_code
+WHERE
+    fs1.flight_code = 'FL00063'
+    AND fst1.employee_id = 1
+    AND fst1.flight_code != fst2.flight_code
+    AND tsrange(fs1.departure_date + fs1.departure_time, fs1.arrival_date + fs1.arrival_time, '[]') && tsrange(fs2.departure_date + fs2.departure_time, fs2.arrival_date + fs2.arrival_time, '[]');
+
+-- 2.5 Insert flight staff
 INSERT INTO flight_staff
-    VALUES ('FL00047', 1);
+    VALUES ('FL00063', 1);
 
 -- 3. Delete flight staff
 -- 3.1 Check if employee exists
-SELECT
-    name
-FROM
-    employee
-WHERE
-    employee_id = 1;
+2.1;
 
 -- 3.2 Check if flight exists
-SELECT
-    status
-FROM
-    flight_schedule
-WHERE
-    flight_code = 1;
+2.2;
 
---3.3 Delete flight staff
+-- 3.3 Check if staff has been assigned to the flight
+2.3;
+
+--3.4 Delete flight staff
 DELETE FROM flight_staff
-WHERE flight_code = 'FL00047'
+WHERE flight_code = 'FL00063'
     AND employee_id = 1;
 
 -- VI. discount queries
