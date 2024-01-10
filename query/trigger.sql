@@ -319,7 +319,7 @@ CREATE OR REPLACE FUNCTION create_emp_email_func ()
     AS $$
 BEGIN
     UPDATE employee 
-    SET email = lower(NEW.first_name) || lower(NEW.last_name) || employee_id || '@kdd.airline.com'
+    SET email = REPLACE(lower(NEW.first_name) || lower(NEW.last_name) || employee_id || '@kdd.airline.com', ' ', '')
     WHERE employee_id = NEW.employee_id;
     RETURN NEW;
 END;
