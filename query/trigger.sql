@@ -318,14 +318,9 @@ CREATE OR REPLACE FUNCTION create_emp_email_func ()
     RETURNS TRIGGER
     AS $$
 BEGIN
-    NEW.first_name := replace(NEW.first_name, ' ', '');
-    NEW.last_name := replace(NEW.last_name, ' ', '');
-    UPDATE
-        employee
-    SET
-        email = lower(NEW.first_name) || lower(NEW.last_name) || employee_id || '@kdd.airline.com'
-    WHERE
-        employee_id = NEW.employee_id;
+    UPDATE employee 
+    SET email = lower(NEW.first_name) || lower(NEW.last_name) || employee_id || '@kdd.airline.com'
+    WHERE employee_id = NEW.employee_id;
     RETURN NEW;
 END;
 $$
