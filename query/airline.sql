@@ -52,7 +52,7 @@ CREATE TABLE customers (
     CONSTRAINT cus_acc_fk FOREIGN KEY (id) REFERENCES account (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE route (
+CREATE TABLE route(
     route_code varchar(6) PRIMARY KEY,
     origin varchar(3) NOT NULL,
     destination varchar(3) NOT NULL,
@@ -70,10 +70,16 @@ CREATE TABLE airfare (
 );
 
 CREATE TABLE employee (
-    employee_id serial PRIMARY KEY,
-    name varchar(255) NOT NULL,
-    email varchar(255) NOT NULL,
-    phone_number varchar(12) NOT NULL
+    employee_id integer NOT NULL,
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL, 
+    gender character varying(7) NOT NULL,
+    address character varying(255) NOT NULL,
+    phone_number character varying(12) NOT NULL,
+    ssn character varying(255) NOT NULL,
+    email character varying(255),
+    password character varying(255) DEFAULT '1'::character varying,
+    CONSTRAINT gender_check CHECK(gender = 'Female' or gender = 'Male')
 );
 
 CREATE TABLE flight_schedule (
