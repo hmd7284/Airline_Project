@@ -128,4 +128,7 @@ router.get("/home_search", isLoggedIn, async (req, res) => {
   }
 });
 
+router.get("/user_profile", isLoggedIn, async (req, res) => {
+  res.render("user_profile.ejs");
+});
 module.exports = router;

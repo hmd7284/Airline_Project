@@ -92,7 +92,6 @@ router.post("/user_login", async (req, res) => {
     // Release the client back to the pool
     login_client.release();
   }
-
 });
 
 router.get("/user_login", isLoggedOut, (req, res) => {
