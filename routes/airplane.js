@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database");
-const { isLoggedInAdmin } = require("./middleware");
+const { isLoggedInAdmin, isLoggedOutAdmin } = require("./middleware");
 
 async function fetchAircraftFromDatabase() {
   const client = await db.connect();

@@ -11,10 +11,6 @@ router.get("/home", (req, res) => {
   res.render("home.ejs");
 });
 
-router.get("/home_user", (req, res) => {
-  res.render("home_user.ejs");
-});
-
 router.get("/about", (req, res) => {
   res.render("about.ejs");
 });

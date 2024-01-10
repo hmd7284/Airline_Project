@@ -9,6 +9,16 @@ module.exports = {
       res.redirect("/home_admin");
     } else next();
   },
+  isLoggedOut(req, res, next) {
+    if (req.session.userId) {
+      res.redirect("/flight_search");
+    } else next();
+  },
+  isLoggedIn(req, res, next) {
+    if (req.session.userId) {
+      next();
+    } else res.redirect("/home");
+  },
   isLoggedInEmployee(req, res, next) {
     if (req.session.employeeID) {
       next();

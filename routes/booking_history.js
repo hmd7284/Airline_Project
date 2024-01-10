@@ -147,22 +147,45 @@ async function fetchBookingHistoryWithDateRange(
 }
 
 async function checkUncancellableOrders(transactionId) {
+  // const result = await db.query(
+  //   "SELECT o.order_id, (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1",
+  //   [transactionId],
+  // );
   const result = await db.query(
-    "SELECT o.order_id, (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1",
+    "SELECT o.order_id, (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp)) AS departure_timestamp FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1",
     [transactionId],
   );
   const uncancellableOrders = [];
 
   for (const order of result.rows) {
-    const timeDifferenceInHours = result.rows[0].time_difference.hours;
-
-    if (timeDifferenceInHours === undefined) {
-      uncancellableOrders.push(order.order_id);
-    } else if (timeDifferenceInHours !== undefined) {
-      if (Math.abs(timeDifferenceInHours) < 3) {
-        uncancellableOrders.push(order.order_id);
-      }
+    /* const timeDifferenceInHours = result.rows[0].time_difference.hours; */
+    const departureTimestamp = order.departure_timestamp;
+    const departureDateTime = new Date(`${departureTimestamp}`);
+    const currentDateTime = new Date();
+    const timeDifference = departureDateTime - currentDateTime;
+    if (timeDifference < 0) {
+      /* uncancellableOrders.push(order.order_id); */
+      uncancellableOrders.push({
+        order_id: order.order_id,
+        error_message:
+          `Order ${order.order_id} can't be canceled because the flight has already departed.`,
+      });
     }
+    if (timeDifference < 2 * 60 * 60 * 1000) {
+      /* uncancellableOrders.push(order.order_id); */
+      uncancellableOrders.push({
+        order_id: order.order_id,
+        error_message:
+          `Order ${order.order_id} can't be canceled because the flight will depart in less than 2 hours.`,
+      });
+    }
+    // if (timeDifferenceInHours === undefined) {
+    //   uncancellableOrders.push(order.order_id);
+    // } else if (timeDifferenceInHours !== undefined) {
+    //   if (Math.abs(timeDifferenceInHours) < 3) {
+    //     uncancellableOrders.push(order.order_id);
+    //   }
+    // }
   }
   return uncancellableOrders;
 }
@@ -226,11 +249,14 @@ router.post(
       const uncancellableOrders = await checkUncancellableOrders(transactionId);
 
       if (uncancellableOrders.length > 0) {
-        const errorMessage = `Order ${
-          uncancellableOrders.join(", ")
-        } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
-        req.flash("error", errorMessage);
-        res.redirect("/booking_history");
+        // const errorMessage = `Order ${
+        //   uncancellableOrders.join(", ")
+        // } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
+        // req.flash("error", errorMessage);
+        uncancellableOrders.forEach((order) => {
+          req.flash("error", order.error_message);
+        });
+        res.redirect(`/booking_history?transactionId=${transactionId}`);
         return;
       }
       const result = await db.query(
@@ -247,7 +273,7 @@ router.post(
       const success_message =
         `Transaction ${transactionId} and associated orders cancelled successfully`;
       req.flash("success", success_message);
-      res.redirect("/booking_history");
+      res.redirect(`/booking_history?transactionId=${transactionId}`);
     } catch (error) {
       console.error("Error cancelling transaction:", error);
       res.status(500).send("Internal Server Error");
@@ -260,80 +286,101 @@ router.post(
   async (req, res) => {
     const { transactionId, orderId } = req.params;
     try {
+      // const timeDifferenceResult = await db.query(
+      //   "SELECT (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1 AND o.order_id = $2",
+      //   [transactionId, orderId],
+      // );
       const timeDifferenceResult = await db.query(
-        "SELECT (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1 AND o.order_id = $2",
+        "SELECT (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp)) AS departure_timestamp FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1 AND o.order_id = $2",
         [transactionId, orderId],
       );
-      console.log(timeDifferenceResult.rows[0].time_difference);
       if (
         !timeDifferenceResult.rows[0] ||
-        timeDifferenceResult.rows[0].time_difference === null
+        timeDifferenceResult.rows[0].departure_timestamp === null
       ) {
         const error_message =
-          `Unable to determine time difference for order ${orderId} of transaction ${transactionId}`;
+          `Unable to determine departure time of the flight for order ${orderId} of transaction ${transactionId}`;
         req.flash("error", error_message);
-        res.redirect("/booking_history");
+        res.redirect(`/booking_history?transactionId=${transactionId}`);
         return;
       }
-      const timeDifferenceInHours =
-        timeDifferenceResult.rows[0].time_difference.hours;
-      const timeDifferenceInMinutes =
-        timeDifferenceResult.rows[0].time_difference.minutes;
-      const timeDifferenceInSeconds =
-        timeDifferenceResult.rows[0].time_difference.seconds;
-      console.log(timeDifferenceInHours);
-      if (timeDifferenceInHours === undefined) {
-        if (timeDifferenceInMinutes === undefined) {
-          if (
-            timeDifferenceInSeconds !== undefined && timeDifferenceInSeconds < 0
-          ) {
-            // Departure time has passed
-            const error_message =
-              `Cancellation of orders is not allowed after departure time`;
-            req.flash("error", error_message);
-            return res.redirect("/booking_history");
-          } else if (
-            timeDifferenceInSeconds !== undefined &&
-            timeDifferenceInSeconds < 60 && timeDifferenceInSeconds > 0
-          ) {
-            const error_message =
-              `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
-            req.flash("error", error_message);
-            res.redirect("/booking_history");
-            return;
-          }
-        } else if (timeDifferenceInMinutes < 0) {
-          // Departure time has passed
-          const error_message =
-            `Cancellation of orders is not allowed after departure time`;
-          req.flash("error", error_message);
-          return res.redirect("/booking_history");
-        } else if (
-          timeDifferenceInMinutes < 60 && timeDifferenceInMinutes > 0
-        ) {
-          const error_message =
-            `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
-          req.flash("error", error_message);
-          res.redirect("/booking_history");
-          return;
-        }
-      }
-      if (timeDifferenceInHours !== undefined && timeDifferenceInHours < 0) {
-        // Departure time has passed
+      // const timeDifferenceInHours =
+      //   timeDifferenceResult.rows[0].time_difference.hours;
+      // const timeDifferenceInMinutes =
+      //   timeDifferenceResult.rows[0].time_difference.minutes;
+      // const timeDifferenceInSeconds =
+      //   timeDifferenceResult.rows[0].time_difference.seconds;
+      // console.log(timeDifferenceInHours);
+      // if (timeDifferenceInHours === undefined) {
+      //   if (timeDifferenceInMinutes === undefined) {
+      //     if (
+      //       timeDifferenceInSeconds !== undefined && timeDifferenceInSeconds < 0
+      //     ) {
+      //       // Departure time has passed
+      //       const error_message =
+      //         `Cancellation of orders is not allowed after departure time`;
+      //       req.flash("error", error_message);
+      //       return res.redirect("/booking_history");
+      //     } else if (
+      //       timeDifferenceInSeconds !== undefined &&
+      //       timeDifferenceInSeconds < 60 && timeDifferenceInSeconds > 0
+      //     ) {
+      //       const error_message =
+      //         `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
+      //       req.flash("error", error_message);
+      //       res.redirect("/booking_history");
+      //       return;
+      //     }
+      //   } else if (timeDifferenceInMinutes < 0) {
+      //     // Departure time has passed
+      //     const error_message =
+      //       `Cancellation of orders is not allowed after departure time`;
+      //     req.flash("error", error_message);
+      //     return res.redirect("/booking_history");
+      //   } else if (
+      //     timeDifferenceInMinutes < 60 && timeDifferenceInMinutes > 0
+      //   ) {
+      //     const error_message =
+      //       `Cancellation of orders can only be done at most 3 hours before departure time. You can't cancel this order.`;
+      //     req.flash("error", error_message);
+      //     res.redirect("/booking_history");
+      //     return;
+      //   }
+      // }
+      // if (timeDifferenceInHours !== undefined && timeDifferenceInHours < 0) {
+      //   // Departure time has passed
+      //   const error_message =
+      //     `Cancellation of orders is not allowed after departure time`;
+      //   req.flash("error", error_message);
+      //   return res.redirect("/booking_history");
+      // }
+      //
+      // if (
+      //   timeDifferenceInHours !== undefined &&
+      //   Math.abs(timeDifferenceInHours) < 3
+      // ) {
+      //   const error_message =
+      //     `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
+      //   req.flash("error", error_message);
+      //   res.redirect("/booking_history");
+      //   return;
+      // }
+      const departureTimestamp =
+        timeDifferenceResult.rows[0].departure_timestamp;
+      const departureDateTime = new Date(`${departureTimestamp}`);
+      const currentDateTime = new Date();
+      const timeDifference = departureDateTime - currentDateTime;
+      if (timeDifference < 0) {
         const error_message =
-          `Cancellation of orders is not allowed after departure time`;
+          `Flight has already departed. You can't cancel this order.`;
         req.flash("error", error_message);
-        return res.redirect("/booking_history");
+        return res.redirect(`/booking_history?transactionId=${transactionId}`);
       }
-
-      if (
-        timeDifferenceInHours !== undefined &&
-        Math.abs(timeDifferenceInHours) < 3
-      ) {
+      if (timeDifference < 2 * 60 * 60 * 1000) {
         const error_message =
-          `Cancellation of orders can only be done at most 6 hours before departure time. You can't cancel this order.`;
+          `Cancellation of orders can only be done at most 2 hours before departure time. You can't cancel this order.`;
         req.flash("error", error_message);
-        res.redirect("/booking_history");
+        res.redirect(`/booking_history?transactionId=${transactionId}`);
         return;
       }
       const result = await db.query(
@@ -351,7 +398,7 @@ router.post(
         const success_message =
           `Your order ${orderId} of transaction ${transactionId} has been cancelled successfully`;
         req.flash("success", success_message);
-        res.redirect("/booking_history");
+        res.redirect(`/booking_history?transactionId=${transactionId}`);
       }
     } catch (error) {
       console.error("Error cancelling order:", error);
