@@ -10,7 +10,7 @@
     <style>
       #flash-message {
         position: fixed;
-        top: 250px;
+        top: 100px;
         right: 10px;
         z-index: 99999;
       }
@@ -69,8 +69,8 @@
                   <div class="form__group">
                     <div class="input__group">
                       <label for="fcode"></label>
-                      <input type="text" name="fcode" pattern="FL\d{5}" maxlength="7" placeholder="Enter a flight code (e.g., FL1234)"
-                        id="fcode" required />
+                      <input type="text" name="fcode" maxlength="7" placeholder="Enter a flight code (e.g., FL1234)"
+                        id="fcode" value="<%= userInput.fcode %>" required />
                     </div>
                     <p>Flight code</p>
                   </div>
@@ -87,13 +87,13 @@
                   <div class="form__group">
                     <div class="input__group">
                       <label for="amount"></label>
-                      <input type="number" name="amount" placeholder="Amount" id="amount" min="1" required />
+                      <input type="number" name="amount" placeholder="Amount" id="amount" min="1" value="<%= userInput.amount %>" required />
                     </div>
                     <p>Amount of tickets</p>
                   </div>
                   <div class="form__group">
                     <div class="input__group">
-                      <input type="text" name="discount" placeholder="Discount code" id="discount">
+                      <input type="text" name="discount" maxlength="5" placeholder="Discount code" id="discount" value="<%= userInput.discount %>">
                     </div>
                     <p>Discount code</p>
                   </div>
@@ -105,7 +105,7 @@
               </div>
             </div>
           </header>
-
+          <section id="queueSection">
           <div id="queue-container">
             <table>
               <h2>Transactions History</h2>
@@ -136,7 +136,14 @@
                       Booking Date: <%= transaction.booking_date %><br>
                         Status: <%= transaction.status %><br>
                           Discount code: <%= transaction.discount %><br>
-                            Total Amount: <%= transaction.total_amount %>$<br>
+                            Total Amount: $<%= transaction.total_amount %><br>
+                  <% if (transaction.status==='Success' && transaction.orders.length> 0) { %>
+                                <form action="/booking_queue/cancel/<%= transaction.transaction_id %>" method="post">
+                                  <button type="submit"
+                                    onclick="return confirm('Are you sure you want to cancel this transaction?')">Cancel
+                                    Transaction</button>
+                                </form>
+                                <% } %>
 
                     </td>
                   </tr>
@@ -165,14 +172,12 @@
                           <%= order.quantity %>
                         </td>
                         <td>
-                          <%= order.total %>$
+                          $<%= order.total %>
                         </td>
                         <!-- Add cancel button for each order -->
                         <td>
                           <% if (transaction.status==='Success' ) { %>
                             <% if (transaction.orders.length> 0) { %>
-
-                              <br>
                               <form
                                 action="/booking_queue/cancel/order/<%= transaction.transaction_id %>/<%= order.order_id %>"
                                 method="post">
@@ -196,7 +201,7 @@
                   class="ri-shopping-cart-line"></i></button>
             </form>
           </div>
-
+          </section>
           <section id="searchSection" class="client">
             <div id="review">
               <h2>Search Flight</h2>
@@ -231,13 +236,13 @@
                 </div>
                 <div class="form__group">
                   <div class="input__group">
-                    <input type="date" id="departureDate" name="departureDate" required />
+                    <input type="date" id="departureDate" name="departureDate" value="<%= userInput.departureDate %>" required />
                   </div>
                   <p>When do you want to fly ?</p>
                 </div>
                 <div class="form__group">
                   <div class="input__group">
-                    <input type="number" name="numberOfTickets" min="1" required />
+                    <input type="number" name="numberOfTickets" min="1" value="<%= userInput.numberOfTickets %>" required />
                   </div>
                   <p>Number of tickets</p>
                 </div>
@@ -346,10 +351,17 @@
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
           <script>
+            $(document).ready(function () {
+              $("#flash-message").delay(4000).fadeOut("slow");
+            }); 
+          </script>
+
+          <script>
             document.addEventListener("DOMContentLoaded", function () {
               // Check if scrollToResults flag is set to true
               const scrollToResults = <%= scrollToResults %>;
               const scrollToSearch = <%= scrollToSearch %>;
+              const scrollToQueue = <%= scrollToQueue %>;
               if (scrollToSearch) {
                 // Scroll to the search section
                 const searchSection = document.getElementById("searchSection");
@@ -364,14 +376,16 @@
                   searchResultsSection.scrollIntoView({ behavior: 'smooth' });
                 }
               }
+              if (scrollToQueue) {
+                // Scroll to the queue section
+                const queueSection = document.getElementById("queueSection");
+                if (queueSection) {
+                  queueSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
             });
           </script>
-          <script>
-            $(document).ready(function () {
-              $("#flash-message").delay(4000).fadeOut("slow");
-            }); 
-          </script>
-
+          
           <script>
             // JavaScript function to update hidden input fields with selected airport codes
             function updateAirportCode(type) {

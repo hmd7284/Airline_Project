@@ -4,7 +4,7 @@ const db = require("../database");
 
 function isLoggedOut(req, res, next) {
   if (req.session.userId) {
-    res.redirect("/flight_booking");
+    res.redirect("/flight_search");
   } else next();
 }
 
@@ -21,7 +21,6 @@ async function fetchAirportsFromDatabase() {
     const result = await client.query(
       "SELECT airport_code, address FROM airport",
     );
-    console.log(result.rows);
     return result.rows;
   } finally {
     client.release();
@@ -97,7 +96,8 @@ async function fetchBookingHistory(userId, transactionId) {
 router.get("/flight_search", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    transactions = await fetchBookingHistory(
+    const userInput = req.session.userInput || {};
+    const transactions = await fetchBookingHistory(
       req.session.userId,
       req.session.transactionId,
     );
@@ -105,11 +105,13 @@ router.get("/flight_search", isLoggedIn, async (req, res) => {
     res.render("user_booking.ejs", {
       airports,
       transactions,
+      userInput,
       scrollToResults: false,
       scrollToSearch: true,
+      scrollToQueue: false,
     });
   } catch (error) {
-    req.flash("errors", "Error fetching data");
+    req.flash("error", "Error fetching data");
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -118,22 +120,25 @@ router.get("/flight_search", isLoggedIn, async (req, res) => {
 router.get("/flight_search_results", isLoggedIn, async (req, res) => {
   try {
     const { origin, destination, departureDate, numberOfTickets } = req.query;
+    const userInput = req.session.userInput || {};
     const airports = await fetchAirportsFromDatabase();
-    transactions = await fetchBookingHistory(
+    const transactions = await fetchBookingHistory(
       req.session.userId,
       req.session.transactionId,
     );
 
     if (origin && destination && departureDate && numberOfTickets) {
       if (origin === destination) {
-        req.flash("errors", "Origin and destination cannot be the same!");
-        res.render("user_booking.ejs", {
-          airports,
-          transactions,
-          results: [],
-          scrollToResults: false,
-          scrollToSearch: true,
-        });
+        req.session.userInput = req.query;
+        req.flash("error", "Origin and destination cannot be the same!");
+        // res.render("user_booking.ejs", {
+        //   airports,
+        //   transactions,
+        //   results: [],
+        //   scrollToResults: false,
+        //   scrollToSearch: true,
+        // });
+        res.redirect("/flight_search_results");
         return;
       }
 
@@ -147,22 +152,26 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
       res.render("user_booking.ejs", {
         airports,
         transactions,
+        userInput,
         results,
         scrollToResults: true,
         scrollToSearch: false,
+        scrollToQueue: false,
       });
-      return;
     }
 
     res.render("user_booking.ejs", {
       airports,
       transactions,
+      userInput,
       results: [],
       scrollToResults: false,
       scrollToSearch: true,
+      scrollToQueue: false,
+      message: req.flash("error"),
     });
   } catch (error) {
-    req.flash("errors", "Error fetching data");
+    req.flash("error", "Error fetching data");
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -171,7 +180,8 @@ router.get("/flight_search_results", isLoggedIn, async (req, res) => {
 router.get("/flight_booking", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    transactions = await fetchBookingHistory(
+    const userInput = req.session.userInput || {};
+    const transactions = await fetchBookingHistory(
       req.session.userId,
       req.session.transactionId,
     );
@@ -179,11 +189,13 @@ router.get("/flight_booking", isLoggedIn, async (req, res) => {
     res.render("user_booking.ejs", {
       airports,
       transactions,
+      scrollToQueue: false,
+      userInput,
       scrollToResults: false,
       scrollToSearch: false,
     });
   } catch (error) {
-    req.flash("errors", "Error fetching data");
+    req.flash("error", "Error fetching data");
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -191,78 +203,118 @@ router.get("/flight_booking", isLoggedIn, async (req, res) => {
 
 router.post("/flight_booking", isLoggedIn, async (req, res) => {
   const { fcode, type, amount, discount } = req.body;
-  const client = await db.connect();
+  const discountValue = discount !== "" ? discount : null;
+  console.log(discountValue);
   try {
-    const flight_query = await client.query(
+    const flight_query = await db.query(
       "SELECT business_seat, economy_seat FROM flight_schedule WHERE flight_code = $1",
       [fcode],
     );
     if (flight_query.rows.length === 0) {
+      req.session.userInput = req.body;
+      console.log("Flight not found");
+      const error_message = `Flight ${fcode} not found`;
       req.flash(
-        "errors",
-        "Flight not found! Make sure you enter the correct flight code.",
+        "error",
+        error_message,
       );
-      res.redirect("/flight_search_results");
+      res.redirect("/flight_booking");
       return;
     }
     const flight = flight_query.rows[0];
     if (type === "Business" && flight.business_seat < amount) {
-      req.flash("errors", "Not enough business seats available!");
+      req.session.userInput = req.body;
+      console.log("Not enough business seats available");
+      req.flash("error", "Not enough business seats available!");
       res.redirect("/flight_booking");
       return;
     }
     if (type === "Economy" && flight.economy_seat < amount) {
-      req.flash("errors", "Not enough economy seats available!");
+      req.session.userInput = req.body;
+      console.log("Not enough economy seats available");
+      req.flash("error", "Not enough economy seats available!");
       res.redirect("/flight_booking");
       return;
     }
-    if (!req.session.transactionId) {
-      const transactionResult = await client.query(
-        "INSERT INTO transactions (booking_date, customer_id, discount, total_amount) VALUES (current_date, $1, $2, $3) RETURNING transaction_id",
-        [req.session.userId, discount, 0],
+    if (discountValue !== null) {
+      const discount_query = await db.query(
+        "SELECT title FROM discount WHERE discount_code = $1",
+        [discountValue],
       );
-      const transactionId = transactionResult.rows[0].transaction_id;
-      req.session.transactionId = transactionId;
-      const orderResult = await client.query(
-        "INSERT INTO transactions_order (transaction_id, flight_code, type, quantity) VALUES ($1, $2, $3, $4)",
-        [transactionId, fcode, type, amount],
-      );
-      if (orderResult.rows.length > 0) {
-        req.flash("sucess", "Successfully booked ticket!");
+      if (discount_query.rows.length === 0) {
+        req.session.userInput = req.body;
+        console.log("Discount code not found");
+        const error_message = `Discount code ${discountValue} not found`;
+        req.flash("error", error_message);
         res.redirect("/flight_booking");
         return;
+      }
+    }
+    if (!req.session.transactionId) {
+      let transactionResult;
+      if (discountValue !== null) {
+        transactionResult = await db.query(
+          "INSERT INTO transactions (booking_date, customer_id, discount) VALUES (current_date, $1, $2) RETURNING transaction_id",
+          [req.session.userId, discountValue],
+        );
       } else {
-        req.flash("errors", "Error during booking");
+        transactionResult = await db.query(
+          "INSERT INTO transactions (booking_date, customer_id) VALUES (current_date, $1) RETURNING transaction_id",
+          [req.session.userId],
+        );
+      }
+      if (transactionResult.rows.length === 0) {
+        req.session.userInput = req.body;
+        req.flash("error", "Error creating transaction");
+        res.redirect("/flight_booking");
+        return;
+      }
+      const transactionId = transactionResult.rows[0].transaction_id;
+      req.session.transactionId = transactionId;
+      console.log(req.body);
+      const orderResult = await db.query(
+        "INSERT INTO transactions_order (transaction_id, flight_code, type, quantity) VALUES ($1, $2, $3, $4) RETURNING order_id",
+        [transactionId, fcode, type, amount],
+      );
+      console.log(orderResult.rows);
+      if (orderResult.rows.length > 0) {
+        req.flash("success", "Successfully added order!");
+        res.redirect("/booking_queue");
+      } else {
+        req.session.userInput = req.body;
+        req.flash("error", "Error Creating Order");
         res.redirect("/flight_booking");
         return;
       }
     } else {
-      const orderResult = await client.query(
-        "INSERT INTO transactions_order (transaction_id, flight_code, type, quantity) VALUES ($1, $2, $3, $4)",
+      const orderResult = await db.query(
+        "INSERT INTO transactions_order (transaction_id, flight_code, type, quantity) VALUES ($1, $2, $3, $4) RETURNING order_id",
         [req.session.transactionId, fcode, type, amount],
       );
       if (orderResult.rows.length > 0) {
-        req.flash("sucess", "Successfully booked ticket!");
+        req.flash("success", "Successfully added order!");
         res.redirect("/booking_queue");
-        return;
       } else {
-        req.flash("errors", "Error during booking");
+        req.session.userInput = req.body;
+        req.flash("error", "Error creating order");
         res.redirect("/flight_booking");
         return;
       }
     }
   } catch (error) {
+    // console.error("Error during booking:", error);
+    // res.status(500).send("Internal Server Error");
     console.error("Error during booking:", error);
-    res.status(500).json({ message: "Internal server error" });
-  } finally {
-    client.release();
+    req.flash("error", "Internal server error");
+    res.redirect("/flight_booking");
   }
 });
 
 router.get("/booking_queue", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    transactions = await fetchBookingHistory(
+    const userInput = req.session.userInput || {};
+    const transactions = await fetchBookingHistory(
       req.session.userId,
       req.session.transactionId,
     );
@@ -270,6 +322,8 @@ router.get("/booking_queue", isLoggedIn, async (req, res) => {
     res.render("user_booking.ejs", {
       airports,
       transactions,
+      userInput,
+      scrollToQueue: true,
       scrollToResults: false,
       scrollToSearch: false,
     });
@@ -282,27 +336,104 @@ router.get("/booking_queue", isLoggedIn, async (req, res) => {
 router.get("/booking_queue/confirmation", isLoggedIn, async (req, res) => {
   try {
     const airports = await fetchAirportsFromDatabase();
-    transactions = await fetchBookingHistory(
+    const userInput = req.session.userInput || {};
+    const transactions = await fetchBookingHistory(
       req.session.userId,
       req.session.transactionId,
     );
     res.render("user_booking.ejs", {
       airports,
       transactions,
+      userInput,
+      scrollToQueue: false,
       scrollToResults: false,
       scrollToSearch: false,
     });
   } catch (error) {
-    req.flash("errors", "Error fetching data");
+    req.flash("error", "Error fetching data");
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+async function checkUncancellableOrders(transactionId) {
+  const result = await db.query(
+    "SELECT o.order_id, (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) - current_timestamp(0)) as time_difference FROM flight_schedule fs JOIN transactions_order o ON fs.flight_code = o.flight_code WHERE o.transaction_id = $1",
+    [transactionId],
+  );
+  const uncancellableOrders = [];
+
+  for (const order of result.rows) {
+    const timeDifferenceInHours = result.rows[0].time_difference.hours;
+
+    if (timeDifferenceInHours === undefined) {
+      uncancellableOrders.push(order.order_id);
+    } else if (timeDifferenceInHours !== undefined) {
+      if (Math.abs(timeDifferenceInHours) < 3) {
+        uncancellableOrders.push(order.order_id);
+      }
+    }
+  }
+  return uncancellableOrders;
+}
+router.post(
+  "/booking_queue/cancel/:transactionId",
+  isLoggedIn,
+  async (req, res) => {
+    if (!req.session.transactionId) {
+      req.flash("error", "No transaction found");
+      res.redirect("/booking_queue");
+      return;
+    }
+    const client = await db.connect();
+    const transactionId = req.params.transactionId;
+    try {
+      // const uncancellableOrders = await checkUncancellableOrders(transactionId);
+
+      // if (uncancellableOrders.length > 0) {
+      //   const errorMessage = `Order ${uncancellableOrders.join(", ")
+      //     } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
+      //   req.flash("error", errorMessage);
+      //   res.redirect("/booking_queue");
+      //   return;
+      // }
+      const result = await client.query(
+        "UPDATE transactions SET status = 'Failed' WHERE transaction_id = $1 RETURNING transaction_id",
+        [transactionId],
+      );
+      if (result.rows.length === 0) {
+        // No rows were deleted, so the transaction was not found
+        const error_message = `Transaction ${transactionId} not found`;
+        req.flash("error", error_message);
+        res.redirect("/booking_history");
+        return;
+      }
+      const success_message =
+        `Transaction ${transactionId} and associated orders cancelled successfully`;
+      req.flash("success", success_message);
+    } catch (error) {
+      console.error("Error cancelling transaction:", error);
+      res.status(500).send("Internal Server Error");
+    } finally {
+      req.session.scrollToTransaction = req.session.transactionId;
+      req.session.transactionId = null;
+      client.release();
+      res.redirect(
+        `/booking_history?transactionId=${req.session.scrollToTransaction}`,
+      );
+    }
+  },
+);
+
 router.post(
   "/booking_queue/cancel/order/:transactionId/:orderId",
   isLoggedIn,
   async (req, res) => {
+    if (!req.session.transactionId) {
+      req.flash("error", "No transaction found");
+      res.redirect("/booking_queue");
+      return;
+    }
     const { transactionId, orderId } = req.params;
     try {
       const result = await db.query(
@@ -316,12 +447,13 @@ router.post(
         req.flash("error", error_message);
         res.redirect("/booking_queue");
         return;
-      } else {
-        const success_message =
-          `Your order ${orderId} of transaction ${transactionId} has been cancelled successfully`;
-        req.flash("success", success_message);
-        res.redirect("/booking_queue");
       }
+      // } else {
+      //   const success_message =
+      //     `Your order ${orderId} of transaction ${transactionId} has been cancelled successfully`;
+      //   req.flash("success", success_message);
+      //   res.redirect("/booking_queue");
+      // }
     } catch (error) {
       console.error("Error cancelling order:", error);
       res.status(500).send("Internal Server Error");
@@ -359,7 +491,9 @@ router.post("/booking_queue/confirmation", isLoggedIn, async (req, res) => {
     req.session.scrollToTransaction = req.session.transactionId;
     req.session.transactionId = null;
     client.release();
-    res.redirect("/booking_history");
+    res.redirect(
+      `/booking_history?transactionId=${req.session.scrollToTransaction}`,
+    );
   }
 });
 module.exports = router;

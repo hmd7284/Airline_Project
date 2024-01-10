@@ -14,6 +14,10 @@ function isLoggedOutAdmin(req, res, next) {
   } else next();
 }
 
+router.get("/home_admin", (req, res) => {
+  res.render("home_admin.ejs");
+});
+
 const loginlogoutRouter = require("./admin_login_logout");
 const airportRouter = require("./airport");
 const airplaneRouter = require("./airplane");

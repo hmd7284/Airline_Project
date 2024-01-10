@@ -193,15 +193,6 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
           "You made no transaction in the specified date range.";
         req.flash("error", error_message);
       }
-    } else if (transactionId) {
-      const transactions = await fetchBooking(
-        req.session.userId,
-        transactionId,
-      );
-      res.render("user_history.ejs", {
-        transactions,
-        scrollToTransaction: transactionId, // Pass transactionId to the template
-      });
     } else {
       transactions = await fetchBookingHistory(req.session.userId);
     }
@@ -235,7 +226,7 @@ router.post(
       const uncancellableOrders = await checkUncancellableOrders(transactionId);
 
       if (uncancellableOrders.length > 0) {
-        const errorMessage = `Ordera ${
+        const errorMessage = `Order ${
           uncancellableOrders.join(", ")
         } of the transaction (${transactionId}) cannot be cancelled !! Therefore, the transaction can't be cancelled!!`;
         req.flash("error", errorMessage);
