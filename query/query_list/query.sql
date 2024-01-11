@@ -495,7 +495,7 @@ SELECT
 FROM
     flight_schedule
 WHERE
-    aircraft = $1
+    aircraft = 'AC001'
     AND (CAST('2024-01-08' || ' ' || '06:45:00' AS timestamp),
         CAST('2024-01-08' || ' ' || '10:05:00' AS timestamp))
     OVERLAPS(CAST(departure_date || ' ' || departure_time AS timestamp), CAST(arrival_date || ' ' || arrival_time AS timestamp));
