@@ -64,9 +64,9 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
     aircraft,
     route,
   } = req.body;
-  req.session.userInput = req.body;
   try {
     if (departure_date > arrival_date) {
+      req.session.userInput = req.body;
       req.flash(
         "error",
         "Departure date cannot be after arrival date",
@@ -77,6 +77,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
 
     if (departure_date === arrival_date) {
       if (departure_time >= arrival_time) {
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "This flight departs and arrives on the same day, departure time on cannot be after or the same as arrival time",
@@ -105,23 +106,26 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         "SELECT flight_code FROM flight_schedule WHERE aircraft = $1 AND (CAST($2 || ' ' || $3 AS timestamp), CAST($4 || ' ' || $5 AS timestamp)) OVERLAPS (CAST(departure_date || ' ' || departure_time AS timestamp), CAST(arrival_date || ' ' || arrival_time AS timestamp))",
         [aircraft, departure_date, departure_time, arrival_date, arrival_time],
       );
-      const routeConditionResult = await db.query(
-        "SELECT fs.flight_code FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp)) ORDER BY fs.departure_date DESC LIMIT 1",
-        [aircraft, origin, departure_date, departure_time],
-      );
+      // const routeConditionResult = await db.query(
+      //   "SELECT fs.flight_code FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp)) ORDER BY fs.departure_date DESC LIMIT 1",
+      //   [aircraft, origin, departure_date, departure_time],
+      // );
       if (existingFlight.rows.length > 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight with code ${flight_code} already exists!! Please choose another flight`;
         req.flash("error", error_message);
         res.redirect("/schedule");
         return;
       } else if (aircraftStatusResult.rows[0].status === "Inactive") {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft with code ${aircraft} is not available!! Please choose another aircraft`;
         req.flash("error", error_message);
         res.redirect("/schedule");
         return;
       } else if (overlapsFlightSchedule.rows.length > 0) {
+        req.session.userInput = req.body;
         const overlappingFlightCodes = overlapsFlightSchedule.rows.map((
           flight,
         ) => flight.flight_code);
@@ -145,6 +149,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         const timeDifference = departureDateTime - currentDateTime;
 
         if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
+          req.session.userInput = req.body;
           req.flash(
             "error",
             "When adding new flights, departure time must be at least 1 day away from the current time",
@@ -170,6 +175,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
           req.flash("success", success_message);
           res.redirect("/schedule");
         } else {
+          req.session.userInput = req.body;
           const error_message =
             `Flight ${flight_code} not added!! Please try again`;
           req.flash("error", error_message);
@@ -178,6 +184,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "delete") {
       if (existingFlight.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight with code ${flight_code} not found!! Cannot cancel`;
         req.flash("error", error_message);
@@ -185,6 +192,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (statusResult.rows[0].status === "Canceled") {
+        req.session.userInput = req.body;
         const error_message =
           `Flight ${flight_code} has already been canceled!!`;
         req.flash("error", error_message);
@@ -199,6 +207,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       const timeDifference = departureDateTime - currentDateTime;
       console.log(timeDifference);
       if (timeDifference < 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight ${flight_code} has already departed!! It cannot be cancelled`;
         req.flash("error", error_message);
@@ -206,6 +215,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (timeDifference < 30 * 60 * 1000) { // 20 minutes in milliseconds
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "Airline can only cancel flight at most 30 minutes before departure time",
@@ -237,6 +247,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         res.redirect("/schedule");
         return;
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Failed to cancel flight ${flight_code} !! Please try again`;
         req.flash("error", error_message);
@@ -245,6 +256,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "del") {
       if (existingFlight.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight with code ${flight_code} not found!! Cannot delete`;
         req.flash("error", error_message);
@@ -260,6 +272,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         req.flash("success", success_message);
         res.redirect("/schedule");
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Flight ${flight_code} not deleted!! Please try again`;
         req.flash("error", error_message);
@@ -268,6 +281,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "update") {
       if (existingFlight.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight with code ${flight_code} not found!! Cannot update`;
         req.flash("error", error_message);
@@ -275,6 +289,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (statusResult.rows[0].status === "Canceled") {
+        req.session.userInput = req.body;
         const error_message =
           `Flight ${flight_code} has been canceled!! You can't update its flight time`;
         req.flash("error", error_message);
@@ -351,6 +366,7 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         req.flash("success", success_message);
         res.redirect("/schedule");
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Flight schedule of ${flight_code} is not updated!! Please try again`;
         req.flash("error", error_message);

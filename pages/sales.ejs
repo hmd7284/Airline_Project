@@ -126,11 +126,23 @@
                 </table>
                 <br>
                 <!-- Pagination links -->
+                <!-- <div class="pagination"> -->
+                <!--   <% for (let i=1; i <=pageCount; i++) { %> -->
+                <!--     <a href="?page=<%= i %>" <%=i===currentPage ? ' style="font-weight: bold;"' : '' %>><%= i %></a> -->
+                <!--     <% } %> -->
+                <!-- </div> -->
                 <div class="pagination">
-                  <% for (let i=1; i <=pageCount; i++) { %>
-                    <a href="?page=<%= i %>" <%=i===currentPage ? ' style="font-weight: bold;"' : '' %>><%= i %></a>
-                    <% } %>
-                </div>
+  <% if (currentPage > 1) { %>
+    <a href="?page=<%= currentPage - 1 %>"><- Prev</a>
+  <% } %>
+
+  <span><%= currentPage %></span>
+
+  <% if (currentPage < pageCount) { %>
+    <a href="?page=<%= currentPage + 1 %>">Next -></a>
+  <% } %>
+</div>
+
               </div>
             </div>
           </div>

@@ -101,7 +101,9 @@
                       <th>Flight Code</th>
                       <th>FLight information</th>
                       <th>Employee ID</th>
-                      <th>Employee name</th>
+                      <th>Employee's Full Name</th>
+                      <th>Employee's phone number</th> 
+                      <th>Employee's email</th>
                                           </tr>
                   </thead>
                   <tbody>
@@ -113,6 +115,9 @@
                         <td rowspan="<%= staff.staffsinfo.length + 1 %>">
                         Departure Date: <%= staff.departure_date %> <br>
                         Departure Time: <%= staff.departure_time %> <br>
+                        Arrival Date: <%= staff.arrival_date %> <br>
+                        Arrival Time: <%= staff.arrival_time %> <br>
+                        Flight Route: <%= staff.route %> <br>
                         Status: <%= staff.status %> <br>
                         </td>
                       </tr>
@@ -124,6 +129,12 @@
                         </td>
                         <td>
                           <%= staffinfo.name %>
+                        </td>
+                        <td>
+                          <%= staffinfo.phone_number %>
+                        </td>
+                        <td>
+                          <%= staffinfo.email %>
                         </td>
                       </tr>
                       <% }); %>

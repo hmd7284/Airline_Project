@@ -626,10 +626,15 @@ WHERE flight_code = 'FL00047';
 -- V. Flight staff queries
 -- 1. Search flight staff
 SELECT
-    e.name,
+    (e.first_name || ' ' || e.last_name) AS full_name,
+    e.phone_number,
+    e.email,
     s.*,
     fs.departure_date,
     fs.departure_time,
+    fs.arrival_date,
+    fs.arrival_time,
+    fs. route,
     fs.status
 FROM
     employee e
@@ -641,7 +646,7 @@ WHERE
 -- 2. Add flight staff
 -- 2.1 Check if employee exists
 SELECT
-    name
+    first_name
 FROM
     employee
 WHERE
@@ -681,7 +686,9 @@ WHERE
 
 -- 2.5 Insert flight staff
 INSERT INTO flight_staff
-    VALUES ('FL00063', 1);
+    VALUES ('FL00063', 1)
+RETURNING
+    employee_id;
 
 -- 3. Delete flight staff
 -- 3.1 Check if employee exists

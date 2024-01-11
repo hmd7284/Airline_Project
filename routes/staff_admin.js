@@ -7,7 +7,7 @@ async function fetchStaff(flight_code) {
   const client = await db.connect();
   try {
     const result = await client.query(
-      "SELECT e.name, s.*, fs.departure_date, fs.departure_time, fs.status FROM employee e JOIN flight_staff s ON e.employee_id = s.employee_id JOIN flight_schedule fs ON s.flight_code = fs.flight_code WHERE s.flight_code = $1",
+      "SELECT (e.first_name || ' ' || e.last_name) as full_name, e.phone_number, e.email, s.*, fs.departure_date, fs.departure_time, fs.arrival_date, fs.arrival_time, fs. route, fs.status FROM employee e JOIN flight_staff s ON e.employee_id = s.employee_id JOIN flight_schedule fs ON s.flight_code = fs.flight_code WHERE s.flight_code = $1",
       [flight_code],
     );
     if (result.rows.length === 0) {
@@ -24,6 +24,10 @@ async function fetchStaff(flight_code) {
         currentStaff = {
           flight_code: row.flight_code,
           departure_date: row.departure_date,
+          departure_time: row.departure_time,
+          arrival_date: row.arrival_date,
+          arrival_time: row.arrival_time,
+          route: row.route,
           status: row.status,
           staffsinfo: [],
         };
@@ -33,7 +37,9 @@ async function fetchStaff(flight_code) {
       // Add order information to the current transaction
       currentStaff.staffsinfo.push({
         employee_id: row.employee_id,
-        name: row.name,
+        name: row.full_name,
+        phone_number: row.phone_number,
+        email: row.email,
       });
     }
 
@@ -97,7 +103,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
       }
 
       const existStaff1 = await db.query(
-        "SELECT name from employee WHERE employee_id = $1",
+        "SELECT first_name from employee WHERE employee_id = $1",
         [employee_id1],
       );
       if (existStaff1.rows.length === 0) {
@@ -124,7 +130,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
       //   [flight_code1, employee_id1],
       // );
       const departedFlight = await db.query(
-        "SELECT (CAST(departure_date || ' ' | departure_time AS timestamp)) as departure_timestamp FROM flight_schedule WHERE flight_code = $1",
+        "SELECT (CAST(departure_date || ' ' || departure_time AS timestamp)) as departure_timestamp FROM flight_schedule WHERE flight_code = $1",
         [flight_code1],
       );
       const departureTimeStamp = departedFlight.rows[0].departure_timestamp;
@@ -160,7 +166,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         return;
       }
       const result = await db.query(
-        "INSERT INTO flight_staff (flight_code, employee_id) VALUES ($1, $2)",
+        "INSERT INTO flight_staff (flight_code, employee_id) VALUES ($1, $2) RETURNING employee_id",
         [flight_code1, employee_id1],
       );
       if (result.rows.length === 0) {
@@ -186,7 +192,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         return;
       }
       const existStaff2 = await db.query(
-        "SELECT name from employee WHERE employee_id = $1",
+        "SELECT first_name from employee WHERE employee_id = $1",
         [employee_id2],
       );
       if (existStaff2.rows.length === 0) {
