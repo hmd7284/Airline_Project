@@ -601,10 +601,10 @@ WHERE
 UPDATE
     flight_schedule
 SET
-    departure_date = '06:45:00',
-    departure_time = '2024-01-08',
-    arrival_date = '10:05:00',
-    arrival_time = '2024-01-08'
+    departure_time = '06:45:00',
+    departure_date = '2024-01-08',
+    arrival_time = '10:05:00',
+    arrival_date = '2024-01-08'
 WHERE
     flight_code = 'FL00047'
 RETURNING
