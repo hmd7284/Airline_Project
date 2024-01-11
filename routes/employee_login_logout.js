@@ -14,7 +14,7 @@ router.post("/employee_login", async (req, res) => {
     if (results.rows.length > 0) {
       const employee = results.rows[0];
       if (employee.password === password) {
-        req.session.employeeID = employee.id;
+        req.session.employeeID = employee.employee_id;
         res.redirect("/home_employee");
       } else {
         req.session.userInput = req.body;

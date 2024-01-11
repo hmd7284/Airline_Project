@@ -457,7 +457,7 @@ FROM
     JOIN airport o ON r.origin = o.airport_code
     JOIN airport d ON r.destination = d.airport_code;
 
--- 2. Fetch route data from the database 
+-- 2. Fetch route data from the database
 SELECT
     r.route_code,
     o.airport_code AS origin_code,
@@ -699,3 +699,57 @@ FROM
 WHERE
     email = 'admin@gmail.com'
     AND type = 'admin';
+
+-- PART 3: Employee QUERIES
+-- I. Login queries
+-- 1. Check if email is registered
+SELECT
+    employee_id,
+    PASSWORD
+FROM
+    employee
+WHERE
+    email = 'duchaminh1@kdd.airline.com';
+
+-- II. Fetch working schedule
+SELECT
+    fs.*,
+    o.airport_code AS origin_code,
+    o.airport_name AS origin_name,
+    o.address AS origin_address,
+    d.airport_code AS destination_code,
+    d.airport_name AS destination_name,
+    d.address AS destination_address
+FROM
+    flight_staff fst
+    JOIN flight_schedule fs ON fs.flight_code = fst.flight_code
+    JOIN route r ON fs.route = r.route_code
+    JOIN airport o ON r.origin = o.airport_code
+    JOIN airport d ON r.destination = d.airport_code
+WHERE
+    fst.employee_id = 1
+ORDER BY
+    fs.departure_date ASC,
+    fs.departure_time ASC;
+
+-- III. Search working schedule
+SELECT
+    fs.*,
+    o.airport_code AS origin_code,
+    o.airport_name AS origin_name,
+    o.address AS origin_address,
+    d.airport_code AS destination_code,
+    d.airport_name AS destination_name,
+    d.address AS destination_address
+FROM
+    flight_staff fst
+    JOIN flight_schedule fs ON fs.flight_code = fst.flight_code
+    JOIN route r ON fs.route = r.route_code
+    JOIN airport o ON r.origin = o.airport_code
+    JOIN airport d ON r.destination = d.airport_code
+WHERE
+    fst.employee_id = 1
+    AND fs.departure_date BETWEEN '2024-01-01' AND '2024-01-13'
+ORDER BY
+    fs.departure_date ASC,
+    fs.departure_time ASC;

@@ -193,13 +193,13 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const userInput = req.session.userInput || {};
-    req.session.userInput = req.query;
     const transactionId = req.query.transactionId;
 
     let transactions;
 
     if (startDate && endDate) {
       if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+        req.session.userInput = req.query;
         const error_message =
           "End Date must be greater than or equal to Start Date.";
         req.flash("error", error_message);
@@ -215,6 +215,8 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
         const error_message =
           "You made no transaction in the specified date range.";
         req.flash("error", error_message);
+        // res.redirect("/booking_history");
+        // return;
       }
     } else {
       transactions = await fetchBookingHistory(req.session.userId);
@@ -230,16 +232,6 @@ router.get("/booking_history", isLoggedIn, async (req, res) => {
   }
 });
 
-// router.get("/booking_history/:transactionId", isLoggedIn, async (req, res) => {
-//   try {
-//     const { transactionId } = req.params;
-//     const transactions = await fetchBooking(req.session.userId, transactionId);
-//     res.render("user_history.ejs", { transactions });
-//   } catch (error) {
-//     console.error("Error retrieving booking history:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
 router.post(
   "/booking_history/cancel/:transactionId",
   isLoggedIn,

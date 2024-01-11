@@ -107,4 +107,36 @@ router.get("/user_signup", (req, res) => {
   res.render("user_signup.ejs", { message: req.flash("error") });
 });
 
+async function fetchUserInformation(userID) {
+  const client = await db.connect();
+  try {
+    const result = await client.query(
+      "SELECT a.email, c.* FROM account a JOIN customers c ON a.id = c.id WHERE a.id = $1",
+      [userID],
+    );
+    return result.rows;
+  } catch (error) {
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+router.get("/user_profile", isLoggedIn, async (req, res) => {
+  const userID = req.session.userId;
+  const userInformation = await fetchUserInformation(userID);
+  res.render("user_profile.ejs", { userInformation });
+});
+
+router.post("/user_profile/edit", isLoggedIn, async (req, res) => {
+  const { email, name, dob, address, phone_number } = req.body;
+  const userID = req.session.userId;
+  try {
+    const editQuery = await db.query(
+      "UPDATE account SET email = $1 WHERE id = $2",
+      [email, userID],
+    );
+  } catch (error) {
+    throw error;
+  }
+});
 module.exports = router;

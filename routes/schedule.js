@@ -105,10 +105,10 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         "SELECT flight_code FROM flight_schedule WHERE aircraft = $1 AND (CAST($2 || ' ' || $3 AS timestamp), CAST($4 || ' ' || $5 AS timestamp)) OVERLAPS (CAST(departure_date || ' ' || departure_time AS timestamp), CAST(arrival_date || ' ' || arrival_time AS timestamp))",
         [aircraft, departure_date, departure_time, arrival_date, arrival_time],
       );
-      // const routeConditionResult = await db.query(
-      //   "SELECT fs.flight_code FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp)) ORDER BY fs.departure_date DESC LIMIT 1",
-      //   [aircraft, origin, departure_date, departure_time],
-      // );
+      const routeConditionResult = await db.query(
+        "SELECT fs.flight_code FROM flight_schedule fs JOIN route r ON fs.route = r.route_code WHERE fs.aircraft = $1 AND r.destination = $2 AND (CAST(fs.departure_date || ' ' || fs.departure_time AS timestamp) < CAST($3 || ' ' || $4 AS timestamp)) ORDER BY fs.departure_date DESC LIMIT 1",
+        [aircraft, origin, departure_date, departure_time],
+      );
       if (existingFlight.rows.length > 0) {
         const error_message =
           `Flight with code ${flight_code} already exists!! Please choose another flight`;
