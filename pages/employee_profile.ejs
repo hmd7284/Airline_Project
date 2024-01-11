@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
-    <link rel="stylesheet" href="user_profile.css" />
-    <title>KDD Airline - Home</title>
+    <link rel="stylesheet" href="staff_flight.css" />
+    <title>KDD Airline - Booking</title>
     <style>
       #flash-message {
         position: fixed;
@@ -28,23 +28,20 @@
         border: 1px solid #c3e6cb;
       }
     </style>
+
   </head>
 
   <body>
     <nav>
       <div class="nav__logo">
         <a href="#" style="color: black;">
-          <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; "> KDD Airline
+          <img src="images/logo.png" alt="Logo" style="height: 100px; width: auto; ">KDD Airline - Staff
         </a>
       </div>
       <ul class="nav__links">
-        <li class="link"><a href="home_user.ejs">Home</a></li>
-        <li class="link"><a href="home_user.ejs/#review">Review</a></li>
-        <li class="link"><a href="home_user.ejs/#about">About</a></li>
-        <li class="link"><a href="/flight_search">Booking history</a></li>
-        <li class="link"><a href="/booking_history">Booking history</a></li>
-        <li class="active"><a href="/user_profile" style="color: black;"><strong>My Profile</strong></a></li>
-        <li class="link"><a href="/user_logout">Log out</a></li>
+        <li class="link"><a href="/home_employee">Home</a></li>
+        <li class="active"><a href="#" style="color: black;"><strong>Profile</strong></a></li>
+        <li class="link"><a href="/employee_logout">Log out</a></li>
       </ul>
     </nav>
     <% if (message.success) { %>
@@ -56,27 +53,37 @@
           <%= message.error %>
         </div>
         <% } %>
+
           <section id="review" class="client">
             <div id="review">
-              <h2>Edit User Profile</h2>
-              <form action="/user_profile/edit" method="post">
+              <h2>Edit Employee Profile</h2>
+              <form action="/employee_profile/edit" method="post">
                 <div class="form__group">
                   <div class="input__group">
-                    <input type="text" name="name" placeholder="Enter your new name" id="name"
-                      value="<%= userInput.name %>" maxlength="255">
+                    <input type="text" name="first_name" placeholder="Enter your new first name" id="first_name"
+                      value="<%= userInput.first_name %>" maxlength="255">
 
                   </div>
-                  <p>Name</p>
+                  <p>First Name</p>
                 </div>
                 <div class="form__group">
                   <div class="input__group">
+                    <input type="text" name="last_name" placeholder="Enter your new last name" id="last_name"
+                      value="<%= userInput.last_name %>" maxlength="255">
 
-                    <input type="date" name="dob" placeholder="Enter your new date of birth" id="dob"
-                      value="<%= userInput.dob %>">
                   </div>
-                  <p>Date of birth</p>
+                  <p>Last Name</p>
                 </div>
-
+                
+                <div class="form__group">
+                  <div class="input__group">
+                    <select id="gender" name="gender" value="<%= userInput.gender %>">
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                  <p>Gender</p>
+                </div>
                 <div class="form__group">
                   <div class="input__group">
 
@@ -94,13 +101,22 @@
                   </div>
                   <p>Phone Number</p>
                 </div>
+                <div class="form__group">
+                  <div class="input__group">
+                    <input type="text" name="ssn" placeholder="Enter your new SSN" id="ssn" maxlength="255"
+                      value="<%= userInput.ssn %>">
+
+                  </div>
+                  <p>SSN</p>
+                </div>
+
 
                 <button type="submit" class="btn"><i class="ri-search-line"></i></button>
               </form>
               <br>
               <br>
               <h2>Change Password</h2>
-              <form action="/user_profile/password" method="post">
+              <form action="/employee_profile/password" method="post">
 
                 <div class="form__group">
                   <div class="input__group">
@@ -133,14 +149,16 @@
             <% if (typeof profile !=='undefined' && profile.length> 0) { %>
 
               <table>
-                <h2>User Profile</h2>
+                <h2>Employee Profile</h2>
                 <br>
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Date Of Birth</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
                     <th>Address</th>
                     <th>Phone Number</th>
+                    <th>SSN</th>
                     <th>Email</th>
                   </tr>
                 </thead>
@@ -148,19 +166,23 @@
                   <% profile.forEach(profile=> { %>
                     <tr>
                       <td>
-                        <%= profile.name %>
+                        <%= profile.first_name %>
                       </td>
                       <td>
-                        <%= profile.dob %>
+                        <%= profile.last_name %>
                       </td>
-
+                      <td>
+                        <%= profile.gender %>
+                      </td>
                       <td>
                         <%= profile.address %>
                       </td>
                       <td>
                         <%= profile.phone_number %>
                       </td>
-
+                      <td>
+                        <%= profile.ssn %>
+                      </td>
                       <td>
                         <%= profile.email %>
                       </td>
@@ -175,6 +197,7 @@
 
                   <br>
           </section>
+
           <footer id="about" class="footer">
             <div class="section__container footer__container">
               <div class="footer__col">
@@ -203,7 +226,6 @@
               Copyright © 2023 Killer Daylight Coop. All rights reserved.
             </div>
           </footer>
-
           <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

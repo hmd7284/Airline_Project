@@ -41,7 +41,7 @@
       </div>
       <ul class="nav__links">
         <li class="active"><a href="#" style="color: black;"><strong>Home</strong></a></li>
-        <li class="link"><a href="#" >Working Shift</a></li>
+        <!-- <li class="link"><a href="#" >Working Shift</a></li> -->
         <li class="link"><a href="/employee_profile" >Profile</a></li>
         <li class="link"><a href="/employee_logout" >Log out</a></li>
       </ul>
@@ -163,6 +163,16 @@
           Copyright © 2023 Killer Daylight Coop. All rights reserved.
         </div>
       </footer>
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+          <script>
+            $(document).ready(function () {
+              $("#flash-message").delay(4000).fadeOut("slow");
+            }); 
+          </script>
 
     </body>
     </html>
