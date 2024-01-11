@@ -267,6 +267,51 @@ WHERE transaction_id = 1
 RETURNING
     order_id;
 
+-- IV. Edit Information
+-- 1. Edit Profile
+-- 1.1 Fetch Information
+SELECT
+    name,
+    dob,
+    address,
+    phone_number
+FROM
+    customers
+WHERE
+    id = 2;
+
+-- 1.2 Update Profile
+UPDATE
+    customers
+SET
+    name = 'Harry Maguire',
+    dob = '1993-03-05',
+    phone_number = '012-345-6789',
+    address = 'HUST'
+WHERE
+    id = 2
+RETURNING
+    id;
+
+-- 2. Change Password
+-- 2.1 Check if old password is correct
+SELECT
+    PASSWORD
+FROM
+    account
+WHERE
+    id = 2
+    AND type = 'customer';
+
+-- 2.2 Update password
+UPDATE
+    account
+SET
+    PASSWORD = '123456'
+WHERE
+    id = 2
+    AND type = 'customer';
+
 -- PART 2: ADMIN QUERIES
 -- I. Airport queries
 -- 1. Fetch airport data - Kien
@@ -753,3 +798,50 @@ WHERE
 ORDER BY
     fs.departure_date ASC,
     fs.departure_time ASC;
+
+-- IV. Edit Information
+-- 1. Edit Profile
+-- 1.1 Fetch Information
+SELECT
+    first_name,
+    last_name,
+    gender,
+    address,
+    phone_number,
+    ssn
+FROM
+    employee
+WHERE
+    employee_id = 1;
+
+-- 1.2 Update Profile
+UPDATE
+    employee
+SET
+    first_name = 'A',
+    last_name = 'Nguyen Van',
+    gender = 'Male',
+    phone_number = '012-345-6789',
+    ssn = '0123456789',
+    address = 'HUST'
+WHERE
+    employee_id = 1
+RETURNING
+    employee_id;
+
+-- 2. Change Password
+-- 2.1 Check if old password is correct
+SELECT
+    PASSWORD
+FROM
+    employee
+WHERE
+    employee_id = 1;
+
+-- 2.2 Update password
+UPDATE
+    employee
+SET
+    PASSWORD = '123456'
+WHERE
+    employee_id = 1;
