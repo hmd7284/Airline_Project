@@ -7,9 +7,11 @@ async function fetchStaff(flight_code) {
   const client = await db.connect();
   try {
     const result = await client.query(
-      "SELECT (e.first_name || ' ' || e.last_name) as full_name, e.phone_number, e.email, s.*, fs.departure_date, fs.departure_time, fs.arrival_date, fs.arrival_time, fs. route, fs.status FROM employee e JOIN flight_staff s ON e.employee_id = s.employee_id JOIN flight_schedule fs ON s.flight_code = fs.flight_code WHERE s.flight_code = $1",
+      /* "SELECT (e.first_name || ' ' || e.last_name) as full_name, e.phone_number, e.email, s.*, fs.departure_date, fs.departure_time, fs.arrival_date, fs.arrival_time, fs. route, fs.status FROM employee e LEFT JOIN flight_staff s ON e.employee_id = s.employee_id JOIN flight_schedule fs ON s.flight_code = fs.flight_code WHERE s.flight_code = $1", */
+      "SELECT fs.flight_code, fs.departure_date, fs.departure_time, fs.arrival_date, fs.arrival_time, fs. route, fs.status, e.employee_id, (e.first_name || ' ' || e.last_name) as full_name, e.phone_number, e.email FROM flight_schedule fs LEFT JOIN flight_staff fst ON fs.flight_code = fst.flight_code LEFT JOIN employee e ON fst.employee_id = e.employee_id WHERE fs.flight_code = $1",
       [flight_code],
     );
+    console.log(result.rows);
     if (result.rows.length === 0) {
       return [];
     }
@@ -98,7 +100,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         req.session.userInput = req.body;
         const error_message = `Flight ${flight_code1} is canceled`;
         req.flash("error", error_message);
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       }
 
@@ -122,7 +124,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         const error_message =
           `Employee ${employee_id1} is already assigned to flight ${flight_code1}`;
         req.flash("error", error_message);
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       }
       // const overlapsSchedule1 = await db.query(
@@ -142,7 +144,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         const error_message =
           `Flight ${flight_code1} has already departed!! You can't add staff to this flight`;
         req.flash("error", error_message);
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       }
       if (timeDifferece < 30 * 60 * 1000) {
@@ -150,7 +152,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         const error_message =
           `Flight ${flight_code1} is departing in less than 30 minutes!! You can't add staff to this flight`;
         req.flash("error", error_message);
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       }
       const overlapsSchedule1 = await db.query(
@@ -172,11 +174,11 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
       if (result.rows.length === 0) {
         req.session.userInput = req.body;
         req.flash("error", "Error inserting staff data");
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       } else {
         req.flash("success", "Successfully added staff");
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code1}`);
         return;
       }
     } else if (action === "delete") {
@@ -210,7 +212,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         const error_message =
           `Employee ${employee_id2} is not assigned to flight ${flight_code2}`;
         req.flash("error", error_message);
-        res.redirect("/staff");
+        res.redirect(`/staff?fcode=${flight_code2}`);
         return;
       }
       const result = await db.query(
@@ -227,7 +229,7 @@ router.post("/staff", isLoggedInAdmin, async (req, res) => {
         // res.redirect("/staff");
         // return;
       }
-      res.redirect("/staff");
+      res.redirect(`/staff?fcode=${flight_code2}`);
       return;
     } else {
       req.flash("error", "Invalid action");

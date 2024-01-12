@@ -8,6 +8,12 @@ management database system. The primary objective is to facilitate efficient
 management for both administrators and customers in accessing and handling
 information pertaining to the airline's operations and services.
 
+## Overview
+
+### Datbase Schema
+
+![Architecture](https://github.com/hmd7284/Airline_Project/blob/main/query/Relational_Model.png)
+
 ### Technical Specifications
 
 - Frontend: EJS, CSS, Javascript
@@ -16,16 +22,22 @@ information pertaining to the airline's operations and services.
 
 ### Features
 
-- Authentication: Login, signup
+- Authentication: Login, signup, update password
 - Authorization:
   - Restrict users, admin, guides what they can do
 - Admin:
   - An admin account is provided
-  - Airport, Airplane, Schedule, Route, Discount, Revenue
+  - Airport, Airplane, Schedule, Route, Discount, Revenue, Employee, Staff
+    management
+- Employee:
+  - An employee account is provided
+  - Check working chedule
+  - Update profile, change password
 - Users:
-  - Search for upcoming flights
+  - Search for flights
   - Booking, cancel booking
   - Check booking history
+  - Update profile, change password
 
 ## Setup
 
@@ -37,6 +49,19 @@ information pertaining to the airline's operations and services.
 4. Import the project in any IDE that support the aforementioned programming
    languages.
 5. Deploy & Run the application with `npm run dev`
+
+## Project Structure
+
+    ├── pages               #EJS files # tables and queries used for this project
+    ├── public
+    ├── query               # tables and queries used for this project
+    ├── routes              #JS files
+    ├── .gitignore
+    ├── README.md
+    ├── database.js
+    ├── index.js
+    ├── package-lock.json
+    └── package.json
 
 ## Collaborators
 
