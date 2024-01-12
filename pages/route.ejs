@@ -65,7 +65,7 @@
                 <input type="hidden" name="action" value="add">
                 <label for="routeCode">Code:</label>
                 <input type="text" id="routeCode" name="routeCode"
-                  placeholder="Route code must have 6 characters! First 3 is the origin code, last 3 is the destination code!"
+                  placeholder="Route code must have 6 characters! First 3 is the origin code, last 3 is the destination code!" maxlength="6" value="<%= userInput.routeCode %>"
                   required>
                 <br>
                 <label for="origin">Origin:</label>
@@ -95,8 +95,7 @@
                 <h2>Delete Flight Route</h2>
                 <input type="hidden" name="action" value="delete">
                 <label for="routeCode">Code:</label>
-                <input type="text" id="routeCode" name="routeCode" placeholder="Route code must have 6 characters"
-                  required>
+                <input type="text" id="routeCode" name="routeCode" placeholder="Route code must have 6 characters" maxlength="6" value="<%= userInput.routeCode %>" required>
                 <br>
                 <button type="submit">Delete Flight Route</button>
               </form>

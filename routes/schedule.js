@@ -16,6 +16,20 @@ async function fetchScheduleFromDatabase() {
   }
 }
 
+async function fetchSchedule(flight_code) {
+  const client = await db.connect();
+
+  try {
+    const result = await client.query(
+      "SELECT fs.*, o.airport_code as origin_code, o.airport_name as origin_name, o.address as origin_address, d.airport_code as destination_code, d.airport_name as destination_name, d.address as destination_address FROM flight_schedule fs JOIN route r ON fs.route = r.route_code JOIN airport o ON r.origin = o.airport_code JOIN airport d ON r.destination = d.airport_code where flight_code = $1",
+      [flight_code],
+    );
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
 async function fetchRouteFromDatabase() {
   const client = await db.connect();
   try {
@@ -64,6 +78,19 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
     aircraft,
     route,
   } = req.body;
+  const schedules = await fetchSchedule(flight_code);
+  const departureDateValue = departure_date !== ""
+    ? departure_date
+    : schedules[0].departure_date;
+  const departureTimeValue = departure_time !== ""
+    ? departure_time
+    : schedules[0].departure_time;
+  const arrivalDateValue = arrival_date !== ""
+    ? arrival_date
+    : schedules[0].arrival_date;
+  const arrivalTimeValue = arrival_time !== ""
+    ? arrival_time
+    : schedules[0].arrival_time;
   try {
     if (departure_date > arrival_date) {
       req.session.userInput = req.body;
@@ -311,9 +338,10 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       const arrivalTimeDifference2 = aDateTime - currentTime;
       // Check if the arrival time is at least 30 minutes away from the current time
       if (
-        (departure_date || departure_time || arrival_date || arrival_time) &&
-        (arrivalTimeDifference2 < 0)
+        (arrival_date !== "" || arrival_time !== "") &&
+        arrivalTimeDifference2 < 0
       ) {
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "The flight has already arrived!! Its schedule cannot be updated",
@@ -322,7 +350,11 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
 
-      if ((departure_date && departure_time) && departureTimeDifference2 > 0) {
+      if (
+        (departure_date !== "" || departure_time !== "") &&
+        departureTimeDifference2 > 0
+      ) {
+        req.session.userInput = req.body;
         const error_message =
           `Flight ${flight_code} has departed!! Its departure date and time cannot be updated`;
         req.flash("error", error_message);
@@ -330,9 +362,10 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (
-        departure_date && departure_time &&
+        departure_date !== "" && departure_time !== "" &&
         departureTimeDifference < 30 * 60 * 1000
       ) { // 30 minutes in milliseconds
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "Departure time must be at least 30 minutes away from the current time when updating flight schedule",
@@ -341,8 +374,10 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (
-        arrival_date && arrival_time && arrivalTimeDifference < 30 * 60 * 1000
+        arrival_date !== "" && arrival_time !== "" &&
+        arrivalTimeDifference < 30 * 60 * 1000
       ) { // 30 minutes in milliseconds
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "Arrival time must be at least 30 minutes away from the current time when updating flight schedule",
@@ -353,10 +388,10 @@ router.post("/schedule", isLoggedInAdmin, async (req, res) => {
       const result = await db.query(
         "UPDATE flight_schedule SET departure_date = $1, departure_time = $2, arrival_date = $3, arrival_time = $4 WHERE flight_code = $5 RETURNING flight_code",
         [
-          departure_date,
-          departure_time,
-          arrival_date,
-          arrival_time,
+          departureDateValue,
+          departureTimeValue,
+          arrivalDateValue,
+          arrivalTimeValue,
           flight_code,
         ],
       );

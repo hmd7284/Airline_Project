@@ -44,22 +44,22 @@ information pertaining to the airline's operations and services.
 1. Clone the project from Github git clone
    https://github.com/hmd7284/Airline_Project.git
 2. Install some essential libraries: `npm install`
-3. Import & execute the SQL queries from the Database folder to the PostgreSQL
-   database. Data needs to be inserted to countries and cities table first for
-   the system to work properly.
+3. Modify the database.js file to fit your system. Import & execute the SQL
+   queries from the Database folder to the PostgreSQL database. Data needs to be
+   inserted to countries and cities table first for the system to work properly.
 4. Import the project in any IDE that support the aforementioned programming
    languages.
 5. Deploy & Run the application with `npm run dev`
 
 ## Project Structure
 
-    ├── pages               #EJS files # tables and queries used for this project
-    ├── public
-    ├── query               # tables and queries used for this project
-    ├── routes              #JS files
+    ├── pages               # EJS files # tables and queries used for this project
+    ├── public              # CSS, images, videos
+    ├── query               # Database definition and queries used for this project
+    ├── routes              # JS files
     ├── .gitignore
     ├── README.md
-    ├── database.js
+    ├── database.js         # Create connection to the database
     ├── index.js
     ├── package-lock.json
     └── package.json

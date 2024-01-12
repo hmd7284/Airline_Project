@@ -65,22 +65,22 @@
                   <h2>Add Flight</h2>
                   <input type="hidden" name="action" value="add">
                   <label for="flight_code">Flight Code:</label>
-                  <input type="text" id="flight_code" name="flight_code" maxlength="7" placeholder="Enter a flight code (e.g., FL12345)" required>
+                  <input type="text" id="flight_code" name="flight_code" maxlength="7" placeholder="Enter a flight code (e.g., FL12345)" value="<%= userInput.flight_code %>" required>
                   <label for="departure_date">Departure Date:</label>
-                  <input type="date" id="departure_date" name="departure_date" required>
+                  <input type="date" id="departure_date" name="departure_date" value="<%= userInput.departure_date %>" required>
                   <br>
                   <label for="departure_time">Departure Time:</label>
-                  <input type="time" id="departure_time" name="departure_time" required>
+                  <input type="time" id="departure_time" name="departure_time" value="<%= userInput.departure_time %>" required>
                   <br>
                   <label for="arrival_date">Arrival Date:</label>
-                  <input type="date" id="arrival_date" name="arrival_date" required>
+                  <input type="date" id="arrival_date" name="arrival_date" value="<%= userInput.arrival_date %>" required>
                   <br>
                   <label for="arrival_time">Arrival Time:</label>
-                  <input type="time" id="arrival_time" name="arrival_time" required>
+                  <input type="time" id="arrival_time" name="arrival_time" value="<%= userInput.arrival_time %>" required>
                   <br>
                   <label for="aircraft">Airplane Code:</label>
                   <input type="text" id="aircraft" name="aircraft" maxlength="5"
-                    placeholder="Enter an airplane code (e.g., AC123)" required>
+                    placeholder="Enter an airplane code (e.g., AC123)" value="<%= userInput.aircraft %>" required>
                   <br>
                   <label for="route">Flight Route:</label>
                   <select id="route" name="route" onchange="updateRouteCode('route')" required>
@@ -101,7 +101,7 @@
                   <input type="hidden" name="action" value="delete">
                   <label for="flight_code">Flight Code:</label>
                   <input type="text" id="flight_code" name="flight_code" maxlength="7"
-                    placeholder="Enter a flight code (e.g., FL12345)" required>
+                    placeholder="Enter a flight code (e.g., FL12345)" value="<%= userInput.flight_code %>" required>
                   <button type="submit" onclick="return confirm('Are you sure you want to cancel this flight?')">Cancel
                     Flight</button>
                 </form>
@@ -110,18 +110,18 @@
                   <h2>Update Flight Time</h2>
                   <input type="hidden" name="action" value="update">
                   <label for="flight_code">Flight Code:</label>
-                  <input type="text" id="flight_code" name="flight_code" maxlength="7" placeholder="Enter a flight code (e.g., FL12345)" required>
+                  <input type="text" id="flight_code" name="flight_code" maxlength="7" placeholder="Enter a flight code (e.g., FL12345)" value="<%= userInput.flight_code %>" required>
                   <label for=" departure_date">Departure Date:</label>
-                  <input type="date" id="departure_date" name="departure_date">
+                  <input type="date" id="departure_date" name="departure_date" value="<%= userInput.departure_date %>">
                   <br>
                   <label for="departure_time">Departure Time:</label>
-                  <input type="time" id="departure_time" name="departure_time">
+                  <input type="time" id="departure_time" name="departure_time" value="<%= userInput.departure_time %>">
                   <br>
                   <label for="arrival_date">Arrival Date:</label>
-                  <input type="date" id="arrival_date" name="arrival_date">
+                  <input type="date" id="arrival_date" name="arrival_date" value="<%= userInput.arrival_date %>">
                   <br>
                   <label for="arrival_time">Arrival Time:</label>
-                  <input type="time" id="arrival_time" name="arrival_time">
+                  <input type="time" id="arrival_time" name="arrival_time" value="<%= userInput.arrival_time %>">
                   <br>
                   <button type="submit" onclick="return confirm('Are you sure you want to update schedule for this flight?')">Update Flight</button>
                 </form>
@@ -132,7 +132,7 @@
                 <label for="flight_code">Flight Code:</label>
 
                 <input type="text" id="flight_code" name="flight_code" maxlength="7"
-                    placeholder="Enter a flight code (e.g., FL12345)" required><br>
+                    placeholder="Enter a flight code (e.g., FL12345)" value="<%= userInput.flight_code %>" required><br>
                 <button type="submit"
                   onclick="return confirm('Are you sure you want to delete this flight? All associated orders will also be deleted!!')">Delete
                   Flight</button>

@@ -26,12 +26,13 @@ router.get("/airport", isLoggedInAdmin, async (req, res) => {
     const startIdx = (currentPage - 1) * pageSize;
     const endIdx = startIdx + pageSize;
     const airports = airportsdata.slice(startIdx, endIdx);
-
+    const userInput = req.session.userInput || {};
     res.render("airport.ejs", {
       airports,
       pageCount,
       currentPage,
       startIdx,
+      userInput,
     });
   } catch (error) {
     console.error("Error retrieving airport data:", error);
@@ -47,6 +48,7 @@ router.post("/airport", isLoggedInAdmin, async (req, res) => {
       [airportCode],
     );
     if (action === "add") {
+      req.session.userInput = req.body;
       if (existingAirport.rows.length > 0) {
         const error_message =
           `Airport with code ${airportCode} already exists!! Please choose another airport`;
@@ -64,6 +66,7 @@ router.post("/airport", isLoggedInAdmin, async (req, res) => {
         res.redirect("/airport");
         return;
       } else {
+        req.session.userInput = req.body;
         error_message = `Airport ${airportCode} not added!! Please try again`;
         req.flash("error", error_message);
         res.redirect("/airport");
@@ -71,6 +74,7 @@ router.post("/airport", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "delete") {
       if (existingAirport.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Airport with code ${airportCode} not found!! Cannot delete`;
         req.flash("error", error_message);
@@ -89,6 +93,7 @@ router.post("/airport", isLoggedInAdmin, async (req, res) => {
         req.flash("success", success_message);
         res.redirect("/airport");
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Airport ${airportCode} not deleted!! Please try again`;
         req.flash("error", error_message);

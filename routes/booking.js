@@ -472,13 +472,12 @@ router.post(
         req.flash("error", error_message);
         res.redirect("/booking_queue");
         return;
+      } else {
+        const success_message =
+          `Your order ${orderId} of transaction ${transactionId} has been cancelled successfully`;
+        req.flash("success", success_message);
+        res.redirect("/booking_queue");
       }
-      // } else {
-      //   const success_message =
-      //     `Your order ${orderId} of transaction ${transactionId} has been cancelled successfully`;
-      //   req.flash("success", success_message);
-      //   res.redirect("/booking_queue");
-      // }
     } catch (error) {
       console.error("Error cancelling order:", error);
       res.status(500).send("Internal Server Error");

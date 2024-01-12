@@ -54,7 +54,6 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
     mfdCom,
     mfdDate,
   } = req.body;
-  req.session.userInput = req.body;
   try {
     const existingAircraft1 = await db.query(
       "SELECT aircraft_name FROM aircraft WHERE aircraft_code = $1",
@@ -71,6 +70,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
 
     if (action === "add") {
       if (existingAircraft1.rows.length > 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft with code ${aircraftCode1} already exists!! Please choose another aircraft`;
         req.flash("error", error_message);
@@ -87,6 +87,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         res.redirect("/airplane");
         return;
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft ${aircraftCode1} not added!! Please try again`;
         req.flash("error", error_message);
@@ -95,6 +96,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "delete") {
       if (existingAircraft3.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft with code ${aircraftCode3} not found!! Cannot delete`;
         req.flash("error", error_message);
@@ -112,6 +114,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         res.redirect("/airplane");
         return;
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft ${aircraftCode3} not deleted!! Please try again`;
         req.flash("error", error_message);
@@ -120,6 +123,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
       }
     } else if (action === "update") {
       if (existingAircraft2.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Aircraft with code ${aircraftCode2} not found!! Cannot update status`;
         req.flash("error", error_message);
@@ -127,6 +131,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (status2 === "Active") {
+        req.session.userInput = req.body;
         if (existingAircraft2.rows[0].status === "Active") {
           const error_message =
             `Aircraft with code ${aircraftCode2} is already Active!!`;
@@ -145,6 +150,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           res.redirect("/airplane");
           return;
         } else {
+          req.session.userInput = req.body;
           const error_message =
             `Aircraft ${aircraftCode2} status is not updated!! Please try again`;
           req.flash("error", error_message);
@@ -153,6 +159,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
         }
       } else if (status2 === "Inactive") {
         if (existingAircraft2.rows[0].status === "Inactive") {
+          req.session.userInput = req.body;
           const error_message =
             `Aircraft with code ${aircraftCode2} is already Inactive!!`;
           req.flash("error", error_message);
@@ -164,6 +171,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           [aircraftCode2],
         );
         if (flightInAir.rows.length > 0) {
+          req.session.userInput = req.body;
           const error_message =
             `Aircraft ${aircraftCode2} cannot be deactivated. Associated flight is currently in the air.`;
           req.flash("error", error_message);
@@ -182,6 +190,7 @@ router.post("/airplane", isLoggedInAdmin, async (req, res) => {
           res.redirect("/airplane");
           return;
         } else {
+          req.session.userInput = req.body;
           const error_message =
             `Aircraft ${aircraftCode2} status not updated!! Please try again`;
           req.flash("error", error_message);

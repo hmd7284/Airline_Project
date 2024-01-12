@@ -39,9 +39,10 @@ router.get("/route", isLoggedInAdmin, async (req, res) => {
     const startIdx = (currentPage - 1) * pageSize;
     const endIdx = startIdx + pageSize;
     const routes = routesdata.slice(startIdx, endIdx);
-
+    const userInput = req.session.userInput || {};
     res.render("route.ejs", {
       routes,
+      userInput,
       airports,
       pageCount,
       currentPage,
@@ -61,12 +62,14 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
       [routeCode],
     );
     if (routeCode.length !== 6) {
+      req.session.userInput = req.body;
       req.flash("error", "Route code must have 6 characters.");
       res.redirect("/route");
       return;
     }
     if (action === "add") {
       if (origin === destination) {
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "Origin and destination cannot be the same",
@@ -75,6 +78,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (routeCode.substring(0, 3) !== origin) {
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "First 3 characters of route code must be the same as the origin",
@@ -83,6 +87,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (routeCode.substring(3, 6) !== destination) {
+        req.session.userInput = req.body;
         req.flash(
           "error",
           "Last 3 characters of route code must be the same as the destination",
@@ -91,6 +96,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (existingRoute.rows.length > 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Route with code ${routeCode} already exists!! Please choose another route`;
         req.flash("error", error_message);
@@ -106,6 +112,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         [destination],
       );
       if (availableOrigin.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Origin airport with code ${origin} does not exist!! Please choose another airport`;
         req.flash("error", error_message);
@@ -113,6 +120,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         return;
       }
       if (availableDestination.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Destination airport with code ${destination} does not exist!! Please choose another airport`;
         req.flash("error", error_message);
@@ -128,12 +136,14 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         req.flash("success", success_message);
         res.redirect("/route");
       } else {
+        req.session.userInput = req.body;
         error_message = `Route ${routeCode} not added!! Please try again`;
         req.flash("error", error_message);
         res.redirect("/route");
       }
     } else if (action === "delete") {
       if (existingRoute.rows.length === 0) {
+        req.session.userInput = req.body;
         const error_message =
           `Route with code ${routeCode} not found!! Cannot delete`;
         req.flash("error", error_message);
@@ -150,6 +160,7 @@ router.post("/route", isLoggedInAdmin, async (req, res) => {
         req.flash("success", success_message);
         res.redirect("/route");
       } else {
+        req.session.userInput = req.body;
         const error_message =
           `Route ${routeCode} not deleted!! Please try again`;
         req.flash("error", error_message);

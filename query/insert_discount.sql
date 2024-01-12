@@ -1,5 +1,0 @@
---Insert some kind of discounts
-INSERT INTO discount VALUES('DIS10', 'DISCOUNT 10 PERCENT', 10, null);
-INSERT INTO discount VALUES('DIS30', 'DISCOUNT 30 PERCENT', 30, null);
-INSERT INTO discount VALUES('DIS50', 'DISCOUNT 50 PERCENT', 50, null);
-INSERT INTO discount VALUES('DIS70', 'DISCOUNT 70 PERCENT', 70, null);
