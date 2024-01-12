@@ -145,6 +145,7 @@ CREATE TABLE transactions_order (
 );
 --Admin account
 INSERT INTO account VALUES(1, 'admin@gmail.com', 'admin', 'admin');
+INSERT INTO customers (id, name, dob, address, phone_number) values (1, 'Admin', '01/01/2000', 'Admin', '448-723-5177');
 
 --TRIGGER AND VIEWS
 --1. Auto update address of the airport after insert a new flight
