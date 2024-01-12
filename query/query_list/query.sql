@@ -635,22 +635,23 @@ ORDER BY
 -- VI. Flight staff queries
 -- 1. Search flight staff
 SELECT
-    (e.first_name || ' ' || e.last_name) AS full_name,
-    e.phone_number,
-    e.email,
-    s.*,
+    fs.flight_code,
     fs.departure_date,
     fs.departure_time,
     fs.arrival_date,
     fs.arrival_time,
     fs. route,
-    fs.status
+    fs.status,
+    e.employee_id,
+    (e.first_name || ' ' || e.last_name) AS full_name,
+    e.phone_number,
+    e.email
 FROM
-    employee e
-    JOIN flight_staff s ON e.employee_id = s.employee_id
-    JOIN flight_schedule fs ON s.flight_code = fs.flight_code
+    flight_schedule fs
+    LEFT JOIN flight_staff fst ON fs.flight_code = fst.flight_code
+    LEFT JOIN employee e ON fst.employee_id = e.employee_id
 WHERE
-    s.flight_code = 'FL00063';
+    fs.flight_code = 'FL00063';
 
 -- 2. Add flight staff
 -- 2.1 Check if employee exists
