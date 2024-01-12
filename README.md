@@ -45,7 +45,8 @@ information pertaining to the airline's operations and services.
    https://github.com/hmd7284/Airline_Project.git
 2. Install some essential libraries: `npm install`
 3. Import & execute the SQL queries from the Database folder to the PostgreSQL
-   database.
+   database. Data needs to be inserted to countries and cities table first for
+   the system to work properly.
 4. Import the project in any IDE that support the aforementioned programming
    languages.
 5. Deploy & Run the application with `npm run dev`
