@@ -623,7 +623,16 @@ WHERE
 DELETE FROM flight_schedule
 WHERE flight_code = 'FL00047';
 
--- V. Flight staff queries
+-- V Employee list
+-- Fetch employee list
+SELECT
+    *
+FROM
+    employee
+ORDER BY
+    employee_id ASC;
+
+-- VI. Flight staff queries
 -- 1. Search flight staff
 SELECT
     (e.first_name || ' ' || e.last_name) AS full_name,
@@ -705,7 +714,7 @@ DELETE FROM flight_staff
 WHERE flight_code = 'FL00063'
     AND employee_id = 1;
 
--- VI. discount queries
+-- VII. discount queries
 -- 1. Fetch discount from database
 SELECT
     *
@@ -742,7 +751,7 @@ WHERE discount_code = 'DIS40'
 RETURNING
     discount_code;
 
--- VII. Admin account queries
+-- VIII. Admin account queries
 -- Search for admin account in the database
 SELECT
     *
