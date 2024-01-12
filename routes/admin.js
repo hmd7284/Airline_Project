@@ -26,6 +26,7 @@ const flightRouteRouter = require("./flight_route");
 const staffRouter = require("./staff_admin");
 const discountRouter = require("./sales");
 const revenueRouter = require("./revenue");
+const employeeRouter = require("./employee_list");
 router.use("/", loginlogoutRouter);
 router.use("/", airportRouter);
 router.use("/", airplaneRouter);
@@ -34,5 +35,5 @@ router.use("/", flightRouteRouter);
 router.use("/", staffRouter);
 router.use("/", discountRouter);
 router.use("/", revenueRouter);
-
+router.use("/", employeeRouter);
 module.exports = router;
